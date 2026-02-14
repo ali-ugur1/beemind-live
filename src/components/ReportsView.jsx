@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { Download, Calendar, TrendingUp, FileText } from 'lucide-react';
+import { Download, Calendar, TrendingUp, FileText, FileSpreadsheet } from 'lucide-react';
 
 const ReportsView = ({ hives }) => {
   const [dateRange, setDateRange] = useState('7days'); // '7days', '30days', '90days'
@@ -78,8 +78,18 @@ const ReportsView = ({ hives }) => {
             <option value="90days">Son 90 Gün</option>
           </select>
 
-          {/* Export Button */}
-          <button className="flex items-center gap-2 px-4 py-2 bg-amber-500 hover:bg-amber-600 text-black font-semibold rounded-lg transition-colors">
+          {/* Export Buttons */}
+          <button
+            onClick={() => exportCSV(hives)}
+            className="flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg transition-colors"
+          >
+            <FileSpreadsheet className="w-4 h-4" />
+            CSV İndir
+          </button>
+          <button
+            onClick={() => window.print()}
+            className="flex items-center gap-2 px-4 py-2 bg-amber-500 hover:bg-amber-600 text-black font-semibold rounded-lg transition-colors"
+          >
             <Download className="w-4 h-4" />
             PDF İndir
           </button>
@@ -244,3 +254,27 @@ const KPICard = ({ title, value, icon }) => (
 );
 
 export default ReportsView;
+
+// CSV Export Utility
+function exportCSV(hives) {
+  const headers = ['ID', 'Durum', 'Sıcaklık (°C)', 'Nem (%)', 'Pil (%)', 'Ağırlık (kg)', 'Ses (dB)', 'Son Güncelleme'];
+  const rows = hives.map(h => [
+    h.id,
+    h.status,
+    h.temp,
+    h.humidity,
+    h.battery,
+    h.weight,
+    h.sound,
+    h.lastUpdate
+  ]);
+
+  const csvContent = [headers, ...rows].map(r => r.join(',')).join('\n');
+  const blob = new Blob([`\uFEFF${csvContent}`], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `beemind-rapor-${new Date().toISOString().slice(0, 10)}.csv`;
+  link.click();
+  URL.revokeObjectURL(url);
+}

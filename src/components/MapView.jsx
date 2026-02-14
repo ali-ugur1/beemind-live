@@ -1,34 +1,56 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { MapPin, Navigation, Layers, ZoomIn, ZoomOut } from 'lucide-react';
 import { getStatusColor } from '../data/mockData';
 
-const MapView = ({ hives }) => {
-  const [mapType, setMapType] = useState('roadmap'); // 'roadmap', 'satellite', 'hybrid'
+const MapView = ({ hives, onViewDetail }) => {
+  const [mapType, setMapType] = useState('roadmap');
   const [selectedHive, setSelectedHive] = useState(null);
+  const [zoom, setZoom] = useState(15);
+  const [center, setCenter] = useState({ lat: 37.8746, lng: 32.4932 });
 
-  // Mock GPS koordinatları (Konya, Selçuklu bölgesi)
-  const baseLocation = {
-    lat: 37.8746,
-    lng: 32.4932
-  };
+  const baseLocation = { lat: 37.8746, lng: 32.4932 };
 
   // Her kovana rastgele ama yakın koordinatlar
   const hiveLocations = useMemo(() => {
     return hives.map((hive, index) => ({
       ...hive,
-      lat: baseLocation.lat + (Math.random() - 0.5) * 0.01,
-      lng: baseLocation.lng + (Math.random() - 0.5) * 0.01
+      lat: baseLocation.lat + (Math.sin(index * 1.7) * 0.004),
+      lng: baseLocation.lng + (Math.cos(index * 2.3) * 0.004)
     }));
   }, [hives]);
 
   // Durum bazlı istatistikler
-  const stats = useMemo(() => {
-    return {
-      critical: hiveLocations.filter(h => h.status === 'critical').length,
-      warning: hiveLocations.filter(h => h.status === 'warning').length,
-      stable: hiveLocations.filter(h => h.status === 'stable').length
-    };
-  }, [hiveLocations]);
+  const stats = useMemo(() => ({
+    critical: hiveLocations.filter(h => h.status === 'critical').length,
+    warning: hiveLocations.filter(h => h.status === 'warning').length,
+    stable: hiveLocations.filter(h => h.status === 'stable').length
+  }), [hiveLocations]);
+
+  // Map embed URL — her map tipi farklı layer
+  const getMapUrl = useCallback(() => {
+    const bbox = getBbox(center.lat, center.lng, zoom);
+    switch (mapType) {
+      case 'satellite':
+        // ESRI World Imagery
+        return `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=cyclemap&marker=${center.lat},${center.lng}`;
+      case 'hybrid':
+        // Topographic
+        return `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=hot&marker=${center.lat},${center.lng}`;
+      default:
+        // Standard
+        return `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${center.lat},${center.lng}`;
+    }
+  }, [center, zoom, mapType]);
+
+  const handleZoomIn = () => setZoom(prev => Math.min(prev + 1, 19));
+  const handleZoomOut = () => setZoom(prev => Math.max(prev - 1, 5));
+  const handleNavigate = () => setCenter({ lat: baseLocation.lat, lng: baseLocation.lng });
+
+  const handleViewDetail = () => {
+    if (selectedHive && onViewDetail) {
+      onViewDetail(selectedHive.id);
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -99,62 +121,68 @@ const MapView = ({ hives }) => {
 
       {/* Map Container */}
       <div className="relative bg-gray-900 border border-gray-800 rounded-lg overflow-hidden" style={{ height: '600px' }}>
-        {/* Google Maps Embed (İframe) */}
+        {/* OpenStreetMap Embed */}
         <iframe
           width="100%"
           height="100%"
           style={{ border: 0 }}
           loading="lazy"
           allowFullScreen
-          referrerPolicy="no-referrer-when-downgrade"
-          src={`https://www.google.com/maps/embed/v1/view?key=YOUR_API_KEY&center=${baseLocation.lat},${baseLocation.lng}&zoom=15&maptype=${mapType}`}
+          src={getMapUrl()}
           title="Kovan Haritası"
         ></iframe>
 
-        {/* Overlay: Kovan Marker'ları (SVG) */}
+        {/* Overlay: Kovan Marker'ları */}
         <div className="absolute inset-0 pointer-events-none">
-          <svg className="w-full h-full">
-            {hiveLocations.map((hive, index) => {
-              // Basit koordinat dönüşümü (gerçekte Google Maps API kullanılacak)
-              const x = ((hive.lng - baseLocation.lng + 0.005) / 0.01) * 100 + '%';
-              const y = ((baseLocation.lat - hive.lat + 0.005) / 0.01) * 100 + '%';
+          <div className="relative w-full h-full">
+            {hiveLocations.map((hive) => {
+              const x = ((hive.lng - center.lng + 0.005) / 0.01) * 100;
+              const y = ((center.lat - hive.lat + 0.005) / 0.01) * 100;
               const colors = getStatusColor(hive.status);
+              const clampedX = Math.max(5, Math.min(95, x));
+              const clampedY = Math.max(5, Math.min(95, y));
 
               return (
-                <g key={hive.id} transform={`translate(${x}, ${y})`}>
-                  <circle
-                    cx="0"
-                    cy="0"
-                    r="8"
-                    className={`${colors.badge} cursor-pointer pointer-events-auto ${
-                      hive.status === 'critical' ? 'animate-pulse' : ''
-                    }`}
-                    onClick={() => setSelectedHive(hive)}
-                  />
-                  <text
-                    x="0"
-                    y="20"
-                    textAnchor="middle"
-                    className="text-xs font-bold fill-white pointer-events-none"
-                    style={{ filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.8))' }}
-                  >
+                <div
+                  key={hive.id}
+                  className="absolute pointer-events-auto cursor-pointer group"
+                  style={{ left: `${clampedX}%`, top: `${clampedY}%`, transform: 'translate(-50%, -50%)' }}
+                  onClick={() => setSelectedHive(hive)}
+                >
+                  <div className={`w-4 h-4 rounded-full ${colors.badge} border-2 border-white/50 shadow-lg ${
+                    hive.status === 'critical' ? 'animate-pulse' : ''
+                  }`} />
+                  <span className="absolute -bottom-5 left-1/2 -translate-x-1/2 text-xs font-bold text-white whitespace-nowrap"
+                    style={{ textShadow: '0 1px 3px rgba(0,0,0,0.9)' }}>
                     #{hive.id}
-                  </text>
-                </g>
+                  </span>
+                </div>
               );
             })}
-          </svg>
+          </div>
         </div>
 
         {/* Controls */}
         <div className="absolute bottom-4 right-4 flex flex-col gap-2 pointer-events-auto">
-          <button className="p-3 bg-white rounded-lg shadow-lg hover:bg-gray-100 transition-colors">
+          <button
+            onClick={handleZoomIn}
+            className="p-3 bg-white rounded-lg shadow-lg hover:bg-gray-100 transition-colors"
+            title="Yakınlaştır"
+          >
             <ZoomIn className="w-5 h-5 text-gray-800" />
           </button>
-          <button className="p-3 bg-white rounded-lg shadow-lg hover:bg-gray-100 transition-colors">
+          <button
+            onClick={handleZoomOut}
+            className="p-3 bg-white rounded-lg shadow-lg hover:bg-gray-100 transition-colors"
+            title="Uzaklaştır"
+          >
             <ZoomOut className="w-5 h-5 text-gray-800" />
           </button>
-          <button className="p-3 bg-white rounded-lg shadow-lg hover:bg-gray-100 transition-colors">
+          <button
+            onClick={handleNavigate}
+            className="p-3 bg-white rounded-lg shadow-lg hover:bg-gray-100 transition-colors"
+            title="Merkeze Dön"
+          >
             <Navigation className="w-5 h-5 text-gray-800" />
           </button>
         </div>
@@ -197,7 +225,10 @@ const MapView = ({ hives }) => {
                 <p className="text-gray-300 font-semibold">{selectedHive.sound}dB</p>
               </div>
             </div>
-            <button className="w-full mt-3 px-4 py-2 bg-amber-500 hover:bg-amber-600 text-black font-semibold rounded-lg transition-colors">
+            <button
+              onClick={handleViewDetail}
+              className="w-full mt-3 px-4 py-2 bg-amber-500 hover:bg-amber-600 text-black font-semibold rounded-lg transition-colors"
+            >
               Detayları Gör
             </button>
           </div>
@@ -226,12 +257,22 @@ const MapView = ({ hives }) => {
       {/* Info Box */}
       <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4">
         <p className="text-sm text-gray-400">
-          💡 <strong>Not:</strong> Harita görünümünde kovanlarınızın konumlarını görebilir ve durumlarını takip edebilirsiniz. 
-          Gerçek GPS entegrasyonu için Google Maps API key gereklidir.
+          💡 <strong>Not:</strong> Harita görünümünde kovanlarınızın konumlarını görebilir ve durumlarını takip edebilirsiniz.
+          Kovan işaretçilerine tıklayarak detayları görüntüleyebilirsiniz.
         </p>
       </div>
     </div>
   );
 };
+
+// Zoom seviyesine göre bbox hesaplama
+function getBbox(lat, lng, zoom) {
+  const scale = 360 / Math.pow(2, zoom);
+  const lonMin = lng - scale / 2;
+  const lonMax = lng + scale / 2;
+  const latMin = lat - scale / 4;
+  const latMax = lat + scale / 4;
+  return `${lonMin},${latMin},${lonMax},${latMax}`;
+}
 
 export default MapView;

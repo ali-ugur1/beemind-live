@@ -1,8 +1,8 @@
 import { useEffect, useRef } from 'react';
-import { X } from 'lucide-react';
+import { X, CheckCheck } from 'lucide-react';
 import { getNotificationIcon } from '../data/mockData';
 
-const NotificationDropdown = ({ notifications, isOpen, onClose, onMarkAsRead }) => {
+const NotificationDropdown = ({ notifications, isOpen, onClose, onMarkAsRead, onMarkAllAsRead, onNotificationClick }) => {
   const dropdownRef = useRef(null);
 
   // Dışarı tıklayınca kapat
@@ -63,7 +63,7 @@ const NotificationDropdown = ({ notifications, isOpen, onClose, onMarkAsRead }) 
                 className={`p-4 hover:bg-gray-800 transition-colors cursor-pointer ${
                   !notif.read ? 'bg-amber-500/5' : ''
                 }`}
-                onClick={() => onMarkAsRead(notif.id)}
+                onClick={() => onNotificationClick ? onNotificationClick(notif) : onMarkAsRead(notif.id)}
               >
                 <div className="flex items-start gap-3">
                   {/* Icon */}
@@ -96,10 +96,16 @@ const NotificationDropdown = ({ notifications, isOpen, onClose, onMarkAsRead }) 
       </div>
 
       {/* Footer */}
-      {notifications.length > 0 && (
+      {notifications.length > 0 && unreadCount > 0 && (
         <div className="p-3 border-t border-gray-700 text-center">
-          <button className="text-sm text-amber-400 hover:text-amber-300 transition-colors">
-            Tümünü Gör
+          <button
+            onClick={() => {
+              onMarkAllAsRead();
+            }}
+            className="flex items-center justify-center gap-2 w-full text-sm text-amber-400 hover:text-amber-300 transition-colors py-1"
+          >
+            <CheckCheck className="w-4 h-4" />
+            Tümünü Okundu Yap
           </button>
         </div>
       )}

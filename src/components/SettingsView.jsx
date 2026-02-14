@@ -1,18 +1,35 @@
-import { useState } from 'react';
-import { User, Bell, Save, Mail, Phone, MapPin } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { User, Bell, Save, Mail, Phone, MapPin, Sun, Moon } from 'lucide-react';
+import { useToast } from '../contexts/ToastContext';
+import { useTheme } from '../contexts/ThemeContext';
+
+const SETTINGS_KEY = 'beemind_settings';
+
+const defaultSettings = {
+  fullName: 'Ahmet Yılmaz',
+  email: 'ahmet@beemind.com',
+  phone: '+90 555 123 4567',
+  location: 'Konya, Türkiye',
+  emailNotifications: true,
+  smsNotifications: false,
+  criticalAlertsOnly: false,
+  weeklyReport: true
+};
 
 const SettingsView = () => {
-  const [settings, setSettings] = useState({
-    // Profil
-    fullName: 'Ahmet Yılmaz',
-    email: 'ahmet@beemind.com',
-    phone: '+90 555 123 4567',
-    location: 'Konya, Türkiye',
-    // Bildirimler
-    emailNotifications: true,
-    smsNotifications: false,
-    criticalAlertsOnly: false,
-    weeklyReport: true
+  const toast = useToast();
+  const { theme, toggleTheme } = useTheme();
+
+  const [settings, setSettings] = useState(() => {
+    try {
+      const saved = localStorage.getItem(SETTINGS_KEY);
+      if (saved) {
+        return { ...defaultSettings, ...JSON.parse(saved) };
+      }
+    } catch (e) {
+      // localStorage parse hatası
+    }
+    return defaultSettings;
   });
 
   const [saved, setSaved] = useState(false);
@@ -28,10 +45,14 @@ const SettingsView = () => {
   };
 
   const handleSave = () => {
-    // Burada API'ye kaydetme işlemi yapılabilir
-    console.log('Ayarlar kaydediliyor:', settings);
-    setSaved(true);
-    setTimeout(() => setSaved(false), 3000);
+    try {
+      localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+      setSaved(true);
+      toast.success('Ayarlar başarıyla kaydedildi');
+      setTimeout(() => setSaved(false), 3000);
+    } catch (e) {
+      toast.error('Ayarlar kaydedilemedi');
+    }
   };
 
   return (
@@ -138,6 +159,31 @@ const SettingsView = () => {
             checked={settings.weeklyReport}
             onChange={() => handleToggle('weeklyReport')}
           />
+        </div>
+      </div>
+
+      {/* Tema Ayarı */}
+      <div className="bg-gray-900 border border-gray-800 rounded-lg p-6 light:bg-white light:border-gray-200">
+        <div className="flex items-center gap-3 mb-6">
+          {theme === 'dark' ? <Moon className="w-6 h-6 text-amber-400" /> : <Sun className="w-6 h-6 text-amber-400" />}
+          <h2 className="text-xl font-semibold text-gray-100 light:text-gray-900">Tema</h2>
+        </div>
+
+        <div className="flex items-center justify-between p-4 bg-gray-800 rounded-lg light:bg-gray-100">
+          <div className="flex-1">
+            <p className="font-medium text-gray-100 light:text-gray-900">Karanlık / Aydınlık Mod</p>
+            <p className="text-sm text-gray-500 mt-1">
+              {theme === 'dark' ? 'Şu an karanlık mod aktif' : 'Şu an aydınlık mod aktif'}
+            </p>
+          </div>
+          <button
+            onClick={toggleTheme}
+            className={`relative w-14 h-7 rounded-full transition-colors ${theme === 'light' ? 'bg-amber-500' : 'bg-gray-700'}`}
+          >
+            <div className={`absolute top-1 w-5 h-5 bg-white rounded-full transition-transform flex items-center justify-center ${theme === 'light' ? 'translate-x-8' : 'translate-x-1'}`}>
+              {theme === 'light' ? <Sun className="w-3 h-3 text-amber-500" /> : <Moon className="w-3 h-3 text-gray-600" />}
+            </div>
+          </button>
         </div>
       </div>
 

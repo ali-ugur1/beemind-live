@@ -27,7 +27,7 @@ const FloatingActionBar = ({ count, onReport, onNotification, onClose }) => {
             className="flex items-center gap-2 px-4 py-2 bg-black/20 hover:bg-black/30 rounded-lg font-medium transition-colors"
           >
             <Bell className="w-4 h-4" />
-            Bildirım
+            Bildirim
           </button>
         </div>
 

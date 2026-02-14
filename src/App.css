@@ -311,3 +311,151 @@ select:focus {
 .custom-scroll::-webkit-scrollbar-thumb:hover {
   background: #6b7280;
 }
+
+/* ==================== LIGHT THEME ==================== */
+.light-theme {
+  color-scheme: light;
+}
+
+/* Base body */
+.light-theme body,
+.light-theme #root {
+  background-color: #f5f5f0 !important;
+  color: #1a1a1a !important;
+}
+
+/* Main layout */
+.light-theme .bg-black {
+  background-color: #ffffff !important;
+}
+
+.light-theme .bg-gray-950 {
+  background-color: #f5f5f0 !important;
+}
+
+/* Cards & surfaces */
+.light-theme .bg-gray-900 {
+  background-color: #ffffff !important;
+}
+
+.light-theme .bg-gray-800 {
+  background-color: #f0f0eb !important;
+}
+
+.light-theme .bg-gray-800\/50 {
+  background-color: rgba(240, 240, 235, 0.5) !important;
+}
+
+.light-theme .bg-gray-900\/50 {
+  background-color: rgba(255, 255, 255, 0.7) !important;
+}
+
+/* Borders */
+.light-theme .border-gray-800 {
+  border-color: #e0ddd5 !important;
+}
+
+.light-theme .border-gray-700 {
+  border-color: #d4d0c8 !important;
+}
+
+/* Text colors */
+.light-theme .text-gray-100 {
+  color: #1a1a1a !important;
+}
+
+.light-theme .text-gray-200 {
+  color: #2d2d2d !important;
+}
+
+.light-theme .text-gray-300 {
+  color: #404040 !important;
+}
+
+.light-theme .text-gray-400 {
+  color: #666666 !important;
+}
+
+.light-theme .text-gray-500 {
+  color: #888888 !important;
+}
+
+.light-theme .text-gray-600 {
+  color: #999999 !important;
+}
+
+/* Sidebar */
+.light-theme aside {
+  background-color: #ffffff !important;
+  border-color: #e0ddd5 !important;
+}
+
+.light-theme aside .text-gray-400 {
+  color: #555555 !important;
+}
+
+.light-theme aside button:hover {
+  background-color: #f0f0eb !important;
+}
+
+.light-theme .hover\:bg-gray-800:hover {
+  background-color: #f0f0eb !important;
+}
+
+/* Inputs */
+.light-theme input[type="text"],
+.light-theme input[type="email"],
+.light-theme input[type="tel"],
+.light-theme select,
+.light-theme textarea {
+  background-color: #f5f5f0 !important;
+  border-color: #d4d0c8 !important;
+  color: #1a1a1a !important;
+}
+
+.light-theme input::placeholder {
+  color: #aaa !important;
+}
+
+/* Scrollbar */
+.light-theme ::-webkit-scrollbar-track {
+  background: #f5f5f0;
+}
+
+.light-theme ::-webkit-scrollbar-thumb {
+  background: #cccccc;
+}
+
+.light-theme ::-webkit-scrollbar-thumb:hover {
+  background: #aaaaaa;
+}
+
+/* Dropdown & overlays */
+.light-theme .shadow-2xl {
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Gradient overrides */
+.light-theme .bg-gradient-to-br.from-amber-500\/10 {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.08), rgba(249, 115, 22, 0.08)) !important;
+}
+
+.light-theme .bg-gradient-to-br.from-blue-500\/10 {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.08), rgba(6, 182, 212, 0.08)) !important;
+}
+
+/* Logo: undo dark-mode blend */
+.light-theme img[alt="BeeMind Logo"],
+.light-theme img[alt="Gateway"] {
+  mix-blend-mode: normal !important;
+}
+
+/* Dividers */
+.light-theme .divide-gray-800 > :not([hidden]) ~ :not([hidden]) {
+  border-color: #e0ddd5 !important;
+}
+
+.light-theme .border-t.border-gray-800 {
+  border-color: #e0ddd5 !important;
+}
+

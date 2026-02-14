@@ -1,9 +1,11 @@
 import { Home, List, Map, FileText, Settings, Package, User, Hexagon, X, Menu } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { useLiveData } from '../contexts/LiveDataContext';
 
 const Sidebar = ({ activeTab, onTabChange }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const { hives } = useLiveData();
 
   // Ekran boyutunu dinle
   useEffect(() => {
@@ -24,6 +26,7 @@ const Sidebar = ({ activeTab, onTabChange }) => {
     { id: 'list', label: 'Kovan Listesi', icon: List },
     { id: 'map', label: 'Harita', icon: Map },
     { id: 'reports', label: 'Raporlar', icon: FileText },
+    { id: 'profile', label: 'Profil', icon: User },
     { id: 'settings', label: 'Ayarlar', icon: Settings }
   ];
 
@@ -111,7 +114,7 @@ const Sidebar = ({ activeTab, onTabChange }) => {
             <Package className="w-4 h-4" />
             <span>Paket: PRO</span>
           </div>
-          <div className="text-xs text-gray-600">24 / 50 Kovan</div>
+          <div className="text-xs text-gray-600">{hives.length} / 50 Kovan</div>
           <div className="flex items-center gap-2 text-sm text-gray-500 pt-2">
             <User className="w-4 h-4" />
             <span>Admin User</span>

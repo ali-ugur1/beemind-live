@@ -67,13 +67,23 @@ export const LiveDataProvider = ({ children }) => {
     };
   }, [fetchLiveData]);
 
+  const deleteHive = useCallback((hiveId) => {
+    setHives(prev => prev.filter(h => h.id !== hiveId));
+  }, []);
+
+  const addHive = useCallback((newHive) => {
+    setHives(prev => [...prev, newHive]);
+  }, []);
+
   const value = {
     hives,
     apiConnected,
     lastApiUpdate,
     loading,
     error,
-    refreshData: fetchLiveData
+    refreshData: fetchLiveData,
+    deleteHive,
+    addHive
   };
 
   return (

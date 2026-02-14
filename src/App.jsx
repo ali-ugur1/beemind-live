@@ -1,6 +1,7 @@
 import { useState, useMemo, lazy, Suspense } from 'react';
 import { ToastProvider, useToast } from './contexts/ToastContext';
 import { LiveDataProvider, useLiveData } from './contexts/LiveDataContext';
+import { ThemeProvider } from './contexts/ThemeContext';
 import ErrorBoundary from './components/ErrorBoundary';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
@@ -12,6 +13,7 @@ import FloatingActionBar from './components/FloatingActionBar';
 import LoadingSpinner from './components/LoadingSpinner';
 import AIAnalysisPanel from './components/AIAnalysisPanel';
 import ConnectionStatus from './components/ConnectionStatus';
+import AddHiveModal from './components/AddHiveModal';
 import { SkeletonStats, SkeletonTable, SkeletonDetail } from './components/Skeleton';
 import { NOTIFICATIONS } from './data/mockData';
 import './App.css';
@@ -21,6 +23,7 @@ const HiveDetailView = lazy(() => import('./components/HiveDetailView'));
 const SettingsView = lazy(() => import('./components/SettingsView'));
 const MapView = lazy(() => import('./components/MapView'));
 const ReportsView = lazy(() => import('./components/ReportsView'));
+const ProfileView = lazy(() => import('./components/ProfileView'));
 
 function AppContent() {
   const toast = useToast();
@@ -38,6 +41,7 @@ function AppContent() {
   const [sortBy, setSortBy] = useState('priority');
   const [selectedHives, setSelectedHives] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [showAddHive, setShowAddHive] = useState(false);
   const itemsPerPage = 10;
 
   const filteredAndSortedHives = useMemo(() => {
@@ -118,6 +122,7 @@ function AppContent() {
   const handleViewDetail = (hiveId) => {
     setSelectedHiveId(hiveId);
     setCurrentView('detail');
+    setActiveTab('list');
   };
 
   const handleBackToOverview = () => {
@@ -129,6 +134,17 @@ function AppContent() {
     setNotifications(prev =>
       prev.map(n => n.id === notifId ? { ...n, read: true } : n)
     );
+  };
+
+  const handleMarkAllAsRead = () => {
+    setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+  };
+
+  const handleNotificationClick = (notif) => {
+    handleMarkAsRead(notif.id);
+    if (notif.hiveId) {
+      handleViewDetail(notif.hiveId);
+    }
   };
 
   const handleAIAnalysis = (hiveId) => {
@@ -143,7 +159,9 @@ function AppContent() {
   };
 
   const handleProfileClick = () => {
-    toast.info('Profil sayfasi yakinda eklenecek');
+    setActiveTab('profile');
+    setCurrentView('overview');
+    setSelectedHiveId(null);
   };
 
   const aiHive = hives.find(h => h.id === aiHiveId);
@@ -169,6 +187,8 @@ function AppContent() {
           activeTab={activeTab}
           notifications={notifications}
           onMarkAsRead={handleMarkAsRead}
+          onMarkAllAsRead={handleMarkAllAsRead}
+          onNotificationClick={handleNotificationClick}
           onSettingsClick={handleSettingsClick}
           onProfileClick={handleProfileClick}
         />
@@ -184,7 +204,7 @@ function AppContent() {
             {activeTab === 'dashboard' && (
               <ErrorBoundary>
                 <Suspense fallback={<SkeletonStats />}>
-                  <OverviewDashboard stats={stats} hives={hives} />
+                  <OverviewDashboard stats={stats} hives={hives} onViewDetail={handleViewDetail} />
                 </Suspense>
               </ErrorBoundary>
             )}
@@ -192,7 +212,17 @@ function AppContent() {
               <ErrorBoundary>
                 <section className="mb-6"><StatsCards stats={stats} /></section>
                 <section className="mb-6">
-                  <FilterBar filter={filter} setFilter={setFilter} searchQuery={searchQuery} setSearchQuery={setSearchQuery} sortBy={sortBy} setSortBy={setSortBy} />
+                  <div className="flex items-center justify-between gap-4 mb-4">
+                    <div className="flex-1">
+                      <FilterBar filter={filter} setFilter={setFilter} searchQuery={searchQuery} setSearchQuery={setSearchQuery} sortBy={sortBy} setSortBy={setSortBy} />
+                    </div>
+                    <button
+                      onClick={() => setShowAddHive(true)}
+                      className="flex items-center gap-2 px-5 py-3 bg-amber-500 hover:bg-amber-600 text-black font-semibold rounded-lg transition-colors whitespace-nowrap"
+                    >
+                      + Yeni Kovan
+                    </button>
+                  </div>
                 </section>
                 <section className="mb-4">
                   <HiveList hives={paginatedHives} selectedHives={selectedHives} onSelectHive={handleSelectHive} onSelectAll={handleSelectAll} onViewDetail={handleViewDetail} onAIAnalysis={handleAIAnalysis} />
@@ -202,7 +232,7 @@ function AppContent() {
               </ErrorBoundary>
             )}
             {activeTab === 'map' && (
-              <ErrorBoundary><Suspense fallback={<LoadingSpinner size="lg" />}><MapView hives={hives} /></Suspense></ErrorBoundary>
+              <ErrorBoundary><Suspense fallback={<LoadingSpinner size="lg" />}><MapView hives={hives} onViewDetail={handleViewDetail} /></Suspense></ErrorBoundary>
             )}
             {activeTab === 'reports' && (
               <ErrorBoundary><Suspense fallback={<LoadingSpinner size="lg" />}><ReportsView hives={hives} /></Suspense></ErrorBoundary>
@@ -210,11 +240,23 @@ function AppContent() {
             {activeTab === 'settings' && (
               <ErrorBoundary><Suspense fallback={<LoadingSpinner size="lg" />}><SettingsView /></Suspense></ErrorBoundary>
             )}
+            {activeTab === 'profile' && (
+              <ErrorBoundary><Suspense fallback={<LoadingSpinner size="lg" />}><ProfileView /></Suspense></ErrorBoundary>
+            )}
+            {!['dashboard','list','map','reports','settings','profile'].includes(activeTab) && (
+              <div className="flex flex-col items-center justify-center py-20">
+                <p className="text-6xl mb-4">🐝</p>
+                <h2 className="text-xl font-semibold text-gray-300 mb-2">Sayfa Bulunamadı</h2>
+                <p className="text-gray-500 mb-6">Aradığınız sayfa mevcut değil.</p>
+                <button onClick={() => handleTabChange('dashboard')} className="px-6 py-3 bg-amber-500 hover:bg-amber-600 text-black font-semibold rounded-lg transition-colors">Ana Sayfaya Dön</button>
+              </div>
+            )}
           </>
         )}
       </main>
       <AIAnalysisPanel isOpen={aiPanelOpen} onClose={() => setAiPanelOpen(false)} hive={aiHive} />
       <ConnectionStatus />
+      <AddHiveModal isOpen={showAddHive} onClose={() => setShowAddHive(false)} />
     </div>
   );
 }
@@ -223,9 +265,11 @@ function App() {
   return (
     <ErrorBoundary>
       <ToastProvider>
-        <LiveDataProvider>
-          <AppContent />
-        </LiveDataProvider>
+        <ThemeProvider>
+          <LiveDataProvider>
+            <AppContent />
+          </LiveDataProvider>
+        </ThemeProvider>
       </ToastProvider>
     </ErrorBoundary>
   );

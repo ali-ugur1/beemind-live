@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { Wifi, Battery, BatteryCharging, Cloud, Droplets, Wind, Sun, MapPin, TrendingUp, TrendingDown, Minus, AlertTriangle } from 'lucide-react';
 
-const OverviewDashboard = ({ stats, hives }) => {
+const OverviewDashboard = ({ stats, hives, onViewDetail }) => {
   // Gateway bilgisi (Mock data - gerçekte API'den gelecek)
   const gateway = {
     id: 'GW-001',
@@ -235,7 +235,11 @@ const OverviewDashboard = ({ stats, hives }) => {
           </div>
           <div className="space-y-3">
             {criticalAlerts.map(alert => (
-              <div key={alert.id} className="bg-gray-900/50 rounded-lg p-4 flex items-center justify-between">
+              <div
+                key={alert.id}
+                className="bg-gray-900/50 rounded-lg p-4 flex items-center justify-between cursor-pointer hover:bg-gray-800 transition-colors"
+                onClick={() => onViewDetail && onViewDetail(alert.id)}
+              >
                 <div className="flex items-center gap-3">
                   <span className="text-2xl">🔴</span>
                   <div>
@@ -243,7 +247,10 @@ const OverviewDashboard = ({ stats, hives }) => {
                     <p className="text-sm text-gray-400">{alert.message}</p>
                   </div>
                 </div>
-                <span className="text-xs text-gray-500">{alert.time}</span>
+                <div className="flex items-center gap-3">
+                  <span className="text-xs text-gray-500">{alert.time}</span>
+                  <span className="text-amber-400 text-sm">→</span>
+                </div>
               </div>
             ))}
           </div>

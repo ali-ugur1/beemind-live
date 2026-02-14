@@ -2,7 +2,7 @@ import { Bell, Settings, User, Clock } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import NotificationDropdown from './NotificationDropdown';
 
-const Header = ({ activeTab, notifications, onMarkAsRead, onSettingsClick, onProfileClick }) => {
+const Header = ({ activeTab, notifications, onMarkAsRead, onMarkAllAsRead, onNotificationClick, onSettingsClick, onProfileClick }) => {
   const [lastUpdate, setLastUpdate] = useState('Az önce');
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
 
@@ -35,6 +35,8 @@ const Header = ({ activeTab, notifications, onMarkAsRead, onSettingsClick, onPro
         return 'Genel Bakış > Raporlar';
       case 'settings':
         return 'Genel Bakış > Ayarlar';
+      case 'profile':
+        return 'Genel Bakış > Profil';
       default:
         return 'Genel Bakış';
     }
@@ -77,6 +79,8 @@ const Header = ({ activeTab, notifications, onMarkAsRead, onSettingsClick, onPro
               isOpen={isNotificationOpen}
               onClose={() => setIsNotificationOpen(false)}
               onMarkAsRead={onMarkAsRead}
+              onMarkAllAsRead={onMarkAllAsRead}
+              onNotificationClick={(notif) => { onNotificationClick(notif); setIsNotificationOpen(false); }}
             />
           </div>
 

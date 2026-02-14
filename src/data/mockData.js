@@ -251,49 +251,49 @@ export const HIVES_DATA = [
   }
 ];
 
-// Bildirimler - Stabilize edilmiş
-export const NOTIFICATIONS = [
-  {
-    id: 1,
-    type: 'critical',
-    hiveId: '04',
-    message: 'Oğul Tespiti - Acil Müdahale Gerekli',
-    time: '2 dakika önce',
-    read: false
-  },
-  {
-    id: 2,
-    type: 'critical',
-    hiveId: '12',
-    message: 'Titreşim Alarmı - Kovan Devrilme Riski',
-    time: '5 dakika önce',
-    read: false
-  },
-  {
-    id: 3,
-    type: 'warning',
-    hiveId: '08',
-    message: 'Yüksek Sıcaklık Uyarısı (39°C)',
-    time: '8 dakika önce',
-    read: true
-  },
-  {
-    id: 4,
-    type: 'warning',
-    hiveId: '02',
-    message: 'Düşük Pil Seviyesi (%15)',
-    time: '12 dakika önce',
-    read: true
-  },
-  {
-    id: 5,
-    type: 'info',
-    hiveId: null,
-    message: 'Haftalık Rapor Hazır',
-    time: '1 saat önce',
-    read: true
-  }
-];
+// Bildirimler — Kovan verilerinden otomatik oluşturulur
+export const NOTIFICATIONS = (() => {
+  const notifs = [];
+  let id = 1;
+
+  HIVES_DATA.forEach(hive => {
+    if (hive.status === 'critical') {
+      notifs.push({
+        id: id++,
+        type: 'critical',
+        hiveId: hive.id,
+        message: hive.alertType || 'Kritik durum algılandı',
+        time: hive.lastUpdate,
+        read: false
+      });
+    } else if (hive.status === 'warning') {
+      notifs.push({
+        id: id++,
+        type: 'warning',
+        hiveId: hive.id,
+        message: hive.alertType || 'Uyarı durumu',
+        time: hive.lastUpdate,
+        read: false
+      });
+    }
+  });
+
+  // Düşük pil bildirimi
+  HIVES_DATA.filter(h => h.battery < 20).forEach(hive => {
+    if (!notifs.find(n => n.hiveId === hive.id && n.message.includes('Pil'))) {
+      notifs.push({
+        id: id++,
+        type: 'warning',
+        hiveId: hive.id,
+        message: `Düşük Pil Seviyesi (%${hive.battery})`,
+        time: hive.lastUpdate,
+        read: true
+      });
+    }
+  });
+
+  return notifs;
+})();
 
 // Utility fonksiyonları
 export const getStatusColor = (status) => {
