@@ -1,0 +1,313 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+/* ==================== CUSTOM SCROLLBAR ==================== */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #111827;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #374151;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #4b5563;
+}
+
+/* ==================== LOGO STYLES ==================== */
+/* Dark background için logo optimizasyonu */
+img[alt="BeeMind Logo"],
+img[alt="Gateway"] {
+  /* Beyaz background'u transparant yap */
+  mix-blend-mode: screen;
+  /* Glow efekti */
+  filter: brightness(1.1) drop-shadow(0 0 8px rgba(245, 158, 11, 0.4));
+}
+
+/* Hover efekti */
+img[alt="BeeMind Logo"]:hover {
+  filter: brightness(1.3) drop-shadow(0 0 12px rgba(245, 158, 11, 0.6));
+  transition: filter 0.3s ease;
+}
+
+/* ==================== SIMULATION PANEL COLORS ==================== */
+/* Tailwind JIT için renk sınıfları */
+.bg-emerald-500\/20 { background-color: rgba(16, 185, 129, 0.2); }
+.border-emerald-500\/50 { border-color: rgba(16, 185, 129, 0.5); }
+.text-emerald-400 { color: rgb(52, 211, 153); }
+
+.bg-red-500\/20 { background-color: rgba(239, 68, 68, 0.2); }
+.border-red-500\/50 { border-color: rgba(239, 68, 68, 0.5); }
+.text-red-400 { color: rgb(248, 113, 113); }
+
+.bg-amber-500\/20 { background-color: rgba(245, 158, 11, 0.2); }
+.border-amber-500\/50 { border-color: rgba(245, 158, 11, 0.5); }
+.text-amber-400 { color: rgb(251, 191, 36); }
+
+.bg-purple-500\/20 { background-color: rgba(168, 85, 247, 0.2); }
+.border-purple-500\/50 { border-color: rgba(168, 85, 247, 0.5); }
+.text-purple-400 { color: rgb(192, 132, 252); }
+
+.bg-orange-500\/20 { background-color: rgba(249, 115, 22, 0.2); }
+.border-orange-500\/50 { border-color: rgba(249, 115, 22, 0.5); }
+.text-orange-400 { color: rgb(251, 146, 60); }
+
+/* ==================== BASE STYLES ==================== */
+* {
+  @apply transition-colors duration-200;
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+}
+
+/* ==================== ANIMATIONS ==================== */
+
+/* Pulse - Kritik kovanlar için */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Slide Up - Floating Action Bar */
+@keyframes slide-up {
+  from {
+    transform: translate(-50%, 100px);
+    opacity: 0;
+  }
+  to {
+    transform: translate(-50%, 0);
+    opacity: 1;
+  }
+}
+
+.animate-slide-up {
+  animation: slide-up 0.3s ease-out;
+}
+
+/* Slide Down - Dropdown menü */
+@keyframes slide-down {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-slide-down {
+  animation: slide-down 0.2s ease-out;
+}
+
+/* Slide Left - Toast notification */
+@keyframes slide-left {
+  from {
+    transform: translateX(400px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.animate-slide-left {
+  animation: slide-left 0.3s ease-out;
+}
+
+/* Fade In - Genel kullanım */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.3s ease-out;
+}
+
+/* Scale In - Modal/Dialog */
+@keyframes scale-in {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.animate-scale-in {
+  animation: scale-in 0.2s ease-out;
+}
+
+/* Spin - Loading spinner */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+/* ==================== FORM ELEMENTS ==================== */
+
+/* Checkbox styling */
+input[type="checkbox"] {
+  cursor: pointer;
+}
+
+input[type="checkbox"]:checked {
+  background-color: #f59e0b;
+  border-color: #f59e0b;
+}
+
+/* Input focus states */
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: #f59e0b;
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+}
+
+/* ==================== UTILITY CLASSES ==================== */
+
+/* Hover scale effect */
+.hover-scale {
+  transition: transform 0.2s;
+}
+
+.hover-scale:hover {
+  transform: scale(1.02);
+}
+
+/* Backdrop blur */
+.backdrop-blur-sm {
+  backdrop-filter: blur(8px);
+}
+
+/* ==================== RESPONSIVE ==================== */
+
+@media (max-width: 640px) {
+  html {
+    font-size: 14px;
+  }
+}
+
+/* ==================== ACCESSIBILITY ==================== */
+
+/* Focus visible for keyboard navigation */
+*:focus-visible {
+  outline: 2px solid #f59e0b;
+  outline-offset: 2px;
+}
+
+/* Reduced motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ==================== PRINT STYLES ==================== */
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  
+  body {
+    background: white;
+    color: black;
+  }
+}
+
+/* ==================== LOADING STATE ==================== */
+
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  background-color: #1f2937;
+}
+
+.skeleton::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0,
+    rgba(255, 255, 255, 0.05) 20%,
+    rgba(255, 255, 255, 0.1) 60%,
+    rgba(255, 255, 255, 0)
+  );
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* ==================== PERFORMANCE ==================== */
+
+/* GPU acceleration for animations */
+.gpu-accelerated {
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+/* ==================== CUSTOM SCROLLBAR FOR SPECIFIC ELEMENTS ==================== */
+
+.custom-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scroll::-webkit-scrollbar-thumb {
+  background: #4b5563;
+  border-radius: 3px;
+}
+
+.custom-scroll::-webkit-scrollbar-thumb:hover {
+  background: #6b7280;
+}

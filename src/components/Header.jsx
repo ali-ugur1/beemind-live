@@ -1,0 +1,102 @@
+import { Bell, Settings, User, Clock } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import NotificationDropdown from './NotificationDropdown';
+
+const Header = ({ activeTab, notifications, onMarkAsRead, onSettingsClick, onProfileClick }) => {
+  const [lastUpdate, setLastUpdate] = useState('Az önce');
+  const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      const now = new Date();
+      const seconds = now.getSeconds();
+
+      if (seconds < 10) {
+        setLastUpdate('Az önce');
+      } else if (seconds < 30) {
+        setLastUpdate(`${seconds} saniye önce`);
+      } else {
+        setLastUpdate('1 dakika önce');
+      }
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
+
+  const getBreadcrumb = () => {
+    switch (activeTab) {
+      case 'dashboard':
+        return 'Genel Bakış';
+      case 'list':
+        return 'Genel Bakış > Kovan Kontrol Merkezi';
+      case 'map':
+        return 'Genel Bakış > Harita';
+      case 'reports':
+        return 'Genel Bakış > Raporlar';
+      case 'settings':
+        return 'Genel Bakış > Ayarlar';
+      default:
+        return 'Genel Bakış';
+    }
+  };
+
+  const unreadCount = notifications.filter(n => !n.read).length;
+
+  return (
+    <header className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
+      {/* Breadcrumb */}
+      <div>
+        <p className="text-sm text-gray-500">{getBreadcrumb()}</p>
+      </div>
+
+      {/* Right Side */}
+      <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 text-sm text-gray-500">
+          <Clock className="w-4 h-4" />
+          <span>Son Güncelleme: {lastUpdate}</span>
+        </div>
+
+        <div className="flex items-center gap-2">
+          {/* Notification Button */}
+          <div className="relative">
+            <button
+              onClick={() => setIsNotificationOpen(!isNotificationOpen)}
+              className="p-2 text-gray-400 hover:text-gray-200 hover:bg-gray-800 rounded-lg transition-colors relative"
+            >
+              <Bell className="w-5 h-5" />
+              {unreadCount > 0 && (
+                <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center">
+                  {unreadCount}
+                </span>
+              )}
+            </button>
+
+            {/* Notification Dropdown */}
+            <NotificationDropdown
+              notifications={notifications}
+              isOpen={isNotificationOpen}
+              onClose={() => setIsNotificationOpen(false)}
+              onMarkAsRead={onMarkAsRead}
+            />
+          </div>
+
+          <button 
+            onClick={onSettingsClick}
+            className="p-2 text-gray-400 hover:text-gray-200 hover:bg-gray-800 rounded-lg transition-colors"
+          >
+            <Settings className="w-5 h-5" />
+          </button>
+
+          <button 
+            onClick={onProfileClick}
+            className="p-2 text-gray-400 hover:text-gray-200 hover:bg-gray-800 rounded-lg transition-colors"
+          >
+            <User className="w-5 h-5" />
+          </button>
+        </div>
+      </div>
+    </header>
+  );
+};
+
+export default Header;
