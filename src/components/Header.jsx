@@ -51,6 +51,7 @@ const Header = ({ activeTab, notifications, onMarkAsRead, onMarkAllAsRead, onNot
             <button
               onClick={() => setIsNotificationOpen(!isNotificationOpen)}
               className="p-2 text-gray-400 hover:text-gray-200 hover:bg-gray-800 rounded-lg transition-colors relative"
+              aria-label={t.notifications.title}
             >
               <Bell className="w-5 h-5" />
               {unreadCount > 0 && (
@@ -71,16 +72,18 @@ const Header = ({ activeTab, notifications, onMarkAsRead, onMarkAllAsRead, onNot
             />
           </div>
 
-          <button 
+          <button
             onClick={onSettingsClick}
             className="p-2 text-gray-400 hover:text-gray-200 hover:bg-gray-800 rounded-lg transition-colors"
+            aria-label={t.sidebar.settings}
           >
             <Settings className="w-5 h-5" />
           </button>
 
-          <button 
+          <button
             onClick={onProfileClick}
             className="p-2 text-gray-400 hover:text-gray-200 hover:bg-gray-800 rounded-lg transition-colors"
+            aria-label={t.sidebar.profile}
           >
             <User className="w-5 h-5" />
           </button>

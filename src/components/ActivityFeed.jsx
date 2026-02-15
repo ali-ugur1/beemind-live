@@ -119,10 +119,11 @@ const ActivityFeed = ({ limit = 10, onViewDetail }) => {
         {activities.map((act) => {
           const Icon = act.icon;
           return (
-            <div
+            <button
               key={act.id}
-              className="flex items-start gap-3 p-3 rounded-lg hover:bg-gray-800/50 transition-colors cursor-pointer group"
+              className="w-full flex items-start gap-3 p-3 rounded-lg hover:bg-gray-800/50 transition-colors cursor-pointer group text-left"
               onClick={() => onViewDetail && onViewDetail(act.hiveId)}
+              aria-label={act.message}
             >
               <div className={`p-1.5 rounded-lg ${act.bgColor} flex-shrink-0 mt-0.5`}>
                 <Icon className={`w-3.5 h-3.5 ${act.iconColor}`} />
@@ -137,7 +138,7 @@ const ActivityFeed = ({ limit = 10, onViewDetail }) => {
                 </div>
               </div>
               <span className="text-gray-600 text-xs group-hover:text-amber-400 transition-colors mt-1">→</span>
-            </div>
+            </button>
           );
         })}
       </div>

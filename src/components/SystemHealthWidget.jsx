@@ -22,7 +22,7 @@ const SystemHealthWidget = () => {
     const clampedScore = Math.max(0, Math.min(100, score));
 
     let status = 'good';
-    let statusText = lang === 'tr' ? 'Sistem Saglkli' : 'System Healthy';
+    let statusText = lang === 'tr' ? 'Sistem Saglikli' : 'System Healthy';
     let statusColor = 'text-emerald-400';
     let statusBg = 'bg-emerald-500/10 border-emerald-500/30';
 
@@ -123,7 +123,7 @@ const SystemHealthWidget = () => {
                 <span className={`text-xs font-medium ${svc.status === 'online' ? 'text-emerald-400' : 'text-red-400'}`}>
                   {svc.status === 'online'
                     ? (lang === 'tr' ? 'Aktif' : 'Online')
-                    : (lang === 'tr' ? 'Cevrmdisi' : 'Offline')}
+                    : (lang === 'tr' ? 'Cevrimdisi' : 'Offline')}
                 </span>
               </div>
             </div>

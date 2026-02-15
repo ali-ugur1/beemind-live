@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
-import { Hexagon, ArrowRight, Wifi, Shield, BarChart3, Zap, Globe, Bell } from 'lucide-react';
+import { ArrowRight, Wifi, Shield, BarChart3, Zap, Globe, Bell } from 'lucide-react';
+import { useLanguage } from '../contexts/LanguageContext';
 
 const WelcomeScreen = ({ onEnter }) => {
+  const { lang } = useLanguage();
   const [step, setStep] = useState(0);
   const [loaded, setLoaded] = useState(false);
 
@@ -17,13 +19,15 @@ const WelcomeScreen = ({ onEnter }) => {
     }
   }, [step]);
 
+  const isTr = lang === 'tr';
+
   const features = [
-    { icon: Wifi, title: 'Canli IoT Veri', desc: 'ESP32 sensorlerinden anlk veri akisi' },
-    { icon: Shield, title: 'Akilli Alarm', desc: 'Ogul, devrilme, sicaklik uyarilari' },
-    { icon: BarChart3, title: 'Detayli Analiz', desc: 'Grafik, rapor ve trend takibi' },
-    { icon: Zap, title: 'Yapay Zeka', desc: 'ML destekli oneriler ve tahminler' },
-    { icon: Globe, title: 'Hava Durumu', desc: 'Gercek zamanli meteoroloji verisi' },
-    { icon: Bell, title: 'Bildirimler', desc: 'Push, SMS ve e-posta bildirimleri' },
+    { icon: Wifi, title: isTr ? 'Canli IoT Veri' : 'Live IoT Data', desc: isTr ? 'ESP32 sensorlerinden anlik veri akisi' : 'Real-time data stream from ESP32 sensors' },
+    { icon: Shield, title: isTr ? 'Akilli Alarm' : 'Smart Alerts', desc: isTr ? 'Ogul, devrilme, sicaklik uyarilari' : 'Swarm, tipping, temperature alerts' },
+    { icon: BarChart3, title: isTr ? 'Detayli Analiz' : 'Detailed Analytics', desc: isTr ? 'Grafik, rapor ve trend takibi' : 'Charts, reports and trend tracking' },
+    { icon: Zap, title: isTr ? 'Yapay Zeka' : 'AI Engine', desc: isTr ? 'ML destekli oneriler ve tahminler' : 'ML-powered suggestions and predictions' },
+    { icon: Globe, title: isTr ? 'Hava Durumu' : 'Weather Data', desc: isTr ? 'Gercek zamanli meteoroloji verisi' : 'Real-time meteorological data' },
+    { icon: Bell, title: isTr ? 'Bildirimler' : 'Notifications', desc: isTr ? 'Push, SMS ve e-posta bildirimleri' : 'Push, SMS and email notifications' },
   ];
 
   return (
@@ -54,16 +58,15 @@ const WelcomeScreen = ({ onEnter }) => {
               alt="BeeMind Logo"
               className="w-16 h-16 object-contain"
               style={{ filter: 'drop-shadow(0 0 12px rgba(245, 158, 11, 0.5))' }}
-              onError={(e) => {
-                e.target.style.display = 'none';
-                e.target.parentNode.innerHTML = '<svg class="w-12 h-12 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>';
-              }}
+              onError={(e) => { e.target.style.display = 'none'; }}
             />
           </div>
           <h1 className="text-5xl md:text-6xl font-bold text-white mb-3">
             Bee<span className="text-amber-400">Mind</span>
           </h1>
-          <p className="text-lg text-gray-400 font-medium">AI-Powered IoT Hive Management System</p>
+          <p className="text-lg text-gray-400 font-medium">
+            {isTr ? 'AI Destekli IoT Kovan Yonetim Sistemi' : 'AI-Powered IoT Hive Management System'}
+          </p>
           <div className="flex items-center justify-center gap-3 mt-3">
             <span className="px-3 py-1 bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-semibold rounded-full">v2.0</span>
             <span className="px-3 py-1 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-semibold rounded-full">PRO</span>
@@ -91,10 +94,12 @@ const WelcomeScreen = ({ onEnter }) => {
             onClick={onEnter}
             className="group inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-black font-bold text-lg rounded-xl transition-all shadow-lg shadow-amber-500/20 hover:shadow-amber-500/30 hover:scale-105"
           >
-            Panele Gir
+            {isTr ? 'Panele Gir' : 'Enter Dashboard'}
             <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
           </button>
-          <p className="text-xs text-gray-600 mt-4">ESC veya Enter ile de girebilirsiniz</p>
+          <p className="text-xs text-gray-600 mt-4">
+            {isTr ? 'ESC veya Enter ile de girebilirsiniz' : 'You can also press ESC or Enter'}
+          </p>
         </div>
       </div>
 
@@ -104,7 +109,7 @@ const WelcomeScreen = ({ onEnter }) => {
         <span>|</span>
         <span>TUBITAK 2204-A</span>
         <span>|</span>
-        <span>2024-2025</span>
+        <span>2025</span>
       </div>
     </div>
   );

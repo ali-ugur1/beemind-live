@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useCallback } from 'react';
+import { createContext, useContext, useState, useCallback, useEffect } from 'react';
 import { tr } from '../i18n/tr';
 import { en } from '../i18n/en';
 
@@ -19,6 +19,11 @@ export const LanguageProvider = ({ children }) => {
   });
 
   const t = translations[lang] || translations.tr;
+
+  // Sync HTML lang attribute with current language
+  useEffect(() => {
+    document.documentElement.lang = lang;
+  }, [lang]);
 
   const changeLanguage = useCallback((newLang) => {
     setLang(newLang);

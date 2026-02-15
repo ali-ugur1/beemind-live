@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo, lazy, Suspense, useCallback } from 'react
 import { ToastProvider, useToast } from './contexts/ToastContext';
 import { LiveDataProvider, useLiveData } from './contexts/LiveDataContext';
 import { ThemeProvider } from './contexts/ThemeContext';
-import { LanguageProvider } from './contexts/LanguageContext';
+import { LanguageProvider, useLanguage } from './contexts/LanguageContext';
 import ErrorBoundary from './components/ErrorBoundary';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
@@ -41,6 +41,7 @@ const WELCOME_KEY = 'beemind_welcome_seen';
 function AppContent() {
   const toast = useToast();
   const { hives, loading, notifications: liveNotifications } = useLiveData();
+  const { t, lang } = useLanguage();
 
   const [showWelcome, setShowWelcome] = useState(() => {
     try {
@@ -68,6 +69,11 @@ function AppContent() {
   const [advancedFilters, setAdvancedFilters] = useState({ tempMin: '', tempMax: '', batteryMin: '', batteryMax: '' });
   const itemsPerPage = 10;
 
+  const handleEnterApp = useCallback(() => {
+    setShowWelcome(false);
+    try { localStorage.setItem(WELCOME_KEY, '1'); } catch {}
+  }, []);
+
   // Welcome screen keyboard handler
   useEffect(() => {
     if (!showWelcome) return;
@@ -78,12 +84,7 @@ function AppContent() {
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [showWelcome]);
-
-  const handleEnterApp = () => {
-    setShowWelcome(false);
-    try { localStorage.setItem(WELCOME_KEY, '1'); } catch {}
-  };
+  }, [showWelcome, handleEnterApp]);
 
   const filteredAndSortedHives = useMemo(() => {
     let result = [...hives];
@@ -173,7 +174,7 @@ function AppContent() {
     setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);
-      toast.success(`${selectedHives.length} kovan icin rapor olusturuldu`);
+      toast.success(lang === 'tr' ? `${selectedHives.length} kovan icin rapor olusturuldu` : `Report created for ${selectedHives.length} hives`);
     }, 1500);
   };
 
@@ -181,7 +182,7 @@ function AppContent() {
     setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);
-      toast.success(`${selectedHives.length} kovana bildirim gonderildi`);
+      toast.success(lang === 'tr' ? `${selectedHives.length} kovana bildirim gonderildi` : `Notification sent to ${selectedHives.length} hives`);
     }, 1500);
   };
 
@@ -253,7 +254,7 @@ function AppContent() {
           </div>
           <LoadingSpinner size="lg" />
           <p className="text-amber-400 mt-4 text-lg font-semibold">BeeMind</p>
-          <p className="text-gray-500 text-sm mt-1">Sistem baslatiliyor...</p>
+          <p className="text-gray-500 text-sm mt-1">{t.common.loading}</p>
           <div className="mt-4 w-48 h-1 bg-gray-800 rounded-full overflow-hidden mx-auto">
             <div className="h-full bg-amber-500 rounded-full animate-pulse" style={{ width: '60%' }} />
           </div>
@@ -313,7 +314,7 @@ function AppContent() {
                         onClick={() => setShowAddHive(true)}
                         className="flex items-center gap-2 px-5 py-3 bg-amber-500 hover:bg-amber-600 text-black font-semibold rounded-lg transition-colors whitespace-nowrap"
                       >
-                        + Yeni Kovan
+                        + {t.addHive.title}
                       </button>
                     </div>
                   </section>
@@ -354,9 +355,9 @@ function AppContent() {
               {!allTabs.includes(activeTab) && (
                 <div className="flex flex-col items-center justify-center py-20">
                   <p className="text-6xl mb-4">🐝</p>
-                  <h2 className="text-xl font-semibold text-gray-300 mb-2">Sayfa Bulunamadi</h2>
-                  <p className="text-gray-500 mb-6">Aradiginiz sayfa mevcut degil.</p>
-                  <button onClick={() => handleTabChange('dashboard')} className="px-6 py-3 bg-amber-500 hover:bg-amber-600 text-black font-semibold rounded-lg transition-colors">Ana Sayfaya Don</button>
+                  <h2 className="text-xl font-semibold text-gray-300 mb-2">{t.common.pageNotFound}</h2>
+                  <p className="text-gray-500 mb-6">{t.common.pageNotFoundDesc}</p>
+                  <button onClick={() => handleTabChange('dashboard')} className="px-6 py-3 bg-amber-500 hover:bg-amber-600 text-black font-semibold rounded-lg transition-colors">{t.common.backToHome}</button>
                 </div>
               )}
             </>

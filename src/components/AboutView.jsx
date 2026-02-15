@@ -1,4 +1,4 @@
-import { Hexagon, Cpu, Wifi, BarChart3, Shield, Code, Users, Award, ExternalLink, Zap, Globe, Database } from 'lucide-react';
+import { Cpu, Wifi, BarChart3, Shield, Code, Award, Zap, Globe, Database } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 
 const AboutView = () => {

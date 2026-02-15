@@ -8,7 +8,7 @@ import ActivityFeed from './ActivityFeed';
 
 const OverviewDashboard = ({ stats, hives, onViewDetail }) => {
   const toast = useToast();
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const { gateway: apiGateway, weather: apiWeather, apiConnected } = useLiveData();
   const [quickLoading, setQuickLoading] = useState(null);
 
@@ -81,16 +81,18 @@ const OverviewDashboard = ({ stats, hives, onViewDetail }) => {
 
   // Trend analizi
   const trends = useMemo(() => {
-    const avgTemp = (hives.reduce((sum, h) => sum + h.temp, 0) / hives.length).toFixed(1);
-    const avgHumidity = (hives.reduce((sum, h) => sum + h.humidity, 0) / hives.length).toFixed(0);
+    const count = hives.length || 1; // guard against division by zero
+    const avgTemp = (hives.reduce((sum, h) => sum + h.temp, 0) / count).toFixed(1);
+    const avgHumidity = (hives.reduce((sum, h) => sum + h.humidity, 0) / count).toFixed(0);
     const lowBattery = hives.filter(h => h.battery < 30).length;
 
+    const batteryLabel = lang === 'tr' ? `${lowBattery} kovan` : `${lowBattery} hives`;
     return {
       temperature: { value: avgTemp, trend: 'up', change: '+0.5°C' },
       humidity: { value: avgHumidity, trend: 'stable', change: '0%' },
-      battery: { value: lowBattery, trend: lowBattery > 0 ? 'down' : 'stable', change: `${lowBattery} kovan` }
+      battery: { value: lowBattery, trend: lowBattery > 0 ? 'down' : 'stable', change: batteryLabel }
     };
-  }, [hives]);
+  }, [hives, lang]);
 
   // Weather icon: gerçek veriden emoji gelir, fallback'te React component gelir
   const weatherIconIsEmoji = typeof weather.icon === 'string';

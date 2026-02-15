@@ -1,4 +1,4 @@
-import { Hexagon, Github, Mail, ExternalLink } from 'lucide-react';
+import { ExternalLink } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 
 const Footer = () => {

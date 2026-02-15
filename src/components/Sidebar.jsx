@@ -78,6 +78,7 @@ const Sidebar = ({ activeTab, onTabChange }) => {
         <button
           onClick={() => setIsOpen(!isOpen)}
           className="fixed top-4 left-4 z-[60] p-2 bg-black border border-gray-800 rounded-lg text-amber-400 hover:bg-gray-900 transition-colors lg:hidden"
+          aria-label={isOpen ? 'Close menu' : 'Open menu'}
         >
           {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
         </button>
