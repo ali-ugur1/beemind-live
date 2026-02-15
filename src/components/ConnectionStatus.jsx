@@ -14,7 +14,7 @@ const ConnectionStatus = () => {
         {apiConnected ? (
           <>
             <Wifi className="w-4 h-4" />
-            <span>Canli</span>
+            <span>Canlı</span>
             <span className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
             {lastApiUpdate && (
               <span className="text-xs text-emerald-500/70 ml-1">
@@ -25,7 +25,7 @@ const ConnectionStatus = () => {
         ) : (
           <>
             <WifiOff className="w-4 h-4" />
-            <span>Baglanti Yok</span>
+            <span>Bağlantı Yok</span>
             <button onClick={refreshData} className="ml-1 hover:text-red-300">
               <RefreshCw className="w-3 h-3" />
             </button>

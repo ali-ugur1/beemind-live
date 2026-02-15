@@ -81,6 +81,19 @@ export const HIVES_DATA = [
     priority: 3
   },
   {
+    id: '16',
+    status: 'stable',
+    alertType: null,
+    temp: 34.8,
+    humidity: 54,
+    battery: 89,
+    weight: 27.9,
+    sound: 46,
+    lastUpdate: '2 dakika önce',
+    lastActivity: 'Tüm Sistemler Normal',
+    priority: 3
+  },
+  {
     id: '03',
     status: 'stable',
     alertType: null,

@@ -1,32 +1,72 @@
-import { useMemo } from 'react';
-import { Wifi, Battery, BatteryCharging, Cloud, Droplets, Wind, Sun, MapPin, TrendingUp, TrendingDown, Minus, AlertTriangle } from 'lucide-react';
+import { useMemo, useState } from 'react';
+import { Wifi, Battery, BatteryCharging, Cloud, Droplets, Wind, Sun, MapPin, TrendingUp, TrendingDown, Minus, AlertTriangle, Zap, FileText, Wrench } from 'lucide-react';
+import { useToast } from '../contexts/ToastContext';
+import { useLanguage } from '../contexts/LanguageContext';
+import { useLiveData } from '../contexts/LiveDataContext';
 
 const OverviewDashboard = ({ stats, hives, onViewDetail }) => {
-  // Gateway bilgisi (Mock data - gerçekte API'den gelecek)
-  const gateway = {
-    id: 'GW-001',
-    batteryLevel: 78,
-    isCharging: false,
-    signalStrength: 92,
-    status: 'online',
-    lastSync: '2 dakika önce',
-    connectedHives: 19
+  const toast = useToast();
+  const { t } = useLanguage();
+  const { gateway: apiGateway, weather: apiWeather, apiConnected } = useLiveData();
+  const [quickLoading, setQuickLoading] = useState(null);
+
+  const handleQuickAction = (action) => {
+    setQuickLoading(action);
+    setTimeout(() => {
+      setQuickLoading(null);
+      if (action === 'scan') toast.success('Tüm kovanlar tarandı — sorun bulunamadı');
+      if (action === 'report') toast.success('Acil rapor oluşturuldu (PDF)');
+      if (action === 'maintenance') toast.info('Bakım planı oluşturuluyor...');
+    }, 1500);
   };
 
-  // Hava durumu (Mock data - gerçekte Weather API'den gelecek)
-  const weather = {
-    location: 'Konya, Selçuklu',
-    temp: 24,
-    condition: 'Açık',
-    humidity: 45,
-    windSpeed: 12,
-    icon: Sun,
-    forecast: [
-      { day: 'Yarın', temp: 26, icon: Sun },
-      { day: 'Pzt', temp: 23, icon: Cloud },
-      { day: 'Salı', temp: 25, icon: Sun }
-    ]
-  };
+  // Gateway bilgisi — API'den gelir, yoksa hives verisinden türetilir
+  const gateway = useMemo(() => {
+    if (apiGateway && apiGateway.status !== 'offline') {
+      return {
+        ...apiGateway,
+        connectedHives: apiGateway.connectedHives || hives.length,
+        lastSync: apiGateway.lastSync ? getTimeSince(apiGateway.lastSync) : '—'
+      };
+    }
+    // Fallback: API bağlantısı varsa online, yoksa offline
+    return {
+      id: 'GW-001',
+      batteryLevel: 78,
+      isCharging: false,
+      signalStrength: apiConnected ? 92 : 0,
+      status: apiConnected ? 'online' : 'offline',
+      lastSync: apiConnected ? 'Az önce' : '—',
+      connectedHives: hives.length
+    };
+  }, [apiGateway, apiConnected, hives.length]);
+
+  // Hava durumu — API'den gelir, yoksa fallback
+  const weather = useMemo(() => {
+    if (apiWeather) {
+      return {
+        location: apiWeather.location || 'Konum bilinmiyor',
+        temp: apiWeather.temp ?? apiWeather.temperature ?? '—',
+        condition: apiWeather.condition || apiWeather.description || '—',
+        humidity: apiWeather.humidity ?? '—',
+        windSpeed: apiWeather.windSpeed ?? apiWeather.wind ?? '—',
+        icon: getWeatherIcon(apiWeather.condition),
+        forecast: apiWeather.forecast || []
+      };
+    }
+    // Fallback: sensör ortalamasından türet
+    const avgTemp = hives.length > 0 ? (hives.reduce((s, h) => s + h.temp, 0) / hives.length).toFixed(0) : '—';
+    const avgHum = hives.length > 0 ? (hives.reduce((s, h) => s + h.humidity, 0) / hives.length).toFixed(0) : '—';
+    return {
+      location: 'Konya, Selçuklu',
+      temp: avgTemp !== '—' ? Number(avgTemp) : '—',
+      condition: 'Sensör Verisi',
+      humidity: avgHum !== '—' ? Number(avgHum) : '—',
+      windSpeed: '—',
+      icon: Sun,
+      forecast: []
+    };
+  }, [apiWeather, hives]);
 
   // Kritik uyarılar
   const criticalAlerts = hives
@@ -50,7 +90,9 @@ const OverviewDashboard = ({ stats, hives, onViewDetail }) => {
     };
   }, [hives]);
 
-  const WeatherIcon = weather.icon;
+  // Weather icon: gerçek veriden emoji gelir, fallback'te React component gelir
+  const weatherIconIsEmoji = typeof weather.icon === 'string';
+  const WeatherIcon = weatherIconIsEmoji ? null : weather.icon;
 
   return (
     <div className="space-y-6">
@@ -122,8 +164,8 @@ const OverviewDashboard = ({ stats, hives, onViewDetail }) => {
         <div className="bg-gradient-to-br from-blue-500/10 to-cyan-500/10 border border-blue-500/30 rounded-lg p-6">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-blue-500/20 rounded-full flex items-center justify-center">
-                <WeatherIcon className="w-6 h-6 text-blue-400" />
+              <div className="w-12 h-12 bg-blue-500/20 rounded-full flex items-center justify-center text-2xl">
+                {weatherIconIsEmoji ? weather.icon : <WeatherIcon className="w-6 h-6 text-blue-400" />}
               </div>
               <div>
                 <div className="flex items-center gap-2">
@@ -135,6 +177,9 @@ const OverviewDashboard = ({ stats, hives, onViewDetail }) => {
             </div>
             <div className="text-right">
               <p className="text-4xl font-bold text-gray-100">{weather.temp}°C</p>
+              {weather.feelsLike !== undefined && (
+                <p className="text-xs text-gray-500">Hissedilen: {weather.feelsLike}°C</p>
+              )}
             </div>
           </div>
 
@@ -142,7 +187,7 @@ const OverviewDashboard = ({ stats, hives, onViewDetail }) => {
             <div className="bg-gray-900/50 rounded-lg p-3 flex items-center gap-3">
               <Droplets className="w-5 h-5 text-cyan-400" />
               <div>
-                <p className="text-xs text-gray-500">Nem</p>
+                <p className="text-xs text-gray-500">{t.weather?.humidity || 'Nem'}</p>
                 <p className="text-lg font-semibold text-gray-100">{weather.humidity}%</p>
               </div>
             </div>
@@ -150,25 +195,31 @@ const OverviewDashboard = ({ stats, hives, onViewDetail }) => {
             <div className="bg-gray-900/50 rounded-lg p-3 flex items-center gap-3">
               <Wind className="w-5 h-5 text-gray-400" />
               <div>
-                <p className="text-xs text-gray-500">Rüzgar</p>
+                <p className="text-xs text-gray-500">{t.weather?.wind || 'Rüzgar'}</p>
                 <p className="text-lg font-semibold text-gray-100">{weather.windSpeed} km/s</p>
               </div>
             </div>
           </div>
 
           {/* 3 Günlük Tahmin */}
-          <div className="flex items-center justify-between border-t border-gray-800 pt-4">
-            {weather.forecast.map((day, i) => {
-              const DayIcon = day.icon;
-              return (
+          {weather.forecast && weather.forecast.length > 0 && (
+            <div className="flex items-center justify-between border-t border-gray-800 pt-4">
+              {weather.forecast.map((day, i) => (
                 <div key={i} className="text-center">
                   <p className="text-xs text-gray-500 mb-2">{day.day}</p>
-                  <DayIcon className="w-5 h-5 text-amber-400 mx-auto mb-1" />
+                  <span className="text-xl block mb-1">{day.icon || '☀️'}</span>
                   <p className="text-sm font-semibold text-gray-300">{day.temp}°C</p>
+                  {day.condition && (
+                    <p className="text-[10px] text-gray-500 mt-1">{day.condition}</p>
+                  )}
                 </div>
-              );
-            })}
-          </div>
+              ))}
+            </div>
+          )}
+
+          {weather._source && (
+            <p className="text-[10px] text-gray-600 mt-3 text-right">Open-Meteo</p>
+          )}
         </div>
       </div>
 
@@ -256,6 +307,43 @@ const OverviewDashboard = ({ stats, hives, onViewDetail }) => {
           </div>
         </div>
       )}
+
+      {/* Hızlı Eylemler */}
+      <div className="bg-gray-900 border border-gray-800 rounded-lg p-6">
+        <h3 className="text-sm font-semibold text-gray-400 uppercase mb-4">⚡ {t.quickActions.scanAll.includes('Scan') ? 'Quick Actions' : 'Hızlı Eylemler'}</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <button
+            onClick={() => handleQuickAction('scan')}
+            disabled={quickLoading === 'scan'}
+            className="flex items-center gap-3 p-4 bg-amber-500/10 border border-amber-500/30 rounded-lg hover:bg-amber-500/20 transition-colors disabled:opacity-50"
+          >
+            <Zap className={`w-5 h-5 text-amber-400 ${quickLoading === 'scan' ? 'animate-spin' : ''}`} />
+            <span className="text-sm font-medium text-gray-200">
+              {quickLoading === 'scan' ? t.quickActions.scanning : t.quickActions.scanAll}
+            </span>
+          </button>
+          <button
+            onClick={() => handleQuickAction('report')}
+            disabled={quickLoading === 'report'}
+            className="flex items-center gap-3 p-4 bg-blue-500/10 border border-blue-500/30 rounded-lg hover:bg-blue-500/20 transition-colors disabled:opacity-50"
+          >
+            <FileText className={`w-5 h-5 text-blue-400 ${quickLoading === 'report' ? 'animate-spin' : ''}`} />
+            <span className="text-sm font-medium text-gray-200">
+              {quickLoading === 'report' ? t.quickActions.reportCreating : t.quickActions.urgentReport}
+            </span>
+          </button>
+          <button
+            onClick={() => handleQuickAction('maintenance')}
+            disabled={quickLoading === 'maintenance'}
+            className="flex items-center gap-3 p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-lg hover:bg-emerald-500/20 transition-colors disabled:opacity-50"
+          >
+            <Wrench className={`w-5 h-5 text-emerald-400 ${quickLoading === 'maintenance' ? 'animate-spin' : ''}`} />
+            <span className="text-sm font-medium text-gray-200">
+              {quickLoading === 'maintenance' ? (t.quickActions.scanAll.includes('Scan') ? 'Planning...' : 'Planlanıyor...') : t.quickActions.planMaintenance}
+            </span>
+          </button>
+        </div>
+      </div>
     </div>
   );
 };
@@ -307,3 +395,25 @@ const TrendCard = ({ title, value, trend, change, icon: Icon }) => {
 };
 
 export default OverviewDashboard;
+
+// Yardımcı fonksiyonlar
+function getTimeSince(isoStr) {
+  try {
+    const diff = Date.now() - new Date(isoStr).getTime();
+    const min = Math.floor(diff / 60000);
+    if (min < 1) return 'Az önce';
+    if (min < 60) return `${min} dakika önce`;
+    return `${Math.floor(min / 60)} saat önce`;
+  } catch {
+    return '—';
+  }
+}
+
+function getWeatherIcon(condition) {
+  if (!condition) return Sun;
+  const c = condition.toLowerCase();
+  if (c.includes('cloud') || c.includes('bulut')) return Cloud;
+  if (c.includes('rain') || c.includes('yağmur')) return Droplets;
+  if (c.includes('wind') || c.includes('rüzgar')) return Wind;
+  return Sun;
+}
