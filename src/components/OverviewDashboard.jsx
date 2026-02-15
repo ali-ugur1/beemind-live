@@ -3,6 +3,8 @@ import { Wifi, Battery, BatteryCharging, Cloud, Droplets, Wind, Sun, MapPin, Tre
 import { useToast } from '../contexts/ToastContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useLiveData } from '../contexts/LiveDataContext';
+import SystemHealthWidget from './SystemHealthWidget';
+import ActivityFeed from './ActivityFeed';
 
 const OverviewDashboard = ({ stats, hives, onViewDetail }) => {
   const toast = useToast();
@@ -342,6 +344,16 @@ const OverviewDashboard = ({ stats, hives, onViewDetail }) => {
               {quickLoading === 'maintenance' ? (t.quickActions.scanAll.includes('Scan') ? 'Planning...' : 'Planlanıyor...') : t.quickActions.planMaintenance}
             </span>
           </button>
+        </div>
+      </div>
+
+      {/* System Health + Activity Feed */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-1">
+          <SystemHealthWidget />
+        </div>
+        <div className="lg:col-span-2">
+          <ActivityFeed limit={8} onViewDetail={onViewDetail} />
         </div>
       </div>
     </div>

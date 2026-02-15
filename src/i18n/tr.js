@@ -10,6 +10,8 @@ export const tr = {
     notificationHistory: 'Bildirim Geçmişi',
     profile: 'Profil',
     settings: 'Ayarlar',
+    help: 'Yardım',
+    about: 'Hakkında',
     package: 'Paket',
     hiveCount: 'Kovan',
   },
@@ -31,6 +33,8 @@ export const tr = {
     notificationHistory: 'Genel Bakış > Bildirim Geçmişi',
     settings: 'Genel Bakış > Ayarlar',
     profile: 'Genel Bakış > Profil',
+    help: 'Genel Bakış > Yardım',
+    about: 'Genel Bakış > Hakkında',
   },
   // Stats
   stats: {

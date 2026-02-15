@@ -1,4 +1,4 @@
-import { Home, List, Map, FileText, Settings, Package, User, Hexagon, X, Menu, GitCompareArrows, Calendar, Bell } from 'lucide-react';
+import { Home, List, Map, FileText, Settings, Package, User, Hexagon, X, Menu, GitCompareArrows, Calendar, Bell, HelpCircle, Info } from 'lucide-react';
 import { useState, useEffect, useCallback } from 'react';
 import { useLiveData } from '../contexts/LiveDataContext';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -55,8 +55,13 @@ const Sidebar = ({ activeTab, onTabChange }) => {
     { id: 'calendar', label: t.sidebar.calendar, icon: Calendar },
     { id: 'reports', label: t.sidebar.reports, icon: FileText },
     { id: 'notificationHistory', label: t.sidebar.notificationHistory, icon: Bell },
+  ];
+
+  const bottomMenuItems = [
     { id: 'profile', label: t.sidebar.profile, icon: User },
-    { id: 'settings', label: t.sidebar.settings, icon: Settings }
+    { id: 'settings', label: t.sidebar.settings, icon: Settings },
+    { id: 'help', label: t.sidebar.help, icon: HelpCircle },
+    { id: 'about', label: t.sidebar.about, icon: Info },
   ];
 
   const handleMenuClick = (tabId) => {
@@ -113,7 +118,7 @@ const Sidebar = ({ activeTab, onTabChange }) => {
 
         {/* Menu Items */}
         <nav className="flex-1 p-4 overflow-y-auto">
-          <ul className="space-y-2">
+          <ul className="space-y-1">
             {menuItems.map(item => {
               const Icon = item.icon;
               const isActive = activeTab === item.id;
@@ -122,14 +127,40 @@ const Sidebar = ({ activeTab, onTabChange }) => {
                 <li key={item.id}>
                   <button
                     onClick={() => handleMenuClick(item.id)}
-                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
+                    className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all ${
                       isActive
                         ? 'bg-amber-500/20 text-amber-400 border border-amber-500/50'
                         : 'text-gray-400 hover:text-gray-200 hover:bg-gray-800'
                     }`}
                   >
                     <Icon className="w-5 h-5" />
-                    <span className="font-medium">{item.label}</span>
+                    <span className="font-medium text-sm">{item.label}</span>
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+
+          {/* Separator */}
+          <div className="border-t border-gray-800 my-3" />
+
+          <ul className="space-y-1">
+            {bottomMenuItems.map(item => {
+              const Icon = item.icon;
+              const isActive = activeTab === item.id;
+
+              return (
+                <li key={item.id}>
+                  <button
+                    onClick={() => handleMenuClick(item.id)}
+                    className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all ${
+                      isActive
+                        ? 'bg-amber-500/20 text-amber-400 border border-amber-500/50'
+                        : 'text-gray-400 hover:text-gray-200 hover:bg-gray-800'
+                    }`}
+                  >
+                    <Icon className="w-5 h-5" />
+                    <span className="font-medium text-sm">{item.label}</span>
                   </button>
                 </li>
               );

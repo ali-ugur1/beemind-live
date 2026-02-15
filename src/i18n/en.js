@@ -9,6 +9,8 @@ export const en = {
     notificationHistory: 'Notification History',
     profile: 'Profile',
     settings: 'Settings',
+    help: 'Help',
+    about: 'About',
     package: 'Package',
     hiveCount: 'Hives',
   },
@@ -28,6 +30,8 @@ export const en = {
     notificationHistory: 'Overview > Notification History',
     settings: 'Overview > Settings',
     profile: 'Overview > Profile',
+    help: 'Overview > Help',
+    about: 'Overview > About',
   },
   stats: {
     totalHives: 'TOTAL HIVES',
