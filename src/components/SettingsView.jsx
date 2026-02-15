@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
-import { User, Bell, Save, Mail, Phone, MapPin, Sun, Moon, Globe, BellRing } from 'lucide-react';
+import { User, Bell, Save, Mail, Phone, MapPin, Sun, Moon } from 'lucide-react';
 import { useToast } from '../contexts/ToastContext';
 import { useTheme } from '../contexts/ThemeContext';
-import { useLanguage } from '../contexts/LanguageContext';
 
 const SETTINGS_KEY = 'beemind_settings';
 
@@ -48,8 +47,6 @@ const SettingsView = () => {
   const handleSave = () => {
     try {
       localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
-      // Sidebar ve diğer componentlere bildir
-      window.dispatchEvent(new Event('beemind-settings-updated'));
       setSaved(true);
       toast.success('Ayarlar başarıyla kaydedildi');
       setTimeout(() => setSaved(false), 3000);
@@ -190,27 +187,6 @@ const SettingsView = () => {
         </div>
       </div>
 
-      {/* Dil Ayarı */}
-      <div className="bg-gray-900 border border-gray-800 rounded-lg p-6">
-        <div className="flex items-center gap-3 mb-6">
-          <Globe className="w-6 h-6 text-amber-400" />
-          <h2 className="text-xl font-semibold text-gray-100">Dil / Language</h2>
-        </div>
-        <div className="flex gap-3">
-          <LanguageButton lang="tr" label="🇹🇷 Türkçe" />
-          <LanguageButton lang="en" label="🇬🇧 English" />
-        </div>
-      </div>
-
-      {/* Push Bildirim */}
-      <div className="bg-gray-900 border border-gray-800 rounded-lg p-6">
-        <div className="flex items-center gap-3 mb-6">
-          <BellRing className="w-6 h-6 text-amber-400" />
-          <h2 className="text-xl font-semibold text-gray-100">Push Bildirim</h2>
-        </div>
-        <PushNotificationToggle />
-      </div>
-
       {/* Kaydet Butonu */}
       <div className="flex items-center justify-end gap-4">
         {saved && (
@@ -254,65 +230,4 @@ const ToggleItem = ({ label, description, checked, onChange }) => {
   );
 };
 
-// Language Button
-const LanguageButton = ({ lang, label }) => {
-  const { lang: currentLang, changeLanguage } = useLanguage();
-  const isActive = currentLang === lang;
-  return (
-    <button
-      onClick={() => changeLanguage(lang)}
-      className={`px-6 py-3 rounded-lg font-medium transition-all ${
-        isActive
-          ? 'bg-amber-500 text-black'
-          : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
-      }`}
-    >
-      {label}
-    </button>
-  );
-};
-
-// Push Notification Toggle
-const PushNotificationToggle = () => {
-  const [permission, setPermission] = useState(() => {
-    if ('Notification' in window) return Notification.permission;
-    return 'unsupported';
-  });
-
-  const requestPermission = async () => {
-    if (!('Notification' in window)) return;
-    const result = await Notification.requestPermission();
-    setPermission(result);
-    if (result === 'granted') {
-      new Notification('BeeMind 🐝', { body: 'Push bildirimleri aktif edildi!' });
-    }
-  };
-
-  if (permission === 'unsupported') {
-    return <p className="text-sm text-gray-500">Tarayıcınız push bildirimleri desteklemiyor.</p>;
-  }
-
-  return (
-    <div className="flex items-center justify-between p-4 bg-gray-800 rounded-lg">
-      <div className="flex-1">
-        <p className="font-medium text-gray-100">Tarayıcı Bildirimleri</p>
-        <p className="text-sm text-gray-500 mt-1">
-          {permission === 'granted' ? '✅ Bildirimler aktif' :
-           permission === 'denied' ? '❌ Bildirimler engellendi (tarayıcı ayarlarından açın)' :
-           'Kritik alarmlar için tarayıcı bildirimi alın'}
-        </p>
-      </div>
-      {permission !== 'granted' && permission !== 'denied' && (
-        <button
-          onClick={requestPermission}
-          className="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-black font-semibold rounded-lg transition-colors text-sm"
-        >
-          İzin Ver
-        </button>
-      )}
-    </div>
-  );
-};
-
 export default SettingsView;
-

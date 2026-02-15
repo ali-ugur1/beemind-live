@@ -1,11 +1,9 @@
 import { Bell, Settings, User, Clock } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import NotificationDropdown from './NotificationDropdown';
-import { useLanguage } from '../contexts/LanguageContext';
 
 const Header = ({ activeTab, notifications, onMarkAsRead, onMarkAllAsRead, onNotificationClick, onSettingsClick, onProfileClick }) => {
-  const { t } = useLanguage();
-  const [lastUpdate, setLastUpdate] = useState(t.header.justNow);
+  const [lastUpdate, setLastUpdate] = useState('Az önce');
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
 
   useEffect(() => {
@@ -14,19 +12,34 @@ const Header = ({ activeTab, notifications, onMarkAsRead, onMarkAllAsRead, onNot
       const seconds = now.getSeconds();
 
       if (seconds < 10) {
-        setLastUpdate(t.header.justNow);
+        setLastUpdate('Az önce');
       } else if (seconds < 30) {
-        setLastUpdate(`${seconds} ${t.header.secondsAgo}`);
+        setLastUpdate(`${seconds} saniye önce`);
       } else {
-        setLastUpdate(t.header.minuteAgo);
+        setLastUpdate('1 dakika önce');
       }
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [t]);
+  }, []);
 
   const getBreadcrumb = () => {
-    return t.breadcrumb[activeTab] || t.breadcrumb.dashboard;
+    switch (activeTab) {
+      case 'dashboard':
+        return 'Genel Bakış';
+      case 'list':
+        return 'Genel Bakış > Kovan Kontrol Merkezi';
+      case 'map':
+        return 'Genel Bakış > Harita';
+      case 'reports':
+        return 'Genel Bakış > Raporlar';
+      case 'settings':
+        return 'Genel Bakış > Ayarlar';
+      case 'profile':
+        return 'Genel Bakış > Profil';
+      default:
+        return 'Genel Bakış';
+    }
   };
 
   const unreadCount = notifications.filter(n => !n.read).length;
@@ -42,7 +55,7 @@ const Header = ({ activeTab, notifications, onMarkAsRead, onMarkAllAsRead, onNot
       <div className="flex items-center gap-4">
         <div className="flex items-center gap-2 text-sm text-gray-500">
           <Clock className="w-4 h-4" />
-          <span>{t.header.lastUpdate}: {lastUpdate}</span>
+          <span>Son Güncelleme: {lastUpdate}</span>
         </div>
 
         <div className="flex items-center gap-2">

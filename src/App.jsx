@@ -1,8 +1,7 @@
-import { useState, useEffect, useMemo, lazy, Suspense, useCallback } from 'react';
+import { useState, useMemo, useEffect, lazy, Suspense } from 'react';
 import { ToastProvider, useToast } from './contexts/ToastContext';
 import { LiveDataProvider, useLiveData } from './contexts/LiveDataContext';
 import { ThemeProvider } from './contexts/ThemeContext';
-import { LanguageProvider } from './contexts/LanguageContext';
 import ErrorBoundary from './components/ErrorBoundary';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
@@ -15,11 +14,8 @@ import LoadingSpinner from './components/LoadingSpinner';
 import AIAnalysisPanel from './components/AIAnalysisPanel';
 import ConnectionStatus from './components/ConnectionStatus';
 import AddHiveModal from './components/AddHiveModal';
-import OnboardingOverlay, { shouldShowOnboarding } from './components/OnboardingOverlay';
-import EditHiveModal from './components/EditHiveModal';
-import useKeyboardShortcuts from './hooks/useKeyboardShortcuts';
-import usePushNotifications from './hooks/usePushNotifications';
 import { SkeletonStats, SkeletonTable, SkeletonDetail } from './components/Skeleton';
+import { generateNotifications } from './data/helpers';
 import './App.css';
 
 const OverviewDashboard = lazy(() => import('./components/OverviewDashboard'));
@@ -28,13 +24,10 @@ const SettingsView = lazy(() => import('./components/SettingsView'));
 const MapView = lazy(() => import('./components/MapView'));
 const ReportsView = lazy(() => import('./components/ReportsView'));
 const ProfileView = lazy(() => import('./components/ProfileView'));
-const CompareView = lazy(() => import('./components/CompareView'));
-const CalendarView = lazy(() => import('./components/CalendarView'));
-const NotificationHistoryView = lazy(() => import('./components/NotificationHistoryView'));
 
 function AppContent() {
   const toast = useToast();
-  const { hives, loading, notifications: liveNotifications } = useLiveData();
+  const { hives, loading } = useLiveData();
 
   const [activeTab, setActiveTab] = useState('list');
   const [currentView, setCurrentView] = useState('overview');
@@ -49,10 +42,22 @@ function AppContent() {
   const [selectedHives, setSelectedHives] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [showAddHive, setShowAddHive] = useState(false);
-  const [showOnboarding, setShowOnboarding] = useState(shouldShowOnboarding);
-  const [editHive, setEditHive] = useState(null);
-  const [advancedFilters, setAdvancedFilters] = useState({ tempMin: '', tempMax: '', batteryMin: '', batteryMax: '' });
   const itemsPerPage = 10;
+
+  // Canlı veriden bildirim oluştur
+  useEffect(() => {
+    if (hives.length > 0) {
+      const liveNotifs = generateNotifications(hives);
+      setNotifications(prev => {
+        // Okunmuş durumlarını koru
+        const readIds = new Set(prev.filter(n => n.read).map(n => `${n.hiveId}-${n.type}`));
+        return liveNotifs.map(n => ({
+          ...n,
+          read: readIds.has(`${n.hiveId}-${n.type}`) ? true : n.read
+        }));
+      });
+    }
+  }, [hives]);
 
   const filteredAndSortedHives = useMemo(() => {
     let result = [...hives];
@@ -64,12 +69,6 @@ function AppContent() {
     if (filter !== 'all') {
       result = result.filter(hive => hive.status === filter);
     }
-    // Gelişmiş filtreler
-    if (advancedFilters.tempMin) result = result.filter(h => h.temp >= Number(advancedFilters.tempMin));
-    if (advancedFilters.tempMax) result = result.filter(h => h.temp <= Number(advancedFilters.tempMax));
-    if (advancedFilters.batteryMin) result = result.filter(h => h.battery >= Number(advancedFilters.batteryMin));
-    if (advancedFilters.batteryMax) result = result.filter(h => h.battery <= Number(advancedFilters.batteryMax));
-
     result.sort((a, b) => {
       switch (sortBy) {
         case 'priority': return a.priority - b.priority;
@@ -80,7 +79,7 @@ function AppContent() {
       }
     });
     return result;
-  }, [hives, filter, searchQuery, sortBy, advancedFilters]);
+  }, [hives, filter, searchQuery, sortBy]);
 
   const stats = useMemo(() => {
     const total = hives.length;
@@ -98,36 +97,12 @@ function AppContent() {
   );
   const selectedHive = hives.find(h => h.id === selectedHiveId);
 
-  // Bildirimler: canlı veriden gelen bildirimleri local read state ile birleştir
-  useEffect(() => {
-    setNotifications(prev => {
-      const readIds = new Set(prev.filter(n => n.read).map(n => `${n.hiveId}-${n.type}`));
-      return liveNotifications.map(n => ({
-        ...n,
-        read: n.read || readIds.has(`${n.hiveId}-${n.type}`)
-      }));
-    });
-  }, [liveNotifications]);
-
-  const handleTabChange = useCallback((newTab) => {
-    if (newTab === 'back') {
-      if (currentView === 'detail') {
-        setCurrentView('overview');
-        setSelectedHiveId(null);
-      }
-      return;
-    }
+  const handleTabChange = (newTab) => {
     setActiveTab(newTab);
     setCurrentView('overview');
     setSelectedHiveId(null);
     setSelectedHives([]);
-  }, [currentView]);
-
-  // Klavye kısayolları
-  useKeyboardShortcuts(handleTabChange);
-
-  // Push bildirimler — kritik kovan olduğunda otomatik gönder
-  usePushNotifications(hives);
+  };
 
   const handleSelectHive = (hiveId) => {
     setSelectedHives(prev =>
@@ -221,7 +196,6 @@ function AppContent() {
   return (
     <div className="flex min-h-screen bg-gray-950 text-gray-100">
       {isLoading && <LoadingSpinner fullScreen />}
-      {showOnboarding && <OnboardingOverlay onComplete={() => setShowOnboarding(false)} />}
       <Sidebar activeTab={activeTab} onTabChange={handleTabChange} />
       <main className="flex-1 p-4 md:p-8 overflow-auto">
         <Header
@@ -255,12 +229,7 @@ function AppContent() {
                 <section className="mb-6">
                   <div className="flex items-center justify-between gap-4 mb-4">
                     <div className="flex-1">
-                      <FilterBar
-                        filter={filter} setFilter={setFilter}
-                        searchQuery={searchQuery} setSearchQuery={setSearchQuery}
-                        sortBy={sortBy} setSortBy={setSortBy}
-                        advancedFilters={advancedFilters} setAdvancedFilters={setAdvancedFilters}
-                      />
+                      <FilterBar filter={filter} setFilter={setFilter} searchQuery={searchQuery} setSearchQuery={setSearchQuery} sortBy={sortBy} setSortBy={setSortBy} />
                     </div>
                     <button
                       onClick={() => setShowAddHive(true)}
@@ -271,7 +240,7 @@ function AppContent() {
                   </div>
                 </section>
                 <section className="mb-4">
-                  <HiveList hives={paginatedHives} selectedHives={selectedHives} onSelectHive={handleSelectHive} onSelectAll={handleSelectAll} onViewDetail={handleViewDetail} onAIAnalysis={handleAIAnalysis} onEditHive={setEditHive} />
+                  <HiveList hives={paginatedHives} selectedHives={selectedHives} onSelectHive={handleSelectHive} onSelectAll={handleSelectAll} onViewDetail={handleViewDetail} onAIAnalysis={handleAIAnalysis} />
                 </section>
                 {totalPages > 1 && <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />}
                 {selectedHives.length > 0 && <FloatingActionBar count={selectedHives.length} onReport={handleBulkReport} onNotification={handleBulkNotification} onClose={() => setSelectedHives([])} />}
@@ -280,17 +249,8 @@ function AppContent() {
             {activeTab === 'map' && (
               <ErrorBoundary><Suspense fallback={<LoadingSpinner size="lg" />}><MapView hives={hives} onViewDetail={handleViewDetail} /></Suspense></ErrorBoundary>
             )}
-            {activeTab === 'compare' && (
-              <ErrorBoundary><Suspense fallback={<LoadingSpinner size="lg" />}><CompareView /></Suspense></ErrorBoundary>
-            )}
-            {activeTab === 'calendar' && (
-              <ErrorBoundary><Suspense fallback={<LoadingSpinner size="lg" />}><CalendarView /></Suspense></ErrorBoundary>
-            )}
             {activeTab === 'reports' && (
               <ErrorBoundary><Suspense fallback={<LoadingSpinner size="lg" />}><ReportsView hives={hives} /></Suspense></ErrorBoundary>
-            )}
-            {activeTab === 'notificationHistory' && (
-              <ErrorBoundary><Suspense fallback={<LoadingSpinner size="lg" />}><NotificationHistoryView notifications={notifications} onViewDetail={handleViewDetail} /></Suspense></ErrorBoundary>
             )}
             {activeTab === 'settings' && (
               <ErrorBoundary><Suspense fallback={<LoadingSpinner size="lg" />}><SettingsView /></Suspense></ErrorBoundary>
@@ -298,7 +258,7 @@ function AppContent() {
             {activeTab === 'profile' && (
               <ErrorBoundary><Suspense fallback={<LoadingSpinner size="lg" />}><ProfileView /></Suspense></ErrorBoundary>
             )}
-            {!['dashboard','list','map','compare','calendar','reports','notificationHistory','settings','profile'].includes(activeTab) && (
+            {!['dashboard','list','map','reports','settings','profile'].includes(activeTab) && (
               <div className="flex flex-col items-center justify-center py-20">
                 <p className="text-6xl mb-4">🐝</p>
                 <h2 className="text-xl font-semibold text-gray-300 mb-2">Sayfa Bulunamadı</h2>
@@ -312,7 +272,6 @@ function AppContent() {
       <AIAnalysisPanel isOpen={aiPanelOpen} onClose={() => setAiPanelOpen(false)} hive={aiHive} />
       <ConnectionStatus />
       <AddHiveModal isOpen={showAddHive} onClose={() => setShowAddHive(false)} />
-      <EditHiveModal hive={editHive} isOpen={!!editHive} onClose={() => setEditHive(null)} onSave={(id, data) => { /* localStorage'a zaten EditHiveModal kaydediyor */ }} />
     </div>
   );
 }
@@ -322,11 +281,9 @@ function App() {
     <ErrorBoundary>
       <ToastProvider>
         <ThemeProvider>
-          <LanguageProvider>
-            <LiveDataProvider>
-              <AppContent />
-            </LiveDataProvider>
-          </LanguageProvider>
+          <LiveDataProvider>
+            <AppContent />
+          </LiveDataProvider>
         </ThemeProvider>
       </ToastProvider>
     </ErrorBoundary>
