@@ -1,25 +1,22 @@
 import { Hexagon, AlertTriangle, Activity } from 'lucide-react';
-import { useLanguage } from '../contexts/LanguageContext';
 
 const StatsCards = ({ stats }) => {
-  const { t } = useLanguage();
-
   const cards = [
     {
-      title: t.stats.totalHives,
+      title: 'TOPLAM KOVAN',
       value: stats.total,
       icon: Hexagon,
       color: 'text-gray-400'
     },
     {
-      title: t.stats.needsAttention,
+      title: 'DİKKAT GEREKEN',
       value: stats.needsAttention,
       icon: AlertTriangle,
       color: 'text-red-400',
       pulse: stats.needsAttention > 0
     },
     {
-      title: t.stats.activeSystem,
+      title: 'AKTİF SİSTEM',
       value: stats.active,
       icon: Activity,
       color: 'text-emerald-400'

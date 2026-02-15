@@ -1,6 +1,6 @@
 import { useState, useMemo, useCallback } from 'react';
 import { MapPin, Navigation, Layers, ZoomIn, ZoomOut } from 'lucide-react';
-import { getStatusColor } from '../data/mockData';
+import { getStatusColor } from '../data/helpers';
 
 const MapView = ({ hives, onViewDetail }) => {
   const [mapType, setMapType] = useState('roadmap');

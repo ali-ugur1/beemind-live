@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { Eye, Sparkles, Trash2, Pencil } from 'lucide-react';
-import { getStatusColor, getStatusText } from '../data/mockData';
+import { Eye, Sparkles, Trash2 } from 'lucide-react';
+import { getStatusColor, getStatusText } from '../data/helpers';
 import EmptyState from './EmptyState';
 import ConfirmDialog from './ConfirmDialog';
 import { useToast } from '../contexts/ToastContext';
 import { useLiveData } from '../contexts/LiveDataContext';
 
-const HiveList = ({ hives, selectedHives, onSelectHive, onSelectAll, onViewDetail, onAIAnalysis, onEditHive }) => {
+const HiveList = ({ hives, selectedHives, onSelectHive, onSelectAll, onViewDetail, onAIAnalysis }) => {
   const [deleteConfirm, setDeleteConfirm] = useState({ isOpen: false, hiveId: null });
   const toast = useToast();
   const { deleteHive } = useLiveData();
@@ -68,7 +68,6 @@ const HiveList = ({ hives, selectedHives, onSelectHive, onSelectAll, onViewDetai
               onView={onViewDetail}
               onDelete={handleDelete}
               onAI={onAIAnalysis}
-              onEdit={onEditHive}
             />
           ))}
         </div>
@@ -96,7 +95,6 @@ const HiveList = ({ hives, selectedHives, onSelectHive, onSelectAll, onViewDetai
             onView={onViewDetail}
             onDelete={handleDelete}
             onAI={onAIAnalysis}
-            onEdit={onEditHive}
           />
         ))}
       </div>
@@ -116,7 +114,7 @@ const HiveList = ({ hives, selectedHives, onSelectHive, onSelectAll, onViewDetai
 };
 
 // Desktop Row
-const HiveRow = React.memo(({ hive, isSelected, onSelect, onView, onDelete, onAI, onEdit }) => {
+const HiveRow = React.memo(({ hive, isSelected, onSelect, onView, onDelete, onAI }) => {
   const colors = getStatusColor(hive.status);
   const isCritical = hive.status === 'critical';
   const isStable = hive.status === 'stable';
@@ -169,9 +167,6 @@ const HiveRow = React.memo(({ hive, isSelected, onSelect, onView, onDelete, onAI
         <button onClick={() => onAI(hive.id)} className="px-3 py-2 bg-gray-800 hover:bg-gray-700 text-gray-400 rounded-lg font-medium text-sm transition-all" aria-label={`Kovan #${hive.id} AI analizi`}>
           <Sparkles className="w-4 h-4 inline mr-1" />AI
         </button>
-        {onEdit && <button onClick={() => onEdit(hive)} className="px-2 py-2 bg-gray-800 hover:bg-blue-600 text-gray-500 hover:text-white rounded-lg text-sm transition-all" aria-label={`Kovan #${hive.id} düzenle`}>
-          <Pencil className="w-4 h-4" />
-        </button>}
         <button onClick={() => onDelete(hive.id)} className="px-2 py-2 bg-gray-800 hover:bg-red-600 text-gray-500 hover:text-white rounded-lg text-sm transition-all" aria-label={`Kovan #${hive.id} sil`}>
           <Trash2 className="w-4 h-4" />
         </button>
@@ -181,7 +176,7 @@ const HiveRow = React.memo(({ hive, isSelected, onSelect, onView, onDelete, onAI
 });
 
 // Mobile Card
-const MobileHiveCard = React.memo(({ hive, isSelected, onSelect, onView, onDelete, onAI, onEdit }) => {
+const MobileHiveCard = React.memo(({ hive, isSelected, onSelect, onView, onDelete, onAI }) => {
   const colors = getStatusColor(hive.status);
   const isCritical = hive.status === 'critical';
   const isStable = hive.status === 'stable';
@@ -248,9 +243,6 @@ const MobileHiveCard = React.memo(({ hive, isSelected, onSelect, onView, onDelet
         <button onClick={() => onAI(hive.id)} className="px-3 py-2 bg-gray-800 hover:bg-gray-700 text-gray-400 rounded-lg font-medium text-sm transition-all">
           <Sparkles className="w-4 h-4" />
         </button>
-        {onEdit && <button onClick={() => onEdit(hive)} className="px-3 py-2 bg-gray-800 hover:bg-blue-600 text-gray-500 hover:text-white rounded-lg text-sm transition-all">
-          <Pencil className="w-4 h-4" />
-        </button>}
         <button onClick={() => onDelete(hive.id)} className="px-3 py-2 bg-gray-800 hover:bg-red-600 text-gray-500 hover:text-white rounded-lg text-sm transition-all">
           <Trash2 className="w-4 h-4" />
         </button>
