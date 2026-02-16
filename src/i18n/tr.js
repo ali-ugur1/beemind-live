@@ -253,7 +253,27 @@ export const tr = {
   weather: {
     humidity: 'Nem',
     wind: 'Rüzgar',
+    feelsLike: 'Hissedilen',
+    sensorData: 'Sensör Verisi',
+    unknownLocation: 'Konum bilinmiyor',
     noData: 'Hava durumu verisi yok',
+  },
+  // Overview Dashboard
+  overview: {
+    criticalAlerts: 'Kritik Uyarılar',
+    hivePrefix: 'Kovan',
+    quickActionsTitle: 'Hızlı Eylemler',
+    planning: 'Planlanıyor...',
+    scanSuccess: 'Tüm kovanlar tarandı — sorun bulunamadı',
+    reportSuccess: 'Acil rapor oluşturuldu (PDF)',
+    maintenanceInfo: 'Bakım planı oluşturuluyor...',
+    avgTemp: 'Ortalama Sıcaklık',
+    avgHumidity: 'Ortalama Nem',
+    lowBattery: 'Düşük Pil',
+    hivesUnit: 'kovan',
+    justNow: 'Az önce',
+    minutesAgo: 'dakika önce',
+    hoursAgo: 'saat önce',
   },
   common: {
     hive: 'Kovan',

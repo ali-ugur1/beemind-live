@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { api, apiToHiveFormat } from '../services/api';
 import { fetchWeather } from '../services/weather';
-import { HIVES_DATA } from '../data/mockData';
+import { DEFAULT_HIVE } from '../data/mockData';
 
 const LiveDataContext = createContext();
 
@@ -15,20 +15,19 @@ export const useLiveData = () => {
 
 const HIVES_STORAGE_KEY = 'beemind_hives';
 
-// localStorage'dan eklenen kovanları al
-const getStoredHives = () => {
+// localStorage'dan kovanları al, yoksa varsayılan tek kovan
+const getLocalHives = () => {
   try {
     const stored = localStorage.getItem(HIVES_STORAGE_KEY);
-    if (stored) return JSON.parse(stored);
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    }
   } catch {}
-  return null;
-};
-
-// Mock + localStorage kovanlarını birleştir
-const getLocalHives = () => {
-  const stored = getStoredHives();
-  if (stored) return stored;
-  return HIVES_DATA;
+  // İlk açılışta varsayılan tek kovan
+  const initial = [DEFAULT_HIVE];
+  try { localStorage.setItem(HIVES_STORAGE_KEY, JSON.stringify(initial)); } catch {}
+  return initial;
 };
 
 // Gateway varsayılan veri
@@ -42,9 +41,6 @@ const DEFAULT_GATEWAY = {
   connectedHives: 0
 };
 
-// Hava durumu varsayılan veri
-const DEFAULT_WEATHER = null;
-
 export const LiveDataProvider = ({ children }) => {
   const [hives, setHives] = useState(() => getLocalHives());
   const [apiConnected, setApiConnected] = useState(false);
@@ -52,13 +48,17 @@ export const LiveDataProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [gateway, setGateway] = useState(DEFAULT_GATEWAY);
-  const [weather, setWeather] = useState(DEFAULT_WEATHER);
+  const [weather, setWeather] = useState(null);
   const apiIntervalRef = useRef(null);
+
+  // localStorage'a kaydet her hives değiştiğinde
+  useEffect(() => {
+    try { localStorage.setItem(HIVES_STORAGE_KEY, JSON.stringify(hives)); } catch {}
+  }, [hives]);
 
   const fetchLiveData = useCallback(async () => {
     try {
       const data = await api.getHivesSummary();
-      
       if (data.hives && data.hives.length > 0) {
         const formattedHives = data.hives.map(apiToHiveFormat);
         setHives(formattedHives);
@@ -68,14 +68,12 @@ export const LiveDataProvider = ({ children }) => {
       }
       setLoading(false);
     } catch (err) {
-      console.warn('API bağlantı hatası:', err.message);
+      console.warn('API baglanti hatasi:', err.message);
       setApiConnected(false);
-      // API yok — local veriler zaten yüklü, hata mesajı gösterme
       setLoading(false);
     }
   }, []);
 
-  // Gateway ve hava durumu verilerini al
   const fetchAuxData = useCallback(async () => {
     // Gateway
     try {
@@ -91,20 +89,16 @@ export const LiveDataProvider = ({ children }) => {
           connectedHives: gwData.connectedHives ?? 0
         });
       }
-    } catch {
-      // Gateway verisi yoksa default kalır
-    }
+    } catch {}
 
-    // Hava durumu — gerçek internet verisinden çek
+    // Hava durumu
     try {
-      // Kullanıcının ayarlardan konumunu al
       let locationName = 'Konya';
       try {
         const saved = localStorage.getItem('beemind_settings');
         if (saved) {
           const parsed = JSON.parse(saved);
           if (parsed.location) {
-            // "Konya, Türkiye" -> "Konya" (ilk kısım yeterli)
             locationName = parsed.location.split(',')[0].trim() || 'Konya';
           }
         }
@@ -112,33 +106,21 @@ export const LiveDataProvider = ({ children }) => {
 
       const lang = localStorage.getItem('beemind_language') || 'tr';
       const weatherData = await fetchWeather(locationName, lang);
-      if (weatherData) {
-        setWeather(weatherData);
-      }
+      if (weatherData) setWeather(weatherData);
     } catch (err) {
-      console.warn('Hava durumu alınamadı:', err.message);
-      // Backend API'den dene
+      console.warn('Hava durumu alinamadi:', err.message);
       try {
         const weatherData = await api.getWeather();
         if (weatherData) setWeather(weatherData);
-      } catch {
-        // Hava durumu verisi yok
-      }
+      } catch {}
     }
   }, []);
 
   useEffect(() => {
     fetchLiveData();
     fetchAuxData();
-    apiIntervalRef.current = setInterval(() => {
-      fetchLiveData();
-    }, 10000);
-
-    // Hava durumu daha seyrek güncelle (15 dakika)
-    const weatherInterval = setInterval(() => {
-      fetchAuxData();
-    }, 15 * 60 * 1000);
-    
+    apiIntervalRef.current = setInterval(fetchLiveData, 10000);
+    const weatherInterval = setInterval(fetchAuxData, 15 * 60 * 1000);
     return () => {
       if (apiIntervalRef.current) clearInterval(apiIntervalRef.current);
       clearInterval(weatherInterval);
@@ -153,62 +135,29 @@ export const LiveDataProvider = ({ children }) => {
     setHives(prev => [...prev, newHive]);
   }, []);
 
-  // Bildirimler otomatik olarak kovan durumlarından üretilir
+  // Bildirimler otomatik kovan durumlarından
   const notifications = useMemo(() => {
     const notifs = [];
     let id = 1;
-
     hives.forEach(hive => {
       if (hive.status === 'critical') {
-        notifs.push({
-          id: id++,
-          type: 'critical',
-          hiveId: hive.id,
-          message: hive.alertType || 'Kritik durum algılandı',
-          time: hive.lastUpdate,
-          read: false
-        });
+        notifs.push({ id: id++, type: 'critical', hiveId: hive.id, message: hive.alertType || 'Kritik durum algilandi', time: hive.lastUpdate, read: false });
       } else if (hive.status === 'warning') {
-        notifs.push({
-          id: id++,
-          type: 'warning',
-          hiveId: hive.id,
-          message: hive.alertType || 'Uyarı durumu',
-          time: hive.lastUpdate,
-          read: false
-        });
+        notifs.push({ id: id++, type: 'warning', hiveId: hive.id, message: hive.alertType || 'Uyari durumu', time: hive.lastUpdate, read: false });
       }
     });
-
-    // Düşük pil bildirimi
     hives.filter(h => h.battery < 20).forEach(hive => {
       if (!notifs.find(n => n.hiveId === hive.id && n.message.includes('Pil'))) {
-        notifs.push({
-          id: id++,
-          type: 'warning',
-          hiveId: hive.id,
-          message: `Düşük Pil Seviyesi (%${hive.battery})`,
-          time: hive.lastUpdate,
-          read: true
-        });
+        notifs.push({ id: id++, type: 'warning', hiveId: hive.id, message: `Dusuk Pil Seviyesi (%${hive.battery})`, time: hive.lastUpdate, read: true });
       }
     });
-
     return notifs;
   }, [hives]);
 
   const value = {
-    hives,
-    apiConnected,
-    lastApiUpdate,
-    loading,
-    error,
-    refreshData: fetchLiveData,
-    deleteHive,
-    addHive,
-    gateway,
-    weather,
-    notifications
+    hives, apiConnected, lastApiUpdate, loading, error,
+    refreshData: fetchLiveData, deleteHive, addHive,
+    gateway, weather, notifications
   };
 
   return (

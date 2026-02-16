@@ -8,7 +8,7 @@ import ActivityFeed from './ActivityFeed';
 
 const OverviewDashboard = ({ stats, hives, onViewDetail }) => {
   const toast = useToast();
-  const { t, lang } = useLanguage();
+  const { t } = useLanguage();
   const { gateway: apiGateway, weather: apiWeather, apiConnected } = useLiveData();
   const [quickLoading, setQuickLoading] = useState(null);
 
@@ -16,9 +16,9 @@ const OverviewDashboard = ({ stats, hives, onViewDetail }) => {
     setQuickLoading(action);
     setTimeout(() => {
       setQuickLoading(null);
-      if (action === 'scan') toast.success('Tüm kovanlar tarandı — sorun bulunamadı');
-      if (action === 'report') toast.success('Acil rapor oluşturuldu (PDF)');
-      if (action === 'maintenance') toast.info('Bakım planı oluşturuluyor...');
+      if (action === 'scan') toast.success(t.overview.scanSuccess);
+      if (action === 'report') toast.success(t.overview.reportSuccess);
+      if (action === 'maintenance') toast.info(t.overview.maintenanceInfo);
     }, 1500);
   };
 
@@ -28,7 +28,7 @@ const OverviewDashboard = ({ stats, hives, onViewDetail }) => {
       return {
         ...apiGateway,
         connectedHives: apiGateway.connectedHives || hives.length,
-        lastSync: apiGateway.lastSync ? getTimeSince(apiGateway.lastSync) : '—'
+        lastSync: apiGateway.lastSync ? getTimeSince(apiGateway.lastSync, t) : '—'
       };
     }
     // Fallback: API bağlantısı varsa online, yoksa offline
@@ -38,16 +38,16 @@ const OverviewDashboard = ({ stats, hives, onViewDetail }) => {
       isCharging: false,
       signalStrength: apiConnected ? 92 : 0,
       status: apiConnected ? 'online' : 'offline',
-      lastSync: apiConnected ? 'Az önce' : '—',
+      lastSync: apiConnected ? t.overview.justNow : '—',
       connectedHives: hives.length
     };
-  }, [apiGateway, apiConnected, hives.length]);
+  }, [apiGateway, apiConnected, hives.length, t]);
 
   // Hava durumu — API'den gelir, yoksa fallback
   const weather = useMemo(() => {
     if (apiWeather) {
       return {
-        location: apiWeather.location || 'Konum bilinmiyor',
+        location: apiWeather.location || t.weather.unknownLocation,
         temp: apiWeather.temp ?? apiWeather.temperature ?? '—',
         condition: apiWeather.condition || apiWeather.description || '—',
         humidity: apiWeather.humidity ?? '—',
@@ -62,13 +62,13 @@ const OverviewDashboard = ({ stats, hives, onViewDetail }) => {
     return {
       location: 'Konya, Selçuklu',
       temp: avgTemp !== '—' ? Number(avgTemp) : '—',
-      condition: 'Sensör Verisi',
+      condition: t.weather.sensorData,
       humidity: avgHum !== '—' ? Number(avgHum) : '—',
       windSpeed: '—',
       icon: Sun,
       forecast: []
     };
-  }, [apiWeather, hives]);
+  }, [apiWeather, hives, t]);
 
   // Kritik uyarılar
   const criticalAlerts = hives
@@ -86,13 +86,13 @@ const OverviewDashboard = ({ stats, hives, onViewDetail }) => {
     const avgHumidity = (hives.reduce((sum, h) => sum + h.humidity, 0) / count).toFixed(0);
     const lowBattery = hives.filter(h => h.battery < 30).length;
 
-    const batteryLabel = lang === 'tr' ? `${lowBattery} kovan` : `${lowBattery} hives`;
+    const batteryLabel = `${lowBattery} ${t.overview.hivesUnit}`;
     return {
       temperature: { value: avgTemp, trend: 'up', change: '+0.5°C' },
       humidity: { value: avgHumidity, trend: 'stable', change: '0%' },
       battery: { value: lowBattery, trend: lowBattery > 0 ? 'down' : 'stable', change: batteryLabel }
     };
-  }, [hives, lang]);
+  }, [hives, t]);
 
   // Weather icon: gerçek veriden emoji gelir, fallback'te React component gelir
   const weatherIconIsEmoji = typeof weather.icon === 'string';
@@ -122,7 +122,7 @@ const OverviewDashboard = ({ stats, hives, onViewDetail }) => {
             <div className={`px-3 py-1 rounded-full text-xs font-semibold ${
               gateway.status === 'online' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-400'
             }`}>
-              {gateway.status === 'online' ? '🟢 Çevrimiçi' : '🔴 Çevrimdışı'}
+              {gateway.status === 'online' ? t.gateway.online : t.gateway.offline}
             </div>
           </div>
 
@@ -135,7 +135,7 @@ const OverviewDashboard = ({ stats, hives, onViewDetail }) => {
                 ) : (
                   <Battery className="w-5 h-5 text-amber-400" />
                 )}
-                <span className="text-xs text-gray-500">Pil</span>
+                <span className="text-xs text-gray-500">{t.gateway.battery}</span>
               </div>
               <p className="text-2xl font-bold text-gray-100">{gateway.batteryLevel}%</p>
               <div className="mt-2 h-2 bg-gray-800 rounded-full overflow-hidden">
@@ -150,17 +150,17 @@ const OverviewDashboard = ({ stats, hives, onViewDetail }) => {
             <div className="bg-gray-900/50 rounded-lg p-4">
               <div className="flex items-center gap-2 mb-2">
                 <Wifi className="w-5 h-5 text-blue-400" />
-                <span className="text-xs text-gray-500">Sinyal</span>
+                <span className="text-xs text-gray-500">{t.gateway.signal}</span>
               </div>
               <p className="text-2xl font-bold text-gray-100">{gateway.signalStrength}%</p>
               <p className="text-xs text-gray-500 mt-2">
-                {gateway.connectedHives} kovan bağlı
+                {gateway.connectedHives} {t.gateway.hivesConnected}
               </p>
             </div>
           </div>
 
           <p className="text-xs text-gray-500 mt-4">
-            Son senkronizasyon: {gateway.lastSync}
+            {t.gateway.lastSync}: {gateway.lastSync}
           </p>
         </div>
 
@@ -182,7 +182,7 @@ const OverviewDashboard = ({ stats, hives, onViewDetail }) => {
             <div className="text-right">
               <p className="text-4xl font-bold text-gray-100">{weather.temp}°C</p>
               {weather.feelsLike !== undefined && (
-                <p className="text-xs text-gray-500">Hissedilen: {weather.feelsLike}°C</p>
+                <p className="text-xs text-gray-500">{t.weather.feelsLike}: {weather.feelsLike}°C</p>
               )}
             </div>
           </div>
@@ -230,26 +230,26 @@ const OverviewDashboard = ({ stats, hives, onViewDetail }) => {
       {/* İstatistik Kartları */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <StatCard
-          title="TOPLAM KOVAN"
+          title={t.stats.totalHives}
           value={stats.total}
           icon="🐝"
           color="amber"
         />
         <StatCard
-          title="KRİTİK DURUM"
+          title={t.stats.critical}
           value={stats.critical}
           icon="🔴"
           color="red"
           pulse={stats.critical > 0}
         />
         <StatCard
-          title="UYARI"
+          title={t.stats.warning}
           value={stats.warning}
           icon="⚠️"
           color="yellow"
         />
         <StatCard
-          title="STABİL"
+          title={t.stats.stable}
           value={stats.total - stats.critical - stats.warning}
           icon="✅"
           color="green"
@@ -259,21 +259,21 @@ const OverviewDashboard = ({ stats, hives, onViewDetail }) => {
       {/* Trend Analizi */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <TrendCard
-          title="Ortalama Sıcaklık"
+          title={t.overview.avgTemp}
           value={`${trends.temperature.value}°C`}
           trend={trends.temperature.trend}
           change={trends.temperature.change}
           icon={Sun}
         />
         <TrendCard
-          title="Ortalama Nem"
+          title={t.overview.avgHumidity}
           value={`${trends.humidity.value}%`}
           trend={trends.humidity.trend}
           change={trends.humidity.change}
           icon={Droplets}
         />
         <TrendCard
-          title="Düşük Pil"
+          title={t.overview.lowBattery}
           value={trends.battery.value}
           trend={trends.battery.trend}
           change={trends.battery.change}
@@ -286,7 +286,7 @@ const OverviewDashboard = ({ stats, hives, onViewDetail }) => {
         <div className="bg-red-500/10 border-2 border-red-500/50 rounded-lg p-6">
           <div className="flex items-center gap-3 mb-4">
             <AlertTriangle className="w-6 h-6 text-red-500" />
-            <h3 className="text-lg font-semibold text-red-500">Kritik Uyarılar</h3>
+            <h3 className="text-lg font-semibold text-red-500">{t.overview.criticalAlerts}</h3>
           </div>
           <div className="space-y-3">
             {criticalAlerts.map(alert => (
@@ -298,7 +298,7 @@ const OverviewDashboard = ({ stats, hives, onViewDetail }) => {
                 <div className="flex items-center gap-3">
                   <span className="text-2xl">🔴</span>
                   <div>
-                    <p className="font-semibold text-gray-100">Kovan #{alert.id}</p>
+                    <p className="font-semibold text-gray-100">{t.overview.hivePrefix} #{alert.id}</p>
                     <p className="text-sm text-gray-400">{alert.message}</p>
                   </div>
                 </div>
@@ -314,7 +314,7 @@ const OverviewDashboard = ({ stats, hives, onViewDetail }) => {
 
       {/* Hızlı Eylemler */}
       <div className="bg-gray-900 border border-gray-800 rounded-lg p-6">
-        <h3 className="text-sm font-semibold text-gray-400 uppercase mb-4">⚡ {t.quickActions.scanAll.includes('Scan') ? 'Quick Actions' : 'Hızlı Eylemler'}</h3>
+        <h3 className="text-sm font-semibold text-gray-400 uppercase mb-4">⚡ {t.overview.quickActionsTitle}</h3>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <button
             onClick={() => handleQuickAction('scan')}
@@ -343,7 +343,7 @@ const OverviewDashboard = ({ stats, hives, onViewDetail }) => {
           >
             <Wrench className={`w-5 h-5 text-emerald-400 ${quickLoading === 'maintenance' ? 'animate-spin' : ''}`} />
             <span className="text-sm font-medium text-gray-200">
-              {quickLoading === 'maintenance' ? (t.quickActions.scanAll.includes('Scan') ? 'Planning...' : 'Planlanıyor...') : t.quickActions.planMaintenance}
+              {quickLoading === 'maintenance' ? t.overview.planning : t.quickActions.planMaintenance}
             </span>
           </button>
         </div>
@@ -411,13 +411,13 @@ const TrendCard = ({ title, value, trend, change, icon: Icon }) => {
 export default OverviewDashboard;
 
 // Yardımcı fonksiyonlar
-function getTimeSince(isoStr) {
+function getTimeSince(isoStr, t) {
   try {
     const diff = Date.now() - new Date(isoStr).getTime();
     const min = Math.floor(diff / 60000);
-    if (min < 1) return 'Az önce';
-    if (min < 60) return `${min} dakika önce`;
-    return `${Math.floor(min / 60)} saat önce`;
+    if (min < 1) return t.overview.justNow;
+    if (min < 60) return `${min} ${t.overview.minutesAgo}`;
+    return `${Math.floor(min / 60)} ${t.overview.hoursAgo}`;
   } catch {
     return '—';
   }

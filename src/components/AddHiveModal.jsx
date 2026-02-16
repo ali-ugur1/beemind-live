@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { X, Plus, Hexagon, Cpu, Wifi } from 'lucide-react';
+import { X, Plus, Hexagon, Cpu, Wifi, MapPin } from 'lucide-react';
 import { useToast } from '../contexts/ToastContext';
 import { useLiveData } from '../contexts/LiveDataContext';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -7,26 +7,22 @@ import { useLanguage } from '../contexts/LanguageContext';
 const AddHiveModal = ({ isOpen, onClose }) => {
   const toast = useToast();
   const { addHive, hives } = useLiveData();
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const [form, setForm] = useState({
     name: '',
     deviceSerial: '',
-    location: 'Konya, Selçuklu'
+    location: 'Konya, Selcuklu',
+    lat: '37.8746',
+    lng: '32.4932'
   });
   const [serialError, setSerialError] = useState('');
 
   if (!isOpen) return null;
 
-  // ESP32 MAC adresi formatı doğrulama (AA:BB:CC:DD:EE:FF veya düz metin)
-  const validateSerial = (serial) => {
-    if (!serial.trim()) return false;
-    return true;
-  };
-
   const handleSubmit = (e) => {
     e.preventDefault();
     setSerialError('');
-    
+
     if (!form.name.trim()) {
       toast.error(t.addHive.nameEmpty);
       return;
@@ -37,20 +33,28 @@ const AddHiveModal = ({ isOpen, onClose }) => {
       return;
     }
 
-    // Duplicate seri numarası kontrolü
+    // Duplicate seri numarasi kontrolu
     if (hives.some(h => h.deviceSerial === form.deviceSerial.trim())) {
       setSerialError(t.addHive.serialDuplicate);
       toast.error(t.addHive.serialDuplicate);
       return;
     }
 
-    // Duplicate isim kontrolü
+    // Duplicate isim kontrolu
     if (hives.some(h => h.name === form.name.trim())) {
       toast.error(t.addHive.nameDuplicate);
       return;
     }
 
-    // Yeni kovan ID'si oluştur (mevcut en yüksek + 1)
+    // Koordinat dogrulama
+    const lat = parseFloat(form.lat);
+    const lng = parseFloat(form.lng);
+    if (isNaN(lat) || isNaN(lng) || lat < -90 || lat > 90 || lng < -180 || lng > 180) {
+      toast.error(lang === 'tr' ? 'Gecersiz koordinat degerleri' : 'Invalid coordinate values');
+      return;
+    }
+
+    // Yeni kovan ID'si olustur
     const maxId = hives.reduce((max, h) => {
       const num = parseInt(h.id, 10);
       return !isNaN(num) && num > max ? num : max;
@@ -62,34 +66,32 @@ const AddHiveModal = ({ isOpen, onClose }) => {
       name: form.name.trim(),
       deviceSerial: form.deviceSerial.trim(),
       location: form.location.trim(),
+      lat,
+      lng,
       status: 'stable',
       alertType: null,
       temp: 0,
       humidity: 0,
-      pressure: 0,
-      vibration: 0,
       battery: 100,
       weight: 0,
       sound: 0,
-      lastUpdate: 'Az önce',
-      lastActivity: 'Cihaz bağlantısı bekleniyor',
+      lastUpdate: lang === 'tr' ? 'Az once' : 'Just now',
+      lastActivity: lang === 'tr' ? 'Cihaz baglantisi bekleniyor' : 'Waiting for device connection',
       priority: 3
     });
 
     toast.success(`${form.name} ${t.addHive.success}`);
-    setForm({ name: '', deviceSerial: '', location: 'Konya, Selçuklu' });
+    setForm({ name: '', deviceSerial: '', location: 'Konya, Selcuklu', lat: '37.8746', lng: '32.4932' });
     onClose();
   };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      {/* Overlay */}
       <div className="absolute inset-0 bg-black/60" onClick={onClose} />
 
-      {/* Modal */}
-      <div className="relative bg-gray-900 border border-gray-700 rounded-lg w-full max-w-md shadow-2xl">
+      <div className="relative bg-gray-900 border border-gray-700 rounded-lg w-full max-w-md shadow-2xl max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-800">
+        <div className="flex items-center justify-between p-6 border-b border-gray-800 sticky top-0 bg-gray-900 z-10">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-amber-500/20 rounded-full flex items-center justify-center">
               <Hexagon className="w-5 h-5 text-amber-400" />
@@ -103,7 +105,7 @@ const AddHiveModal = ({ isOpen, onClose }) => {
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="p-6 space-y-5">
-          {/* Kovan Adı */}
+          {/* Kovan Adi */}
           <div>
             <label className="block text-sm font-medium text-gray-400 mb-2">
               {t.addHive.hiveName} *
@@ -118,7 +120,7 @@ const AddHiveModal = ({ isOpen, onClose }) => {
             />
           </div>
 
-          {/* Cihaz Seri Numarası / MAC Adresi */}
+          {/* Cihaz Seri Numarasi */}
           <div>
             <label className="block text-sm font-medium text-gray-400 mb-2 flex items-center gap-2">
               <Cpu className="w-4 h-4" />
@@ -154,8 +156,48 @@ const AddHiveModal = ({ isOpen, onClose }) => {
               type="text"
               value={form.location}
               onChange={(e) => setForm(prev => ({ ...prev, location: e.target.value }))}
+              placeholder={lang === 'tr' ? 'Ornek: Konya, Selcuklu' : 'e.g. Konya, Selcuklu'}
               className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-gray-100 placeholder-gray-500 focus:outline-none focus:border-amber-500 transition-colors"
             />
+          </div>
+
+          {/* Koordinatlar */}
+          <div>
+            <label className="block text-sm font-medium text-gray-400 mb-2 flex items-center gap-2">
+              <MapPin className="w-4 h-4" />
+              {lang === 'tr' ? 'GPS Koordinatlari' : 'GPS Coordinates'}
+            </label>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-xs text-gray-500 mb-1">
+                  {lang === 'tr' ? 'Enlem (Lat)' : 'Latitude'}
+                </label>
+                <input
+                  type="text"
+                  value={form.lat}
+                  onChange={(e) => setForm(prev => ({ ...prev, lat: e.target.value }))}
+                  placeholder="37.8746"
+                  className="w-full px-3 py-2.5 bg-gray-800 border border-gray-700 rounded-lg text-gray-100 placeholder-gray-500 focus:outline-none focus:border-amber-500 transition-colors font-mono text-sm"
+                />
+              </div>
+              <div>
+                <label className="block text-xs text-gray-500 mb-1">
+                  {lang === 'tr' ? 'Boylam (Lng)' : 'Longitude'}
+                </label>
+                <input
+                  type="text"
+                  value={form.lng}
+                  onChange={(e) => setForm(prev => ({ ...prev, lng: e.target.value }))}
+                  placeholder="32.4932"
+                  className="w-full px-3 py-2.5 bg-gray-800 border border-gray-700 rounded-lg text-gray-100 placeholder-gray-500 focus:outline-none focus:border-amber-500 transition-colors font-mono text-sm"
+                />
+              </div>
+            </div>
+            <p className="text-xs text-gray-600 mt-1.5">
+              {lang === 'tr'
+                ? 'Google Maps\'ten kovan konumunuzun koordinatlarini alabilirsiniz'
+                : 'You can get coordinates from Google Maps for your hive location'}
+            </p>
           </div>
 
           <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-3">

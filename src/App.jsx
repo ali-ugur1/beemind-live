@@ -3,6 +3,7 @@ import { ToastProvider, useToast } from './contexts/ToastContext';
 import { LiveDataProvider, useLiveData } from './contexts/LiveDataContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { LanguageProvider, useLanguage } from './contexts/LanguageContext';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
 import ErrorBoundary from './components/ErrorBoundary';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
@@ -18,7 +19,7 @@ import AddHiveModal from './components/AddHiveModal';
 import OnboardingOverlay, { shouldShowOnboarding } from './components/OnboardingOverlay';
 import EditHiveModal from './components/EditHiveModal';
 import Footer from './components/Footer';
-import WelcomeScreen from './components/WelcomeScreen';
+import LoginPage from './components/LoginPage';
 import useKeyboardShortcuts from './hooks/useKeyboardShortcuts';
 import usePushNotifications from './hooks/usePushNotifications';
 import { SkeletonStats, SkeletonTable, SkeletonDetail } from './components/Skeleton';
@@ -36,20 +37,11 @@ const NotificationHistoryView = lazy(() => import('./components/NotificationHist
 const HelpView = lazy(() => import('./components/HelpView'));
 const AboutView = lazy(() => import('./components/AboutView'));
 
-const WELCOME_KEY = 'beemind_welcome_seen';
-
 function AppContent() {
   const toast = useToast();
   const { hives, loading, notifications: liveNotifications } = useLiveData();
   const { t, lang } = useLanguage();
-
-  const [showWelcome, setShowWelcome] = useState(() => {
-    try {
-      return !localStorage.getItem(WELCOME_KEY);
-    } catch {
-      return true;
-    }
-  });
+  const { isFirstLogin, clearFirstLogin } = useAuth();
 
   const [activeTab, setActiveTab] = useState('dashboard');
   const [currentView, setCurrentView] = useState('overview');
@@ -64,27 +56,18 @@ function AppContent() {
   const [selectedHives, setSelectedHives] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [showAddHive, setShowAddHive] = useState(false);
-  const [showOnboarding, setShowOnboarding] = useState(shouldShowOnboarding);
+  const [showOnboarding, setShowOnboarding] = useState(() => isFirstLogin || shouldShowOnboarding);
   const [editHive, setEditHive] = useState(null);
   const [advancedFilters, setAdvancedFilters] = useState({ tempMin: '', tempMax: '', batteryMin: '', batteryMax: '' });
   const itemsPerPage = 10;
 
-  const handleEnterApp = useCallback(() => {
-    setShowWelcome(false);
-    try { localStorage.setItem(WELCOME_KEY, '1'); } catch {}
-  }, []);
-
-  // Welcome screen keyboard handler
+  // Trigger onboarding on first login
   useEffect(() => {
-    if (!showWelcome) return;
-    const handler = (e) => {
-      if (e.key === 'Enter' || e.key === 'Escape') {
-        handleEnterApp();
-      }
-    };
-    window.addEventListener('keydown', handler);
-    return () => window.removeEventListener('keydown', handler);
-  }, [showWelcome, handleEnterApp]);
+    if (isFirstLogin) {
+      setShowOnboarding(true);
+      clearFirstLogin();
+    }
+  }, [isFirstLogin, clearFirstLogin]);
 
   const filteredAndSortedHives = useMemo(() => {
     let result = [...hives];
@@ -233,11 +216,6 @@ function AppContent() {
 
   const aiHive = hives.find(h => h.id === aiHiveId);
 
-  // Welcome screen
-  if (showWelcome) {
-    return <WelcomeScreen onEnter={handleEnterApp} />;
-  }
-
   // Loading screen
   if (loading) {
     return (
@@ -332,7 +310,7 @@ function AppContent() {
                 <ErrorBoundary><Suspense fallback={<LoadingSpinner size="lg" />}><CompareView /></Suspense></ErrorBoundary>
               )}
               {activeTab === 'calendar' && (
-                <ErrorBoundary><Suspense fallback={<LoadingSpinner size="lg" />}><CalendarView /></Suspense></ErrorBoundary>
+                <ErrorBoundary><Suspense fallback={<LoadingSpinner size="lg" />}><CalendarView hives={hives} /></Suspense></ErrorBoundary>
               )}
               {activeTab === 'reports' && (
                 <ErrorBoundary><Suspense fallback={<LoadingSpinner size="lg" />}><ReportsView hives={hives} /></Suspense></ErrorBoundary>
@@ -363,13 +341,36 @@ function AppContent() {
             </>
           )}
         </main>
-        <Footer />
+        <Footer onTabChange={handleTabChange} />
       </div>
       <AIAnalysisPanel isOpen={aiPanelOpen} onClose={() => setAiPanelOpen(false)} hive={aiHive} />
       <ConnectionStatus />
       <AddHiveModal isOpen={showAddHive} onClose={() => setShowAddHive(false)} />
-      <EditHiveModal hive={editHive} isOpen={!!editHive} onClose={() => setEditHive(null)} onSave={(id, data) => { /* localStorage'a zaten EditHiveModal kaydediyor */ }} />
+      <EditHiveModal hive={editHive} isOpen={!!editHive} onClose={() => setEditHive(null)} onSave={(id, data) => {}} />
     </div>
+  );
+}
+
+// Auth gate - shows login or app content
+function AuthGate() {
+  const { isAuthenticated, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen bg-gray-950 items-center justify-center">
+        <div className="w-8 h-8 border-2 border-amber-500/30 border-t-amber-500 rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return <LoginPage />;
+  }
+
+  return (
+    <LiveDataProvider>
+      <AppContent />
+    </LiveDataProvider>
   );
 }
 
@@ -379,9 +380,9 @@ function App() {
       <ToastProvider>
         <ThemeProvider>
           <LanguageProvider>
-            <LiveDataProvider>
-              <AppContent />
-            </LiveDataProvider>
+            <AuthProvider>
+              <AuthGate />
+            </AuthProvider>
           </LanguageProvider>
         </ThemeProvider>
       </ToastProvider>
