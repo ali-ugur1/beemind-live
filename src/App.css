@@ -459,3 +459,20 @@ select:focus {
   border-color: #e0ddd5 !important;
 }
 
+/* Footer & new components light overrides */
+.light-theme .bg-gray-950\/50 {
+  background-color: rgba(250, 249, 246, 0.8) !important;
+}
+
+.light-theme .bg-gray-700 {
+  background-color: #d4d0c8 !important;
+}
+
+.light-theme .border-gray-700\/50 {
+  border-color: rgba(212, 208, 200, 0.5) !important;
+}
+
+.light-theme .border-gray-600 {
+  border-color: #c4c0b8 !important;
+}
+

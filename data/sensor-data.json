@@ -1,0 +1,25 @@
+[
+  {
+    "temperature": 22.5,
+    "humidity": 45,
+    "pressure": 1013.2,
+    "co2": 400,
+    "tvoc": 0,
+    "sound_db": -65.3,
+    "vibration": 1,
+    "received_at": "2026-02-21T13:29:52.968Z",
+    "ip": "127.0.0.1"
+  },
+  {
+    "timestamp": 5450,
+    "temperature": 21.6,
+    "humidity": 41.7,
+    "pressure": 898.46,
+    "co2": 400,
+    "tvoc": 0,
+    "sound_db": -73.09,
+    "vibration": 0,
+    "received_at": "2026-02-21T13:31:00.860Z",
+    "ip": "192.168.1.42"
+  }
+]

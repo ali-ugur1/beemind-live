@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { X, CheckCheck } from 'lucide-react';
-import { getNotificationIcon } from '../data/helpers';
+import { getNotificationIcon } from '../data/mockData';
 
 const NotificationDropdown = ({ notifications, isOpen, onClose, onMarkAsRead, onMarkAllAsRead, onNotificationClick }) => {
   const dropdownRef = useRef(null);
