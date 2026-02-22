@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dir:*)",
+      "Bash(powershell -Command \"Get-ChildItem ''C:\\\\Users\\\\Casper\\\\OneDrive\\\\Masaüstü\\\\beemind\\\\beemind-live'' -Force | Select-Object Name, PSIsContainer | Format-Table\")",
+      "Bash(powershell -Command:*)",
+      "Bash(del \"\\\\?\\\\%CD%\\\\nul\")",
+      "Bash(powershell \"Get-ChildItem ''C:\\\\Users\\\\Casper\\\\OneDrive\\\\Masaüstü\\\\beemind\\\\beemind-live'' -Force -Depth 0 | Format-Table Name, PSIsContainer\")"
+    ]
+  }
+}

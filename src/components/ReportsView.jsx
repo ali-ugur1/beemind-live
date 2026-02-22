@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { Download, Calendar, TrendingUp, FileText, FileSpreadsheet } from 'lucide-react';
+import { Download, Calendar, TrendingUp, FileText, FileSpreadsheet, FileJson, FileDown } from 'lucide-react';
 
 const ReportsView = ({ hives }) => {
   const [dateRange, setDateRange] = useState('7days'); // '7days', '30days', '90days'
@@ -81,17 +81,31 @@ const ReportsView = ({ hives }) => {
           {/* Export Buttons */}
           <button
             onClick={() => exportCSV(hives)}
-            className="flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg transition-colors"
+            className="flex items-center gap-2 px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-lg transition-colors text-sm"
           >
             <FileSpreadsheet className="w-4 h-4" />
-            CSV İndir
+            CSV
+          </button>
+          <button
+            onClick={() => exportExcel(hives)}
+            className="flex items-center gap-2 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors text-sm"
+          >
+            <FileDown className="w-4 h-4" />
+            Excel
+          </button>
+          <button
+            onClick={() => exportJSON(hives)}
+            className="flex items-center gap-2 px-3 py-2 bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-lg transition-colors text-sm"
+          >
+            <FileJson className="w-4 h-4" />
+            JSON
           </button>
           <button
             onClick={() => window.print()}
-            className="flex items-center gap-2 px-4 py-2 bg-amber-500 hover:bg-amber-600 text-black font-semibold rounded-lg transition-colors"
+            className="flex items-center gap-2 px-3 py-2 bg-amber-500 hover:bg-amber-600 text-black font-medium rounded-lg transition-colors text-sm"
           >
             <Download className="w-4 h-4" />
-            PDF İndir
+            PDF
           </button>
         </div>
       </div>
@@ -275,6 +289,42 @@ function exportCSV(hives) {
   const link = document.createElement('a');
   link.href = url;
   link.download = `beemind-rapor-${new Date().toISOString().slice(0, 10)}.csv`;
+  link.click();
+  URL.revokeObjectURL(url);
+}
+
+function exportExcel(hives) {
+  // TSV formatı — Excel doğrudan açar
+  const headers = ['ID', 'Durum', 'Sıcaklık (°C)', 'Nem (%)', 'Pil (%)', 'Ağırlık (kg)', 'Ses (dB)', 'Son Güncelleme'];
+  const rows = hives.map(h => [h.id, h.status, h.temp, h.humidity, h.battery, h.weight, h.sound, h.lastUpdate]);
+  const tsvContent = [headers, ...rows].map(r => r.join('\t')).join('\n');
+  const blob = new Blob([`\uFEFF${tsvContent}`], { type: 'application/vnd.ms-excel;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `beemind-rapor-${new Date().toISOString().slice(0, 10)}.xls`;
+  link.click();
+  URL.revokeObjectURL(url);
+}
+
+function exportJSON(hives) {
+  const data = hives.map(h => ({
+    id: h.id,
+    status: h.status,
+    temperature: h.temp,
+    humidity: h.humidity,
+    battery: h.battery,
+    weight: h.weight,
+    sound: h.sound,
+    alertType: h.alertType || null,
+    lastUpdate: h.lastUpdate,
+    exportDate: new Date().toISOString(),
+  }));
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `beemind-rapor-${new Date().toISOString().slice(0, 10)}.json`;
   link.click();
   URL.revokeObjectURL(url);
 }
