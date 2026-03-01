@@ -3,19 +3,31 @@ const API_URL = '';
 export const api = {
   async getHivesSummary() {
     const res = await fetch(`${API_URL}/api/hives/summary`);
-    if (!res.ok) throw new Error('API hatasi');
+    if (!res.ok) throw new Error('API hatası');
     return res.json();
   },
 
   async getSensorData() {
     const res = await fetch(`${API_URL}/api/sensor-data`);
-    if (!res.ok) throw new Error('API hatasi');
+    if (!res.ok) throw new Error('API hatası');
     return res.json();
   },
 
   async getHiveChart(hiveId) {
     const res = await fetch(`${API_URL}/api/hives/${hiveId}/chart`);
-    if (!res.ok) throw new Error('API hatasi');
+    if (!res.ok) throw new Error('API hatası');
+    return res.json();
+  },
+
+  async getGatewayStatus() {
+    const res = await fetch(`${API_URL}/api/gateway/status`);
+    if (!res.ok) throw new Error('API hatası');
+    return res.json();
+  },
+
+  async getWeather() {
+    const res = await fetch(`${API_URL}/api/weather`);
+    if (!res.ok) throw new Error('API hatası');
     return res.json();
   }
 };
@@ -32,9 +44,9 @@ export function apiToHiveFormat(apiHive) {
   if (temp > 38 || temp < 10 || vibration > 2000) {
     status = 'critical';
     priority = 1;
-    if (temp > 38) alertType = 'Yuksek Sicaklik (' + temp.toFixed(1) + ' C)';
-    else if (temp < 10) alertType = 'Dusuk Sicaklik (' + temp.toFixed(1) + ' C)';
-    else alertType = 'Yuksek Titresim Alarmi';
+    if (temp > 38) alertType = 'Yüksek Sıcaklık (' + temp.toFixed(1) + '°C)';
+    else if (temp < 10) alertType = 'Düşük Sıcaklık (' + temp.toFixed(1) + '°C)';
+    else alertType = 'Yüksek Titreşim Alarmı';
   } else if (temp > 36 || humidity > 80 || humidity < 30 || vibration > 1000) {
     status = 'warning';
     priority = 2;
@@ -56,7 +68,7 @@ export function apiToHiveFormat(apiHive) {
     weight: apiHive.weight || 0,
     sound: vibration ? Math.min(100, vibration / 40) : 40,
     lastUpdate: timeDiff,
-    lastActivity: alertType || 'Tum Sistemler Normal',
+    lastActivity: alertType || 'Tüm Sistemler Normal',
     priority
   };
 }
@@ -65,9 +77,9 @@ function getTimeDiff(date) {
   const now = new Date();
   const diffMs = now - date;
   const diffMin = Math.floor(diffMs / 60000);
-  if (diffMin < 1) return 'Az once';
-  if (diffMin < 60) return diffMin + ' dakika once';
+  if (diffMin < 1) return 'Az önce';
+  if (diffMin < 60) return diffMin + ' dakika önce';
   const diffHour = Math.floor(diffMin / 60);
-  if (diffHour < 24) return diffHour + ' saat once';
-  return Math.floor(diffHour / 24) + ' gun once';
+  if (diffHour < 24) return diffHour + ' saat önce';
+  return Math.floor(diffHour / 24) + ' gün önce';
 }

@@ -1,11 +1,37 @@
-import { Home, List, Map, FileText, Settings, Package, User, Hexagon, X, Menu } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { Home, List, Map, FileText, Settings, Package, User, Hexagon, X, Menu, GitCompareArrows, Calendar, Bell, HelpCircle, Info } from 'lucide-react';
+import { useState, useEffect, useCallback } from 'react';
 import { useLiveData } from '../contexts/LiveDataContext';
+import { useLanguage } from '../contexts/LanguageContext';
+
+const readUserName = () => {
+  try {
+    const saved = localStorage.getItem('beemind_settings');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      return parsed.fullName || 'Admin User';
+    }
+  } catch {}
+  return 'Admin User';
+};
 
 const Sidebar = ({ activeTab, onTabChange }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const { hives } = useLiveData();
+  const { t } = useLanguage();
+
+  const [userName, setUserName] = useState(readUserName);
+
+  // Ayarlar değiştiğinde kullanıcı adını güncelle
+  useEffect(() => {
+    const handleStorage = () => setUserName(readUserName());
+    window.addEventListener('storage', handleStorage);
+    window.addEventListener('beemind-settings-updated', handleStorage);
+    return () => {
+      window.removeEventListener('storage', handleStorage);
+      window.removeEventListener('beemind-settings-updated', handleStorage);
+    };
+  }, []);
 
   // Ekran boyutunu dinle
   useEffect(() => {
@@ -22,12 +48,20 @@ const Sidebar = ({ activeTab, onTabChange }) => {
   }, []);
 
   const menuItems = [
-    { id: 'dashboard', label: 'Genel Bakış', icon: Home },
-    { id: 'list', label: 'Kovan Listesi', icon: List },
-    { id: 'map', label: 'Harita', icon: Map },
-    { id: 'reports', label: 'Raporlar', icon: FileText },
-    { id: 'profile', label: 'Profil', icon: User },
-    { id: 'settings', label: 'Ayarlar', icon: Settings }
+    { id: 'dashboard', label: t.sidebar.overview, icon: Home },
+    { id: 'list', label: t.sidebar.hiveList, icon: List },
+    { id: 'map', label: t.sidebar.map, icon: Map },
+    { id: 'compare', label: t.sidebar.compare, icon: GitCompareArrows },
+    { id: 'calendar', label: t.sidebar.calendar, icon: Calendar },
+    { id: 'reports', label: t.sidebar.reports, icon: FileText },
+    { id: 'notificationHistory', label: t.sidebar.notificationHistory, icon: Bell },
+  ];
+
+  const bottomMenuItems = [
+    { id: 'profile', label: t.sidebar.profile, icon: User },
+    { id: 'settings', label: t.sidebar.settings, icon: Settings },
+    { id: 'help', label: t.sidebar.help, icon: HelpCircle },
+    { id: 'about', label: t.sidebar.about, icon: Info },
   ];
 
   const handleMenuClick = (tabId) => {
@@ -44,6 +78,7 @@ const Sidebar = ({ activeTab, onTabChange }) => {
         <button
           onClick={() => setIsOpen(!isOpen)}
           className="fixed top-4 left-4 z-[60] p-2 bg-black border border-gray-800 rounded-lg text-amber-400 hover:bg-gray-900 transition-colors lg:hidden"
+          aria-label={isOpen ? 'Close menu' : 'Open menu'}
         >
           {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
         </button>
@@ -84,7 +119,7 @@ const Sidebar = ({ activeTab, onTabChange }) => {
 
         {/* Menu Items */}
         <nav className="flex-1 p-4 overflow-y-auto">
-          <ul className="space-y-2">
+          <ul className="space-y-1">
             {menuItems.map(item => {
               const Icon = item.icon;
               const isActive = activeTab === item.id;
@@ -93,14 +128,40 @@ const Sidebar = ({ activeTab, onTabChange }) => {
                 <li key={item.id}>
                   <button
                     onClick={() => handleMenuClick(item.id)}
-                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
+                    className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all ${
                       isActive
                         ? 'bg-amber-500/20 text-amber-400 border border-amber-500/50'
                         : 'text-gray-400 hover:text-gray-200 hover:bg-gray-800'
                     }`}
                   >
                     <Icon className="w-5 h-5" />
-                    <span className="font-medium">{item.label}</span>
+                    <span className="font-medium text-sm">{item.label}</span>
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+
+          {/* Separator */}
+          <div className="border-t border-gray-800 my-3" />
+
+          <ul className="space-y-1">
+            {bottomMenuItems.map(item => {
+              const Icon = item.icon;
+              const isActive = activeTab === item.id;
+
+              return (
+                <li key={item.id}>
+                  <button
+                    onClick={() => handleMenuClick(item.id)}
+                    className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all ${
+                      isActive
+                        ? 'bg-amber-500/20 text-amber-400 border border-amber-500/50'
+                        : 'text-gray-400 hover:text-gray-200 hover:bg-gray-800'
+                    }`}
+                  >
+                    <Icon className="w-5 h-5" />
+                    <span className="font-medium text-sm">{item.label}</span>
                   </button>
                 </li>
               );
@@ -112,12 +173,12 @@ const Sidebar = ({ activeTab, onTabChange }) => {
         <div className="p-4 border-t border-gray-800 space-y-2">
           <div className="flex items-center gap-2 text-sm text-gray-500">
             <Package className="w-4 h-4" />
-            <span>Paket: PRO</span>
+            <span>{t.sidebar.package}: PRO</span>
           </div>
-          <div className="text-xs text-gray-600">{hives.length} / 50 Kovan</div>
+          <div className="text-xs text-gray-600">{hives.length} / 50 {t.sidebar.hiveCount}</div>
           <div className="flex items-center gap-2 text-sm text-gray-500 pt-2">
             <User className="w-4 h-4" />
-            <span>Admin User</span>
+            <span>{userName}</span>
           </div>
         </div>
       </aside>

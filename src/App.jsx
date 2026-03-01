@@ -1,7 +1,9 @@
-import { useState, useMemo, lazy, Suspense } from 'react';
+import { useState, useEffect, useMemo, lazy, Suspense, useCallback } from 'react';
 import { ToastProvider, useToast } from './contexts/ToastContext';
 import { LiveDataProvider, useLiveData } from './contexts/LiveDataContext';
 import { ThemeProvider } from './contexts/ThemeContext';
+import { LanguageProvider, useLanguage } from './contexts/LanguageContext';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
 import ErrorBoundary from './components/ErrorBoundary';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
@@ -14,8 +16,13 @@ import LoadingSpinner from './components/LoadingSpinner';
 import AIAnalysisPanel from './components/AIAnalysisPanel';
 import ConnectionStatus from './components/ConnectionStatus';
 import AddHiveModal from './components/AddHiveModal';
+import OnboardingOverlay, { shouldShowOnboarding } from './components/OnboardingOverlay';
+import EditHiveModal from './components/EditHiveModal';
+import Footer from './components/Footer';
+import LoginPage from './components/LoginPage';
+import useKeyboardShortcuts from './hooks/useKeyboardShortcuts';
+import usePushNotifications from './hooks/usePushNotifications';
 import { SkeletonStats, SkeletonTable, SkeletonDetail } from './components/Skeleton';
-import { NOTIFICATIONS } from './data/mockData';
 import './App.css';
 
 const OverviewDashboard = lazy(() => import('./components/OverviewDashboard'));
@@ -24,17 +31,24 @@ const SettingsView = lazy(() => import('./components/SettingsView'));
 const MapView = lazy(() => import('./components/MapView'));
 const ReportsView = lazy(() => import('./components/ReportsView'));
 const ProfileView = lazy(() => import('./components/ProfileView'));
+const CompareView = lazy(() => import('./components/CompareView'));
+const CalendarView = lazy(() => import('./components/CalendarView'));
+const NotificationHistoryView = lazy(() => import('./components/NotificationHistoryView'));
+const HelpView = lazy(() => import('./components/HelpView'));
+const AboutView = lazy(() => import('./components/AboutView'));
 
 function AppContent() {
   const toast = useToast();
-  const { hives, loading } = useLiveData();
+  const { hives, loading, notifications: liveNotifications } = useLiveData();
+  const { t, lang } = useLanguage();
+  const { isFirstLogin, clearFirstLogin } = useAuth();
 
-  const [activeTab, setActiveTab] = useState('list');
+  const [activeTab, setActiveTab] = useState('dashboard');
   const [currentView, setCurrentView] = useState('overview');
   const [selectedHiveId, setSelectedHiveId] = useState(null);
   const [aiPanelOpen, setAiPanelOpen] = useState(false);
   const [aiHiveId, setAiHiveId] = useState(null);
-  const [notifications, setNotifications] = useState(NOTIFICATIONS);
+  const [notifications, setNotifications] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [filter, setFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -42,7 +56,18 @@ function AppContent() {
   const [selectedHives, setSelectedHives] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [showAddHive, setShowAddHive] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(() => isFirstLogin || shouldShowOnboarding);
+  const [editHive, setEditHive] = useState(null);
+  const [advancedFilters, setAdvancedFilters] = useState({ tempMin: '', tempMax: '', batteryMin: '', batteryMax: '' });
   const itemsPerPage = 10;
+
+  // Trigger onboarding on first login
+  useEffect(() => {
+    if (isFirstLogin) {
+      setShowOnboarding(true);
+      clearFirstLogin();
+    }
+  }, [isFirstLogin, clearFirstLogin]);
 
   const filteredAndSortedHives = useMemo(() => {
     let result = [...hives];
@@ -54,6 +79,11 @@ function AppContent() {
     if (filter !== 'all') {
       result = result.filter(hive => hive.status === filter);
     }
+    if (advancedFilters.tempMin) result = result.filter(h => h.temp >= Number(advancedFilters.tempMin));
+    if (advancedFilters.tempMax) result = result.filter(h => h.temp <= Number(advancedFilters.tempMax));
+    if (advancedFilters.batteryMin) result = result.filter(h => h.battery >= Number(advancedFilters.batteryMin));
+    if (advancedFilters.batteryMax) result = result.filter(h => h.battery <= Number(advancedFilters.batteryMax));
+
     result.sort((a, b) => {
       switch (sortBy) {
         case 'priority': return a.priority - b.priority;
@@ -64,7 +94,7 @@ function AppContent() {
       }
     });
     return result;
-  }, [hives, filter, searchQuery, sortBy]);
+  }, [hives, filter, searchQuery, sortBy, advancedFilters]);
 
   const stats = useMemo(() => {
     const total = hives.length;
@@ -82,12 +112,32 @@ function AppContent() {
   );
   const selectedHive = hives.find(h => h.id === selectedHiveId);
 
-  const handleTabChange = (newTab) => {
+  useEffect(() => {
+    setNotifications(prev => {
+      const readIds = new Set(prev.filter(n => n.read).map(n => `${n.hiveId}-${n.type}`));
+      return liveNotifications.map(n => ({
+        ...n,
+        read: n.read || readIds.has(`${n.hiveId}-${n.type}`)
+      }));
+    });
+  }, [liveNotifications]);
+
+  const handleTabChange = useCallback((newTab) => {
+    if (newTab === 'back') {
+      if (currentView === 'detail') {
+        setCurrentView('overview');
+        setSelectedHiveId(null);
+      }
+      return;
+    }
     setActiveTab(newTab);
     setCurrentView('overview');
     setSelectedHiveId(null);
     setSelectedHives([]);
-  };
+  }, [currentView]);
+
+  useKeyboardShortcuts(handleTabChange);
+  usePushNotifications(hives);
 
   const handleSelectHive = (hiveId) => {
     setSelectedHives(prev =>
@@ -107,7 +157,7 @@ function AppContent() {
     setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);
-      toast.success(`${selectedHives.length} kovan icin rapor olusturuldu`);
+      toast.success(lang === 'tr' ? `${selectedHives.length} kovan icin rapor olusturuldu` : `Report created for ${selectedHives.length} hives`);
     }, 1500);
   };
 
@@ -115,7 +165,7 @@ function AppContent() {
     setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);
-      toast.success(`${selectedHives.length} kovana bildirim gonderildi`);
+      toast.success(lang === 'tr' ? `${selectedHives.length} kovana bildirim gonderildi` : `Notification sent to ${selectedHives.length} hives`);
     }, 1500);
   };
 
@@ -166,98 +216,161 @@ function AppContent() {
 
   const aiHive = hives.find(h => h.id === aiHiveId);
 
+  // Loading screen
   if (loading) {
     return (
       <div className="flex min-h-screen bg-gray-950 items-center justify-center">
         <div className="text-center">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-amber-500/10 border border-amber-500/30 rounded-2xl mb-4">
+            <img
+              src="/logo.png"
+              alt="BeeMind"
+              className="w-10 h-10 object-contain animate-pulse"
+              style={{ filter: 'drop-shadow(0 0 8px rgba(245, 158, 11, 0.5))' }}
+              onError={(e) => { e.target.style.display = 'none'; }}
+            />
+          </div>
           <LoadingSpinner size="lg" />
-          <p className="text-amber-400 mt-4 text-lg">BeeMind yukleniyor...</p>
-          <p className="text-gray-500 text-sm mt-2">ESP32 verisi bekleniyor</p>
+          <p className="text-amber-400 mt-4 text-lg font-semibold">BeeMind</p>
+          <p className="text-gray-500 text-sm mt-1">{t.common.loading}</p>
+          <div className="mt-4 w-48 h-1 bg-gray-800 rounded-full overflow-hidden mx-auto">
+            <div className="h-full bg-amber-500 rounded-full animate-pulse" style={{ width: '60%' }} />
+          </div>
         </div>
       </div>
     );
   }
 
+  const allTabs = ['dashboard','list','map','compare','calendar','reports','notificationHistory','settings','profile','help','about'];
+
   return (
     <div className="flex min-h-screen bg-gray-950 text-gray-100">
       {isLoading && <LoadingSpinner fullScreen />}
+      {showOnboarding && <OnboardingOverlay onComplete={() => setShowOnboarding(false)} />}
       <Sidebar activeTab={activeTab} onTabChange={handleTabChange} />
-      <main className="flex-1 p-4 md:p-8 overflow-auto">
-        <Header
-          activeTab={activeTab}
-          notifications={notifications}
-          onMarkAsRead={handleMarkAsRead}
-          onMarkAllAsRead={handleMarkAllAsRead}
-          onNotificationClick={handleNotificationClick}
-          onSettingsClick={handleSettingsClick}
-          onProfileClick={handleProfileClick}
-        />
-        {currentView === 'detail' && selectedHive && (
-          <ErrorBoundary>
-            <Suspense fallback={<SkeletonDetail />}>
-              <HiveDetailView hive={selectedHive} onBack={handleBackToOverview} />
-            </Suspense>
-          </ErrorBoundary>
-        )}
-        {currentView === 'overview' && (
-          <>
-            {activeTab === 'dashboard' && (
-              <ErrorBoundary>
-                <Suspense fallback={<SkeletonStats />}>
-                  <OverviewDashboard stats={stats} hives={hives} onViewDetail={handleViewDetail} />
-                </Suspense>
-              </ErrorBoundary>
-            )}
-            {activeTab === 'list' && (
-              <ErrorBoundary>
-                <section className="mb-6"><StatsCards stats={stats} /></section>
-                <section className="mb-6">
-                  <div className="flex items-center justify-between gap-4 mb-4">
-                    <div className="flex-1">
-                      <FilterBar filter={filter} setFilter={setFilter} searchQuery={searchQuery} setSearchQuery={setSearchQuery} sortBy={sortBy} setSortBy={setSortBy} />
+      <div className="flex-1 flex flex-col overflow-auto">
+        <main className="flex-1 p-4 md:p-8">
+          <Header
+            activeTab={activeTab}
+            notifications={notifications}
+            onMarkAsRead={handleMarkAsRead}
+            onMarkAllAsRead={handleMarkAllAsRead}
+            onNotificationClick={handleNotificationClick}
+            onSettingsClick={handleSettingsClick}
+            onProfileClick={handleProfileClick}
+          />
+          {currentView === 'detail' && selectedHive && (
+            <ErrorBoundary>
+              <Suspense fallback={<SkeletonDetail />}>
+                <HiveDetailView hive={selectedHive} onBack={handleBackToOverview} />
+              </Suspense>
+            </ErrorBoundary>
+          )}
+          {currentView === 'overview' && (
+            <>
+              {activeTab === 'dashboard' && (
+                <ErrorBoundary>
+                  <Suspense fallback={<SkeletonStats />}>
+                    <OverviewDashboard stats={stats} hives={hives} onViewDetail={handleViewDetail} />
+                  </Suspense>
+                </ErrorBoundary>
+              )}
+              {activeTab === 'list' && (
+                <ErrorBoundary>
+                  <section className="mb-6"><StatsCards stats={stats} /></section>
+                  <section className="mb-6">
+                    <div className="flex items-center justify-between gap-4 mb-4">
+                      <div className="flex-1">
+                        <FilterBar
+                          filter={filter} setFilter={setFilter}
+                          searchQuery={searchQuery} setSearchQuery={setSearchQuery}
+                          sortBy={sortBy} setSortBy={setSortBy}
+                          advancedFilters={advancedFilters} setAdvancedFilters={setAdvancedFilters}
+                        />
+                      </div>
+                      <button
+                        onClick={() => setShowAddHive(true)}
+                        className="flex items-center gap-2 px-5 py-3 bg-amber-500 hover:bg-amber-600 text-black font-semibold rounded-lg transition-colors whitespace-nowrap"
+                      >
+                        + {t.addHive.title}
+                      </button>
                     </div>
-                    <button
-                      onClick={() => setShowAddHive(true)}
-                      className="flex items-center gap-2 px-5 py-3 bg-amber-500 hover:bg-amber-600 text-black font-semibold rounded-lg transition-colors whitespace-nowrap"
-                    >
-                      + Yeni Kovan
-                    </button>
-                  </div>
-                </section>
-                <section className="mb-4">
-                  <HiveList hives={paginatedHives} selectedHives={selectedHives} onSelectHive={handleSelectHive} onSelectAll={handleSelectAll} onViewDetail={handleViewDetail} onAIAnalysis={handleAIAnalysis} />
-                </section>
-                {totalPages > 1 && <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />}
-                {selectedHives.length > 0 && <FloatingActionBar count={selectedHives.length} onReport={handleBulkReport} onNotification={handleBulkNotification} onClose={() => setSelectedHives([])} />}
-              </ErrorBoundary>
-            )}
-            {activeTab === 'map' && (
-              <ErrorBoundary><Suspense fallback={<LoadingSpinner size="lg" />}><MapView hives={hives} onViewDetail={handleViewDetail} /></Suspense></ErrorBoundary>
-            )}
-            {activeTab === 'reports' && (
-              <ErrorBoundary><Suspense fallback={<LoadingSpinner size="lg" />}><ReportsView hives={hives} /></Suspense></ErrorBoundary>
-            )}
-            {activeTab === 'settings' && (
-              <ErrorBoundary><Suspense fallback={<LoadingSpinner size="lg" />}><SettingsView /></Suspense></ErrorBoundary>
-            )}
-            {activeTab === 'profile' && (
-              <ErrorBoundary><Suspense fallback={<LoadingSpinner size="lg" />}><ProfileView /></Suspense></ErrorBoundary>
-            )}
-            {!['dashboard','list','map','reports','settings','profile'].includes(activeTab) && (
-              <div className="flex flex-col items-center justify-center py-20">
-                <p className="text-6xl mb-4">🐝</p>
-                <h2 className="text-xl font-semibold text-gray-300 mb-2">Sayfa Bulunamadı</h2>
-                <p className="text-gray-500 mb-6">Aradığınız sayfa mevcut değil.</p>
-                <button onClick={() => handleTabChange('dashboard')} className="px-6 py-3 bg-amber-500 hover:bg-amber-600 text-black font-semibold rounded-lg transition-colors">Ana Sayfaya Dön</button>
-              </div>
-            )}
-          </>
-        )}
-      </main>
+                  </section>
+                  <section className="mb-4">
+                    <HiveList hives={paginatedHives} selectedHives={selectedHives} onSelectHive={handleSelectHive} onSelectAll={handleSelectAll} onViewDetail={handleViewDetail} onAIAnalysis={handleAIAnalysis} onEditHive={setEditHive} />
+                  </section>
+                  {totalPages > 1 && <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />}
+                  {selectedHives.length > 0 && <FloatingActionBar count={selectedHives.length} onReport={handleBulkReport} onNotification={handleBulkNotification} onClose={() => setSelectedHives([])} />}
+                </ErrorBoundary>
+              )}
+              {activeTab === 'map' && (
+                <ErrorBoundary><Suspense fallback={<LoadingSpinner size="lg" />}><MapView hives={hives} onViewDetail={handleViewDetail} /></Suspense></ErrorBoundary>
+              )}
+              {activeTab === 'compare' && (
+                <ErrorBoundary><Suspense fallback={<LoadingSpinner size="lg" />}><CompareView /></Suspense></ErrorBoundary>
+              )}
+              {activeTab === 'calendar' && (
+                <ErrorBoundary><Suspense fallback={<LoadingSpinner size="lg" />}><CalendarView hives={hives} /></Suspense></ErrorBoundary>
+              )}
+              {activeTab === 'reports' && (
+                <ErrorBoundary><Suspense fallback={<LoadingSpinner size="lg" />}><ReportsView hives={hives} /></Suspense></ErrorBoundary>
+              )}
+              {activeTab === 'notificationHistory' && (
+                <ErrorBoundary><Suspense fallback={<LoadingSpinner size="lg" />}><NotificationHistoryView notifications={notifications} onViewDetail={handleViewDetail} /></Suspense></ErrorBoundary>
+              )}
+              {activeTab === 'settings' && (
+                <ErrorBoundary><Suspense fallback={<LoadingSpinner size="lg" />}><SettingsView /></Suspense></ErrorBoundary>
+              )}
+              {activeTab === 'profile' && (
+                <ErrorBoundary><Suspense fallback={<LoadingSpinner size="lg" />}><ProfileView /></Suspense></ErrorBoundary>
+              )}
+              {activeTab === 'help' && (
+                <ErrorBoundary><Suspense fallback={<LoadingSpinner size="lg" />}><HelpView /></Suspense></ErrorBoundary>
+              )}
+              {activeTab === 'about' && (
+                <ErrorBoundary><Suspense fallback={<LoadingSpinner size="lg" />}><AboutView /></Suspense></ErrorBoundary>
+              )}
+              {!allTabs.includes(activeTab) && (
+                <div className="flex flex-col items-center justify-center py-20">
+                  <p className="text-6xl mb-4">🐝</p>
+                  <h2 className="text-xl font-semibold text-gray-300 mb-2">{t.common.pageNotFound}</h2>
+                  <p className="text-gray-500 mb-6">{t.common.pageNotFoundDesc}</p>
+                  <button onClick={() => handleTabChange('dashboard')} className="px-6 py-3 bg-amber-500 hover:bg-amber-600 text-black font-semibold rounded-lg transition-colors">{t.common.backToHome}</button>
+                </div>
+              )}
+            </>
+          )}
+        </main>
+        <Footer onTabChange={handleTabChange} />
+      </div>
       <AIAnalysisPanel isOpen={aiPanelOpen} onClose={() => setAiPanelOpen(false)} hive={aiHive} />
       <ConnectionStatus />
       <AddHiveModal isOpen={showAddHive} onClose={() => setShowAddHive(false)} />
+      <EditHiveModal hive={editHive} isOpen={!!editHive} onClose={() => setEditHive(null)} onSave={(id, data) => {}} />
     </div>
+  );
+}
+
+// Auth gate - shows login or app content
+function AuthGate() {
+  const { isAuthenticated, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen bg-gray-950 items-center justify-center">
+        <div className="w-8 h-8 border-2 border-amber-500/30 border-t-amber-500 rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return <LoginPage />;
+  }
+
+  return (
+    <LiveDataProvider>
+      <AppContent />
+    </LiveDataProvider>
   );
 }
 
@@ -266,9 +379,11 @@ function App() {
     <ErrorBoundary>
       <ToastProvider>
         <ThemeProvider>
-          <LiveDataProvider>
-            <AppContent />
-          </LiveDataProvider>
+          <LanguageProvider>
+            <AuthProvider>
+              <AuthGate />
+            </AuthProvider>
+          </LanguageProvider>
         </ThemeProvider>
       </ToastProvider>
     </ErrorBoundary>

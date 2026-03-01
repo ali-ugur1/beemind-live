@@ -1,32 +1,74 @@
-import { useMemo } from 'react';
-import { Wifi, Battery, BatteryCharging, Cloud, Droplets, Wind, Sun, MapPin, TrendingUp, TrendingDown, Minus, AlertTriangle } from 'lucide-react';
+import { useMemo, useState } from 'react';
+import { Wifi, Battery, BatteryCharging, Cloud, Droplets, Wind, Sun, MapPin, TrendingUp, TrendingDown, Minus, AlertTriangle, Zap, FileText, Wrench } from 'lucide-react';
+import { useToast } from '../contexts/ToastContext';
+import { useLanguage } from '../contexts/LanguageContext';
+import { useLiveData } from '../contexts/LiveDataContext';
+import SystemHealthWidget from './SystemHealthWidget';
+import ActivityFeed from './ActivityFeed';
 
 const OverviewDashboard = ({ stats, hives, onViewDetail }) => {
-  // Gateway bilgisi (Mock data - gerçekte API'den gelecek)
-  const gateway = {
-    id: 'GW-001',
-    batteryLevel: 78,
-    isCharging: false,
-    signalStrength: 92,
-    status: 'online',
-    lastSync: '2 dakika önce',
-    connectedHives: 19
+  const toast = useToast();
+  const { t } = useLanguage();
+  const { gateway: apiGateway, weather: apiWeather, apiConnected } = useLiveData();
+  const [quickLoading, setQuickLoading] = useState(null);
+
+  const handleQuickAction = (action) => {
+    setQuickLoading(action);
+    setTimeout(() => {
+      setQuickLoading(null);
+      if (action === 'scan') toast.success(t.overview.scanSuccess);
+      if (action === 'report') toast.success(t.overview.reportSuccess);
+      if (action === 'maintenance') toast.info(t.overview.maintenanceInfo);
+    }, 1500);
   };
 
-  // Hava durumu (Mock data - gerçekte Weather API'den gelecek)
-  const weather = {
-    location: 'Konya, Selçuklu',
-    temp: 24,
-    condition: 'Açık',
-    humidity: 45,
-    windSpeed: 12,
-    icon: Sun,
-    forecast: [
-      { day: 'Yarın', temp: 26, icon: Sun },
-      { day: 'Pzt', temp: 23, icon: Cloud },
-      { day: 'Salı', temp: 25, icon: Sun }
-    ]
-  };
+  // Gateway bilgisi — API'den gelir, yoksa hives verisinden türetilir
+  const gateway = useMemo(() => {
+    if (apiGateway && apiGateway.status !== 'offline') {
+      return {
+        ...apiGateway,
+        connectedHives: apiGateway.connectedHives || hives.length,
+        lastSync: apiGateway.lastSync ? getTimeSince(apiGateway.lastSync, t) : '—'
+      };
+    }
+    // Fallback: API bağlantısı varsa online, yoksa offline
+    return {
+      id: 'GW-001',
+      batteryLevel: 78,
+      isCharging: false,
+      signalStrength: apiConnected ? 92 : 0,
+      status: apiConnected ? 'online' : 'offline',
+      lastSync: apiConnected ? t.overview.justNow : '—',
+      connectedHives: hives.length
+    };
+  }, [apiGateway, apiConnected, hives.length, t]);
+
+  // Hava durumu — API'den gelir, yoksa fallback
+  const weather = useMemo(() => {
+    if (apiWeather) {
+      return {
+        location: apiWeather.location || t.weather.unknownLocation,
+        temp: apiWeather.temp ?? apiWeather.temperature ?? '—',
+        condition: apiWeather.condition || apiWeather.description || '—',
+        humidity: apiWeather.humidity ?? '—',
+        windSpeed: apiWeather.windSpeed ?? apiWeather.wind ?? '—',
+        icon: getWeatherIcon(apiWeather.condition),
+        forecast: apiWeather.forecast || []
+      };
+    }
+    // Fallback: sensör ortalamasından türet
+    const avgTemp = hives.length > 0 ? (hives.reduce((s, h) => s + h.temp, 0) / hives.length).toFixed(0) : '—';
+    const avgHum = hives.length > 0 ? (hives.reduce((s, h) => s + h.humidity, 0) / hives.length).toFixed(0) : '—';
+    return {
+      location: 'Konya, Selçuklu',
+      temp: avgTemp !== '—' ? Number(avgTemp) : '—',
+      condition: t.weather.sensorData,
+      humidity: avgHum !== '—' ? Number(avgHum) : '—',
+      windSpeed: '—',
+      icon: Sun,
+      forecast: []
+    };
+  }, [apiWeather, hives, t]);
 
   // Kritik uyarılar
   const criticalAlerts = hives
@@ -39,18 +81,22 @@ const OverviewDashboard = ({ stats, hives, onViewDetail }) => {
 
   // Trend analizi
   const trends = useMemo(() => {
-    const avgTemp = (hives.reduce((sum, h) => sum + h.temp, 0) / hives.length).toFixed(1);
-    const avgHumidity = (hives.reduce((sum, h) => sum + h.humidity, 0) / hives.length).toFixed(0);
+    const count = hives.length || 1; // guard against division by zero
+    const avgTemp = (hives.reduce((sum, h) => sum + h.temp, 0) / count).toFixed(1);
+    const avgHumidity = (hives.reduce((sum, h) => sum + h.humidity, 0) / count).toFixed(0);
     const lowBattery = hives.filter(h => h.battery < 30).length;
 
+    const batteryLabel = `${lowBattery} ${t.overview.hivesUnit}`;
     return {
       temperature: { value: avgTemp, trend: 'up', change: '+0.5°C' },
       humidity: { value: avgHumidity, trend: 'stable', change: '0%' },
-      battery: { value: lowBattery, trend: lowBattery > 0 ? 'down' : 'stable', change: `${lowBattery} kovan` }
+      battery: { value: lowBattery, trend: lowBattery > 0 ? 'down' : 'stable', change: batteryLabel }
     };
-  }, [hives]);
+  }, [hives, t]);
 
-  const WeatherIcon = weather.icon;
+  // Weather icon: gerçek veriden emoji gelir, fallback'te React component gelir
+  const weatherIconIsEmoji = typeof weather.icon === 'string';
+  const WeatherIcon = weatherIconIsEmoji ? null : weather.icon;
 
   return (
     <div className="space-y-6">
@@ -76,7 +122,7 @@ const OverviewDashboard = ({ stats, hives, onViewDetail }) => {
             <div className={`px-3 py-1 rounded-full text-xs font-semibold ${
               gateway.status === 'online' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-400'
             }`}>
-              {gateway.status === 'online' ? '🟢 Çevrimiçi' : '🔴 Çevrimdışı'}
+              {gateway.status === 'online' ? t.gateway.online : t.gateway.offline}
             </div>
           </div>
 
@@ -89,7 +135,7 @@ const OverviewDashboard = ({ stats, hives, onViewDetail }) => {
                 ) : (
                   <Battery className="w-5 h-5 text-amber-400" />
                 )}
-                <span className="text-xs text-gray-500">Pil</span>
+                <span className="text-xs text-gray-500">{t.gateway.battery}</span>
               </div>
               <p className="text-2xl font-bold text-gray-100">{gateway.batteryLevel}%</p>
               <div className="mt-2 h-2 bg-gray-800 rounded-full overflow-hidden">
@@ -104,17 +150,17 @@ const OverviewDashboard = ({ stats, hives, onViewDetail }) => {
             <div className="bg-gray-900/50 rounded-lg p-4">
               <div className="flex items-center gap-2 mb-2">
                 <Wifi className="w-5 h-5 text-blue-400" />
-                <span className="text-xs text-gray-500">Sinyal</span>
+                <span className="text-xs text-gray-500">{t.gateway.signal}</span>
               </div>
               <p className="text-2xl font-bold text-gray-100">{gateway.signalStrength}%</p>
               <p className="text-xs text-gray-500 mt-2">
-                {gateway.connectedHives} kovan bağlı
+                {gateway.connectedHives} {t.gateway.hivesConnected}
               </p>
             </div>
           </div>
 
           <p className="text-xs text-gray-500 mt-4">
-            Son senkronizasyon: {gateway.lastSync}
+            {t.gateway.lastSync}: {gateway.lastSync}
           </p>
         </div>
 
@@ -122,8 +168,8 @@ const OverviewDashboard = ({ stats, hives, onViewDetail }) => {
         <div className="bg-gradient-to-br from-blue-500/10 to-cyan-500/10 border border-blue-500/30 rounded-lg p-6">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-blue-500/20 rounded-full flex items-center justify-center">
-                <WeatherIcon className="w-6 h-6 text-blue-400" />
+              <div className="w-12 h-12 bg-blue-500/20 rounded-full flex items-center justify-center text-2xl">
+                {weatherIconIsEmoji ? weather.icon : <WeatherIcon className="w-6 h-6 text-blue-400" />}
               </div>
               <div>
                 <div className="flex items-center gap-2">
@@ -135,6 +181,9 @@ const OverviewDashboard = ({ stats, hives, onViewDetail }) => {
             </div>
             <div className="text-right">
               <p className="text-4xl font-bold text-gray-100">{weather.temp}°C</p>
+              {weather.feelsLike !== undefined && (
+                <p className="text-xs text-gray-500">{t.weather.feelsLike}: {weather.feelsLike}°C</p>
+              )}
             </div>
           </div>
 
@@ -142,7 +191,7 @@ const OverviewDashboard = ({ stats, hives, onViewDetail }) => {
             <div className="bg-gray-900/50 rounded-lg p-3 flex items-center gap-3">
               <Droplets className="w-5 h-5 text-cyan-400" />
               <div>
-                <p className="text-xs text-gray-500">Nem</p>
+                <p className="text-xs text-gray-500">{t.weather?.humidity || 'Nem'}</p>
                 <p className="text-lg font-semibold text-gray-100">{weather.humidity}%</p>
               </div>
             </div>
@@ -150,51 +199,57 @@ const OverviewDashboard = ({ stats, hives, onViewDetail }) => {
             <div className="bg-gray-900/50 rounded-lg p-3 flex items-center gap-3">
               <Wind className="w-5 h-5 text-gray-400" />
               <div>
-                <p className="text-xs text-gray-500">Rüzgar</p>
+                <p className="text-xs text-gray-500">{t.weather?.wind || 'Rüzgar'}</p>
                 <p className="text-lg font-semibold text-gray-100">{weather.windSpeed} km/s</p>
               </div>
             </div>
           </div>
 
           {/* 3 Günlük Tahmin */}
-          <div className="flex items-center justify-between border-t border-gray-800 pt-4">
-            {weather.forecast.map((day, i) => {
-              const DayIcon = day.icon;
-              return (
+          {weather.forecast && weather.forecast.length > 0 && (
+            <div className="flex items-center justify-between border-t border-gray-800 pt-4">
+              {weather.forecast.map((day, i) => (
                 <div key={i} className="text-center">
                   <p className="text-xs text-gray-500 mb-2">{day.day}</p>
-                  <DayIcon className="w-5 h-5 text-amber-400 mx-auto mb-1" />
+                  <span className="text-xl block mb-1">{day.icon || '☀️'}</span>
                   <p className="text-sm font-semibold text-gray-300">{day.temp}°C</p>
+                  {day.condition && (
+                    <p className="text-[10px] text-gray-500 mt-1">{day.condition}</p>
+                  )}
                 </div>
-              );
-            })}
-          </div>
+              ))}
+            </div>
+          )}
+
+          {weather._source && (
+            <p className="text-[10px] text-gray-600 mt-3 text-right">Open-Meteo</p>
+          )}
         </div>
       </div>
 
       {/* İstatistik Kartları */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <StatCard
-          title="TOPLAM KOVAN"
+          title={t.stats.totalHives}
           value={stats.total}
           icon="🐝"
           color="amber"
         />
         <StatCard
-          title="KRİTİK DURUM"
+          title={t.stats.critical}
           value={stats.critical}
           icon="🔴"
           color="red"
           pulse={stats.critical > 0}
         />
         <StatCard
-          title="UYARI"
+          title={t.stats.warning}
           value={stats.warning}
           icon="⚠️"
           color="yellow"
         />
         <StatCard
-          title="STABİL"
+          title={t.stats.stable}
           value={stats.total - stats.critical - stats.warning}
           icon="✅"
           color="green"
@@ -204,21 +259,21 @@ const OverviewDashboard = ({ stats, hives, onViewDetail }) => {
       {/* Trend Analizi */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <TrendCard
-          title="Ortalama Sıcaklık"
+          title={t.overview.avgTemp}
           value={`${trends.temperature.value}°C`}
           trend={trends.temperature.trend}
           change={trends.temperature.change}
           icon={Sun}
         />
         <TrendCard
-          title="Ortalama Nem"
+          title={t.overview.avgHumidity}
           value={`${trends.humidity.value}%`}
           trend={trends.humidity.trend}
           change={trends.humidity.change}
           icon={Droplets}
         />
         <TrendCard
-          title="Düşük Pil"
+          title={t.overview.lowBattery}
           value={trends.battery.value}
           trend={trends.battery.trend}
           change={trends.battery.change}
@@ -231,7 +286,7 @@ const OverviewDashboard = ({ stats, hives, onViewDetail }) => {
         <div className="bg-red-500/10 border-2 border-red-500/50 rounded-lg p-6">
           <div className="flex items-center gap-3 mb-4">
             <AlertTriangle className="w-6 h-6 text-red-500" />
-            <h3 className="text-lg font-semibold text-red-500">Kritik Uyarılar</h3>
+            <h3 className="text-lg font-semibold text-red-500">{t.overview.criticalAlerts}</h3>
           </div>
           <div className="space-y-3">
             {criticalAlerts.map(alert => (
@@ -243,7 +298,7 @@ const OverviewDashboard = ({ stats, hives, onViewDetail }) => {
                 <div className="flex items-center gap-3">
                   <span className="text-2xl">🔴</span>
                   <div>
-                    <p className="font-semibold text-gray-100">Kovan #{alert.id}</p>
+                    <p className="font-semibold text-gray-100">{t.overview.hivePrefix} #{alert.id}</p>
                     <p className="text-sm text-gray-400">{alert.message}</p>
                   </div>
                 </div>
@@ -256,6 +311,53 @@ const OverviewDashboard = ({ stats, hives, onViewDetail }) => {
           </div>
         </div>
       )}
+
+      {/* Hızlı Eylemler */}
+      <div className="bg-gray-900 border border-gray-800 rounded-lg p-6">
+        <h3 className="text-sm font-semibold text-gray-400 uppercase mb-4">⚡ {t.overview.quickActionsTitle}</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <button
+            onClick={() => handleQuickAction('scan')}
+            disabled={quickLoading === 'scan'}
+            className="flex items-center gap-3 p-4 bg-amber-500/10 border border-amber-500/30 rounded-lg hover:bg-amber-500/20 transition-colors disabled:opacity-50"
+          >
+            <Zap className={`w-5 h-5 text-amber-400 ${quickLoading === 'scan' ? 'animate-spin' : ''}`} />
+            <span className="text-sm font-medium text-gray-200">
+              {quickLoading === 'scan' ? t.quickActions.scanning : t.quickActions.scanAll}
+            </span>
+          </button>
+          <button
+            onClick={() => handleQuickAction('report')}
+            disabled={quickLoading === 'report'}
+            className="flex items-center gap-3 p-4 bg-blue-500/10 border border-blue-500/30 rounded-lg hover:bg-blue-500/20 transition-colors disabled:opacity-50"
+          >
+            <FileText className={`w-5 h-5 text-blue-400 ${quickLoading === 'report' ? 'animate-spin' : ''}`} />
+            <span className="text-sm font-medium text-gray-200">
+              {quickLoading === 'report' ? t.quickActions.reportCreating : t.quickActions.urgentReport}
+            </span>
+          </button>
+          <button
+            onClick={() => handleQuickAction('maintenance')}
+            disabled={quickLoading === 'maintenance'}
+            className="flex items-center gap-3 p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-lg hover:bg-emerald-500/20 transition-colors disabled:opacity-50"
+          >
+            <Wrench className={`w-5 h-5 text-emerald-400 ${quickLoading === 'maintenance' ? 'animate-spin' : ''}`} />
+            <span className="text-sm font-medium text-gray-200">
+              {quickLoading === 'maintenance' ? t.overview.planning : t.quickActions.planMaintenance}
+            </span>
+          </button>
+        </div>
+      </div>
+
+      {/* System Health + Activity Feed */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-1">
+          <SystemHealthWidget />
+        </div>
+        <div className="lg:col-span-2">
+          <ActivityFeed limit={8} onViewDetail={onViewDetail} />
+        </div>
+      </div>
     </div>
   );
 };
@@ -307,3 +409,25 @@ const TrendCard = ({ title, value, trend, change, icon: Icon }) => {
 };
 
 export default OverviewDashboard;
+
+// Yardımcı fonksiyonlar
+function getTimeSince(isoStr, t) {
+  try {
+    const diff = Date.now() - new Date(isoStr).getTime();
+    const min = Math.floor(diff / 60000);
+    if (min < 1) return t.overview.justNow;
+    if (min < 60) return `${min} ${t.overview.minutesAgo}`;
+    return `${Math.floor(min / 60)} ${t.overview.hoursAgo}`;
+  } catch {
+    return '—';
+  }
+}
+
+function getWeatherIcon(condition) {
+  if (!condition) return Sun;
+  const c = condition.toLowerCase();
+  if (c.includes('cloud') || c.includes('bulut')) return Cloud;
+  if (c.includes('rain') || c.includes('yağmur')) return Droplets;
+  if (c.includes('wind') || c.includes('rüzgar')) return Wind;
+  return Sun;
+}
