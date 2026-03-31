@@ -3,7 +3,7 @@ import { tr } from '../i18n/tr';
 import { en } from '../i18n/en';
 
 const LanguageContext = createContext();
-const LANG_KEY = 'beemind_language';
+const LANG_KEY = 'hexora_language';
 
 const translations = { tr, en };
 

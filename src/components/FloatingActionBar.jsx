@@ -1,12 +1,14 @@
 import { FileText, Bell, X } from 'lucide-react';
+import { useLanguage } from '../contexts/LanguageContext';
 
 const FloatingActionBar = ({ count, onReport, onNotification, onClose }) => {
+  const { lang } = useLanguage();
   return (
     <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 animate-slide-up">
       <div className="bg-amber-500 text-black rounded-lg shadow-2xl px-6 py-4 flex items-center gap-6">
         {/* Count */}
         <div className="flex items-center gap-2">
-          <span className="font-bold text-lg">⚡ {count} Seçili</span>
+          <span className="font-bold text-lg">⚡ {count} {lang === 'tr' ? 'Seçili' : 'Selected'}</span>
         </div>
 
         {/* Divider */}
@@ -19,7 +21,7 @@ const FloatingActionBar = ({ count, onReport, onNotification, onClose }) => {
             className="flex items-center gap-2 px-4 py-2 bg-black/20 hover:bg-black/30 rounded-lg font-medium transition-colors"
           >
             <FileText className="w-4 h-4" />
-            Raporla
+            {lang === 'tr' ? 'Raporla' : 'Report'}
           </button>
 
           <button
@@ -27,7 +29,7 @@ const FloatingActionBar = ({ count, onReport, onNotification, onClose }) => {
             className="flex items-center gap-2 px-4 py-2 bg-black/20 hover:bg-black/30 rounded-lg font-medium transition-colors"
           >
             <Bell className="w-4 h-4" />
-            Bildirim
+            {lang === 'tr' ? 'Bildirim' : 'Notify'}
           </button>
         </div>
 

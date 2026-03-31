@@ -1,4 +1,7 @@
+import { useLanguage } from '../contexts/LanguageContext';
+
 const LoadingSpinner = ({ size = 'md', fullScreen = false }) => {
+  const { t } = useLanguage();
   const sizes = {
     sm: 'w-4 h-4',
     md: 'w-8 h-8',
@@ -16,7 +19,7 @@ const LoadingSpinner = ({ size = 'md', fullScreen = false }) => {
     return (
       <div className="fixed inset-0 bg-gray-950/80 backdrop-blur-sm z-[9999] flex flex-col items-center justify-center">
         <div className={`${sizes[size]} border-4 border-gray-700 border-t-amber-500 rounded-full animate-spin mb-4`}></div>
-        <p className="text-gray-400 text-sm">Yükleniyor...</p>
+        <p className="text-gray-400 text-sm">{t.common.loading}</p>
       </div>
     );
   }

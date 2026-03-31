@@ -178,7 +178,7 @@ export const tr = {
   },
   // Onboarding
   onboarding: {
-    welcome: 'BeeMind\'e Hoş Geldiniz! 🐝',
+    welcome: 'Hexora\'e Hoş Geldiniz! 🐝',
     step1Title: 'Genel Bakış',
     step1Desc: 'Dashboard\'da tüm kovanlarınızın anlık durumunu görebilirsiniz.',
     step2Title: 'Kovan Listesi',
@@ -229,6 +229,13 @@ export const tr = {
     serialEmpty: 'Cihaz seri numarası gerekli',
     serialDuplicate: 'Bu seri numarası başka bir kovana bağlı',
     success: 'başarıyla eklendi',
+    adapterType: 'Adaptör Tipi',
+    adapterBasic: 'Basic',
+    adapterBasicDesc: 'Sıcaklık, Nem, Ağırlık, Pil',
+    adapterStandard: 'Standard',
+    adapterStandardDesc: 'Tüm sensörler (Ses, Basınç, Titreşim dahil)',
+    adapterPro: 'Pro',
+    adapterProDesc: 'Tüm sensörler + Kamera',
   },
   // Edit Hive
   editHive: {

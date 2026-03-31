@@ -40,12 +40,12 @@ class ErrorBoundary extends React.Component {
 
             {/* Title */}
             <h1 className="text-3xl font-bold text-gray-100 mb-4">
-              Bir Şeyler Yanlış Gitti
+              Something Went Wrong / Bir Şeyler Yanlış Gitti
             </h1>
 
             {/* Description */}
             <p className="text-gray-400 mb-8">
-              Beklenmeyen bir hata oluştu. Lütfen sayfayı yenilemeyi deneyin veya ana sayfaya dönün.
+              An unexpected error occurred. Please try refreshing the page or go back to the home page.
             </p>
 
             {/* Error Details (Development only) */}
@@ -69,14 +69,14 @@ class ErrorBoundary extends React.Component {
                 className="flex items-center gap-2 px-6 py-3 bg-amber-500 hover:bg-amber-600 text-black font-semibold rounded-lg transition-colors"
               >
                 <RefreshCw className="w-5 h-5" />
-                Sayfayı Yenile
+                Refresh / Yenile
               </button>
               <button
                 onClick={this.handleGoHome}
                 className="flex items-center gap-2 px-6 py-3 bg-gray-800 hover:bg-gray-700 text-gray-300 font-semibold rounded-lg transition-colors"
               >
                 <Home className="w-5 h-5" />
-                Ana Sayfaya Dön
+                Home / Ana Sayfa
               </button>
             </div>
           </div>

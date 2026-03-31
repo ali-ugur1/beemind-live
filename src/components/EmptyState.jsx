@@ -1,4 +1,5 @@
 import { Inbox, Search, AlertTriangle, FileX } from 'lucide-react';
+import { useLanguage } from '../contexts/LanguageContext';
 
 const EmptyState = ({ 
   type = 'noData', 
@@ -7,26 +8,29 @@ const EmptyState = ({
   action,
   actionText 
 }) => {
+  const { lang } = useLanguage();
+  const isTr = lang === 'tr';
+
   const configs = {
     noData: {
       icon: Inbox,
-      defaultTitle: 'Veri Bulunamadı',
-      defaultDescription: 'Henüz gösterilecek veri yok.'
+      defaultTitle: isTr ? 'Veri Bulunamadı' : 'No Data Found',
+      defaultDescription: isTr ? 'Henüz gösterilecek veri yok.' : 'No data to display yet.'
     },
     noResults: {
       icon: Search,
-      defaultTitle: 'Sonuç Bulunamadı',
-      defaultDescription: 'Arama kriterlerinize uygun sonuç bulunamadı.'
+      defaultTitle: isTr ? 'Sonuç Bulunamadı' : 'No Results Found',
+      defaultDescription: isTr ? 'Arama kriterlerinize uygun sonuç bulunamadı.' : 'No results match your search criteria.'
     },
     error: {
       icon: AlertTriangle,
-      defaultTitle: 'Bir Hata Oluştu',
-      defaultDescription: 'Veriler yüklenirken bir sorun oluştu.'
+      defaultTitle: isTr ? 'Bir Hata Oluştu' : 'An Error Occurred',
+      defaultDescription: isTr ? 'Veriler yüklenirken bir sorun oluştu.' : 'A problem occurred while loading data.'
     },
     noFile: {
       icon: FileX,
-      defaultTitle: 'Dosya Bulunamadı',
-      defaultDescription: 'İstediğiniz dosya mevcut değil.'
+      defaultTitle: isTr ? 'Dosya Bulunamadı' : 'File Not Found',
+      defaultDescription: isTr ? 'İstediğiniz dosya mevcut değil.' : 'The requested file does not exist.'
     }
   };
 

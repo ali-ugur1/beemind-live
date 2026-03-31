@@ -3,6 +3,7 @@ import { X, Plus, Hexagon, Cpu, Wifi, MapPin } from 'lucide-react';
 import { useToast } from '../contexts/ToastContext';
 import { useLiveData } from '../contexts/LiveDataContext';
 import { useLanguage } from '../contexts/LanguageContext';
+import { api } from '../services/api';
 
 const AddHiveModal = ({ isOpen, onClose }) => {
   const toast = useToast();
@@ -13,13 +14,14 @@ const AddHiveModal = ({ isOpen, onClose }) => {
     deviceSerial: '',
     location: 'Konya, Selcuklu',
     lat: '37.8746',
-    lng: '32.4932'
+    lng: '32.4932',
+    adapterType: 'standard'
   });
   const [serialError, setSerialError] = useState('');
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setSerialError('');
 
@@ -54,34 +56,47 @@ const AddHiveModal = ({ isOpen, onClose }) => {
       return;
     }
 
-    // Yeni kovan ID'si olustur
+    // Yeni kovan ID'si olustur (hive-001 formatı destekle)
     const maxId = hives.reduce((max, h) => {
-      const num = parseInt(h.id, 10);
-      return !isNaN(num) && num > max ? num : max;
+      const match = h.id.match(/(\d+)$/);
+      const num = match ? parseInt(match[1], 10) : 0;
+      return num > max ? num : max;
     }, 0);
-    const newId = String(maxId + 1).padStart(2, '0');
+    const newId = `hive-${String(maxId + 1).padStart(3, '0')}`;
 
-    addHive({
+    const newHiveData = {
       id: newId,
       name: form.name.trim(),
       deviceSerial: form.deviceSerial.trim(),
       location: form.location.trim(),
       lat,
       lng,
+      adapterType: form.adapterType,
       status: 'stable',
       alertType: null,
       temp: 0,
       humidity: 0,
-      battery: 100,
       weight: 0,
-      sound: 0,
-      lastUpdate: lang === 'tr' ? 'Az once' : 'Just now',
-      lastActivity: lang === 'tr' ? 'Cihaz baglantisi bekleniyor' : 'Waiting for device connection',
-      priority: 3
-    });
+      battery: 100,
+      sound: form.adapterType !== 'basic' ? 0 : undefined,
+      pressure: form.adapterType !== 'basic' ? 0 : undefined,
+      vibration: form.adapterType !== 'basic' ? 0 : undefined,
+      lastUpdate: lang === 'tr' ? 'Az önce' : 'Just now',
+      lastActivity: lang === 'tr' ? 'Cihaz bağlantısı bekleniyor' : 'Waiting for device connection',
+      priority: 3,
+      hasData: false,
+    };
 
+    // Backend'e kaydet (başarısız olursa sadece local'de kalır)
+    try {
+      await api.createHive({ id: newId, name: form.name.trim(), location: form.location.trim(), lat, lng, deviceSerial: form.deviceSerial.trim(), adapterType: form.adapterType });
+    } catch (err) {
+      console.warn('Backend hive create failed, local only:', err.message);
+    }
+
+    addHive(newHiveData);
     toast.success(`${form.name} ${t.addHive.success}`);
-    setForm({ name: '', deviceSerial: '', location: 'Konya, Selcuklu', lat: '37.8746', lng: '32.4932' });
+    setForm({ name: '', deviceSerial: '', location: 'Konya, Selcuklu', lat: '37.8746', lng: '32.4932', adapterType: 'standard' });
     onClose();
   };
 
@@ -145,6 +160,39 @@ const AddHiveModal = ({ isOpen, onClose }) => {
               <Wifi className="w-3 h-3" />
               {t.addHive.serialHint}
             </p>
+          </div>
+
+          {/* Adaptör Tipi */}
+          <div>
+            <label className="block text-sm font-medium text-gray-400 mb-2">
+              {t.addHive.adapterType} *
+            </label>
+            <div className="grid grid-cols-3 gap-2">
+              {[
+                { value: 'basic', label: t.addHive.adapterBasic, desc: t.addHive.adapterBasicDesc,
+                  active: 'border-emerald-500 bg-emerald-500/10 ring-1 ring-emerald-500/50', activeText: 'text-emerald-400' },
+                { value: 'standard', label: t.addHive.adapterStandard, desc: t.addHive.adapterStandardDesc,
+                  active: 'border-amber-500 bg-amber-500/10 ring-1 ring-amber-500/50', activeText: 'text-amber-400' },
+                { value: 'pro', label: t.addHive.adapterPro, desc: t.addHive.adapterProDesc,
+                  active: 'border-purple-500 bg-purple-500/10 ring-1 ring-purple-500/50', activeText: 'text-purple-400' },
+              ].map(opt => (
+                <button
+                  key={opt.value}
+                  type="button"
+                  onClick={() => setForm(prev => ({ ...prev, adapterType: opt.value }))}
+                  className={`p-3 rounded-lg border text-center transition-all ${
+                    form.adapterType === opt.value
+                      ? opt.active
+                      : 'border-gray-700 bg-gray-800 hover:border-gray-600'
+                  }`}
+                >
+                  <p className={`text-sm font-bold ${
+                    form.adapterType === opt.value ? opt.activeText : 'text-gray-300'
+                  }`}>{opt.label}</p>
+                  <p className="text-[10px] text-gray-500 mt-1 leading-tight">{opt.desc}</p>
+                </button>
+              ))}
+            </div>
           </div>
 
           {/* Konum */}

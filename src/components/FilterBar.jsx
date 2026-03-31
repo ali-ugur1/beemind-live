@@ -4,7 +4,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 
 const FilterBar = ({ filter, setFilter, searchQuery, setSearchQuery, sortBy, setSortBy, advancedFilters, setAdvancedFilters }) => {
   const [showAdvanced, setShowAdvanced] = useState(false);
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
 
   const filterButtons = [
     { id: 'all', label: t.filter.all, color: 'bg-amber-500 hover:bg-amber-600' },
@@ -73,7 +73,7 @@ const FilterBar = ({ filter, setFilter, searchQuery, setSearchQuery, sortBy, set
             }`}
           >
             {showAdvanced ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-            {t.filter.all === 'All' ? 'Filter' : 'Filtre'}
+            {lang === 'tr' ? 'Filtre' : 'Filter'}
           </button>
         </div>
       </div>
@@ -126,7 +126,7 @@ const FilterBar = ({ filter, setFilter, searchQuery, setSearchQuery, sortBy, set
               onClick={() => setAdvancedFilters({ tempMin: '', tempMax: '', batteryMin: '', batteryMax: '' })}
               className="text-xs text-amber-400 hover:text-amber-300 underline transition-colors"
             >
-              {t.filter.all === 'All' ? 'Clear Filters' : 'Filtreleri Temizle'}
+              {lang === 'tr' ? 'Filtreleri Temizle' : 'Clear Filters'}
             </button>
           )}
         </div>

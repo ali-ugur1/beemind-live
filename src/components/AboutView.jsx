@@ -6,24 +6,24 @@ const AboutView = () => {
 
   const content = {
     tr: {
-      title: 'BeeMind Nedir?',
-      desc: 'BeeMind, ariclik sektorune yonelik gelistirilmis akilli kovan izleme sistemidir. IoT sensorleri ile kovan ici sicaklik, nem, basinc, agirlik, ses analizi ve titresim gibi kritik verileri gercek zamanli olarak izler.',
+      title: 'Hexora Nedir?',
+      desc: 'Hexora, ariclik sektorune yonelik gelistirilmis akilli kovan izleme sistemidir. IoT sensorleri ile kovan ici sicaklik, nem, basinc, agirlik, ses analizi ve titresim gibi kritik verileri gercek zamanli olarak izler.',
       howTitle: 'Nasil Calisir?',
       howDesc: 'Kovanlara yerlestirilen ESP32 tabanli sensor modulleri, verileri duzenli araliklarla bulut sunucuya gonderir. Web paneli ve mobil uygulama uzerinden bu verileri anlik olarak takip edebilir, gecmis verilerle karsilastirma yapabilirsiniz.',
-      whyTitle: 'Neden BeeMind?',
-      whyDesc: 'Geleneksel aricilik yontemlerinde kovan kontrolu icin fiziksel ziyaret gerekir. BeeMind ile kovanlarinizi 7/24 uzaktan izleyebilir, anormal durumlari aninda tespit edebilir ve zamaninda mudahale edebilirsiniz.',
+      whyTitle: 'Neden Hexora?',
+      whyDesc: 'Geleneksel aricilik yontemlerinde kovan kontrolu icin fiziksel ziyaret gerekir. Hexora ile kovanlarinizi 7/24 uzaktan izleyebilir, anormal durumlari aninda tespit edebilir ve zamaninda mudahale edebilirsiniz.',
       featuresTitle: 'Ozellikler',
       techTitle: 'Teknik Altyapi',
       archTitle: 'Sistem Mimarisi',
       contactTitle: 'Iletisim',
     },
     en: {
-      title: 'What is BeeMind?',
-      desc: 'BeeMind is a smart hive monitoring system developed for the beekeeping industry. It monitors critical data such as hive temperature, humidity, pressure, weight, sound analysis and vibration in real-time using IoT sensors.',
+      title: 'What is Hexora?',
+      desc: 'Hexora is a smart hive monitoring system developed for the beekeeping industry. It monitors critical data such as hive temperature, humidity, pressure, weight, sound analysis and vibration in real-time using IoT sensors.',
       howTitle: 'How Does It Work?',
       howDesc: 'ESP32-based sensor modules placed in hives send data to the cloud server at regular intervals. You can track this data in real-time through the web panel and mobile app, and compare it with historical data.',
-      whyTitle: 'Why BeeMind?',
-      whyDesc: 'Traditional beekeeping methods require physical visits for hive inspection. With BeeMind, you can remotely monitor your hives 24/7, instantly detect abnormal conditions, and intervene in time.',
+      whyTitle: 'Why Hexora?',
+      whyDesc: 'Traditional beekeeping methods require physical visits for hive inspection. With Hexora, you can remotely monitor your hives 24/7, instantly detect abnormal conditions, and intervene in time.',
       featuresTitle: 'Features',
       techTitle: 'Technical Infrastructure',
       archTitle: 'System Architecture',
@@ -57,20 +57,20 @@ const AboutView = () => {
       <div className="text-center py-8">
         <div className="inline-flex items-center justify-center w-20 h-20 bg-amber-500/10 border-2 border-amber-500/30 rounded-2xl mb-4">
           <img
-            src="/logo.png"
-            alt="BeeMind"
+            src="/hexora-logo.svg"
+            alt="Hexora"
             className="w-12 h-12 object-contain"
             style={{ filter: 'drop-shadow(0 0 8px rgba(245, 158, 11, 0.5))' }}
             onError={(e) => { e.target.style.display = 'none'; }}
           />
         </div>
-        <h1 className="text-3xl font-bold text-gray-100 mb-2">BeeMind</h1>
+        <h1 className="text-3xl font-bold text-gray-100 mb-2">Hexora</h1>
         <p className="text-amber-400 font-medium">
           {lang === 'tr' ? 'Akilli Kovan Izleme Sistemi' : 'Smart Hive Monitoring System'}
         </p>
       </div>
 
-      {/* What is BeeMind */}
+      {/* What is Hexora */}
       <section className="bg-gray-900 border border-gray-800 rounded-xl p-6">
         <h2 className="text-xl font-bold text-gray-100 mb-3 flex items-center gap-2">
           🐝 {t.title}
@@ -86,7 +86,7 @@ const AboutView = () => {
         <p className="text-gray-400 leading-relaxed">{t.howDesc}</p>
       </section>
 
-      {/* Why BeeMind */}
+      {/* Why Hexora */}
       <section className="bg-gradient-to-br from-amber-500/5 to-orange-500/5 border border-amber-500/20 rounded-xl p-6">
         <h2 className="text-xl font-bold text-gray-100 mb-3 flex items-center gap-2">
           <Shield className="w-5 h-5 text-amber-400" /> {t.whyTitle}
@@ -152,7 +152,7 @@ const AboutView = () => {
         <h2 className="text-xl font-bold text-gray-100 mb-4">{t.contactTitle}</h2>
         <div className="space-y-2 text-sm text-gray-400">
           <p>📧 aliugurpamuk@gmail.com</p>
-          <p>🌐 beemind.tech</p>
+          <p>🌐 hexora.tech</p>
         </div>
       </section>
 

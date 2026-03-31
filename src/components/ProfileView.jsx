@@ -2,38 +2,43 @@ import { useMemo } from 'react';
 import { User, Mail, Phone, MapPin, Shield, Calendar, Hexagon } from 'lucide-react';
 import { useLiveData } from '../contexts/LiveDataContext';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useAuth } from '../contexts/AuthContext';
 
-const SETTINGS_KEY = 'beemind_settings';
-
-const defaultProfile = {
-  fullName: 'Ahmet Yılmaz',
-  email: 'ahmet@beemind.com',
-  phone: '+90 555 123 4567',
-  location: 'Konya, Türkiye'
-};
+const SETTINGS_KEY = 'hexora_settings';
 
 const ProfileView = () => {
   const { hives } = useLiveData();
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
+  const { user } = useAuth();
 
-  // Settings'den kaydedilmiş profil bilgilerini oku (useMemo ile React-uyumlu)
   const profile = useMemo(() => {
+    const base = {
+      fullName: user?.fullName || '',
+      email: user?.email || '',
+      phone: user?.phone || '',
+      location: user?.location || 'Konya, Türkiye'
+    };
     try {
       const saved = localStorage.getItem(SETTINGS_KEY);
       if (saved) {
         const parsed = JSON.parse(saved);
         return {
-          fullName: parsed.fullName || defaultProfile.fullName,
-          email: parsed.email || defaultProfile.email,
-          phone: parsed.phone || defaultProfile.phone,
-          location: parsed.location || defaultProfile.location
+          fullName: parsed.fullName || base.fullName,
+          email: parsed.email || base.email,
+          phone: parsed.phone || base.phone,
+          location: parsed.location || base.location
         };
       }
-    } catch (e) {
-      // fallback to defaults
-    }
-    return { ...defaultProfile };
-  }, []);
+    } catch (e) {}
+    return base;
+  }, [user]);
+
+  const activeMonths = useMemo(() => {
+    if (!user?.createdAt) return 0;
+    const created = new Date(user.createdAt);
+    const now = new Date();
+    return Math.max(0, (now.getFullYear() - created.getFullYear()) * 12 + now.getMonth() - created.getMonth());
+  }, [user]);
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
@@ -94,12 +99,14 @@ const ProfileView = () => {
         </div>
         <div className="bg-gray-900 border border-gray-800 rounded-lg p-6 text-center">
           <Shield className="w-8 h-8 text-emerald-400 mx-auto mb-3" />
-          <p className="text-3xl font-bold text-gray-100 mb-1">%98</p>
+          <p className="text-3xl font-bold text-gray-100 mb-1">
+            {hives.length > 0 ? `%${Math.round((hives.filter(h => h.status === 'stable').length / hives.length) * 100)}` : '-'}
+          </p>
           <p className="text-sm text-gray-500">{t.profile.uptime}</p>
         </div>
         <div className="bg-gray-900 border border-gray-800 rounded-lg p-6 text-center">
           <Calendar className="w-8 h-8 text-blue-400 mx-auto mb-3" />
-          <p className="text-3xl font-bold text-gray-100 mb-1">13</p>
+          <p className="text-3xl font-bold text-gray-100 mb-1">{activeMonths}</p>
           <p className="text-sm text-gray-500">{t.profile.activeMonths}</p>
         </div>
       </div>
@@ -124,7 +131,7 @@ const ProfileView = () => {
             <div>
               <p className="font-medium text-gray-100">{t.profile.lastLogin}</p>
               <p className="text-sm text-gray-500">
-                {new Date().toLocaleDateString()}, {new Date().toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })} - {t.profile.lastLoginDesc}
+                {new Date().toLocaleDateString(lang === 'tr' ? 'tr-TR' : 'en-US')}, {new Date().toLocaleTimeString(lang === 'tr' ? 'tr-TR' : 'en-US', { hour: '2-digit', minute: '2-digit' })} - {t.profile.lastLoginDesc}
               </p>
             </div>
             <span className="text-xs text-gray-500">{profile.location}</span>

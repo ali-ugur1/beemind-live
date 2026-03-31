@@ -49,7 +49,7 @@ const DAY_NAMES = {
  */
 async function geocode(locationName) {
   // Önce cache kontrol
-  const cacheKey = `beemind_geocode_${locationName}`;
+  const cacheKey = `hexora_geocode_${locationName}`;
   try {
     const cached = localStorage.getItem(cacheKey);
     if (cached) {
@@ -87,7 +87,7 @@ async function geocode(locationName) {
  */
 export async function fetchWeather(locationName, lang = 'tr') {
   // Hava durumu cache (15 dakika)
-  const cacheKey = `beemind_weather_${locationName}`;
+  const cacheKey = `hexora_weather_${locationName}`;
   try {
     const cached = localStorage.getItem(cacheKey);
     if (cached) {

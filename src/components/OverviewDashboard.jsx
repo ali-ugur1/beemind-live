@@ -52,8 +52,10 @@ const OverviewDashboard = ({ stats, hives, onViewDetail }) => {
         condition: apiWeather.condition || apiWeather.description || '—',
         humidity: apiWeather.humidity ?? '—',
         windSpeed: apiWeather.windSpeed ?? apiWeather.wind ?? '—',
-        icon: getWeatherIcon(apiWeather.condition),
-        forecast: apiWeather.forecast || []
+        icon: apiWeather.icon || getWeatherIcon(apiWeather.condition),
+        forecast: apiWeather.forecast || [],
+        feelsLike: apiWeather.feelsLike,
+        _source: apiWeather._source,
       };
     }
     // Fallback: sensör ortalamasından türet
@@ -75,6 +77,7 @@ const OverviewDashboard = ({ stats, hives, onViewDetail }) => {
     .filter(h => h.status === 'critical')
     .map(h => ({
       id: h.id,
+      name: h.name || h.id,
       message: h.alertType,
       time: h.lastUpdate
     }));
@@ -108,7 +111,7 @@ const OverviewDashboard = ({ stats, hives, onViewDetail }) => {
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 bg-amber-500/20 rounded-full flex items-center justify-center p-2">
                 <img 
-                  src="/logo.png" 
+                  src="/hexora-logo.svg" 
                   alt="Gateway" 
                   className="w-full h-full object-contain"
                   style={{ filter: 'brightness(1.2) drop-shadow(0 0 4px rgba(245, 158, 11, 0.5))' }}
@@ -298,7 +301,7 @@ const OverviewDashboard = ({ stats, hives, onViewDetail }) => {
                 <div className="flex items-center gap-3">
                   <span className="text-2xl">🔴</span>
                   <div>
-                    <p className="font-semibold text-gray-100">{t.overview.hivePrefix} #{alert.id}</p>
+                    <p className="font-semibold text-gray-100">{alert.name || alert.id}</p>
                     <p className="text-sm text-gray-400">{alert.message}</p>
                   </div>
                 </div>

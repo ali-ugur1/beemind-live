@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { X, ChevronRight, ChevronLeft, Home, List, Map, FileText, Keyboard } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 
-const ONBOARDING_KEY = 'beemind_onboarding_done';
+const ONBOARDING_KEY = 'hexora_onboarding_done';
 
 export const shouldShowOnboarding = () => {
   try { return !localStorage.getItem(ONBOARDING_KEY); } catch { return false; }

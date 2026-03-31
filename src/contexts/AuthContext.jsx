@@ -2,11 +2,10 @@ import { createContext, useContext, useState, useEffect } from 'react';
 
 const AuthContext = createContext();
 
-const AUTH_KEY = 'beemind_auth_token';
-const FIRST_LOGIN_KEY = 'beemind_first_login';
-
-// Hardcoded credentials
-const VALID_USER = { username: 'admin', password: 'admin123', displayName: 'Admin', role: 'admin' };
+const TOKEN_KEY = 'hexora_jwt';
+const USER_KEY = 'hexora_user';
+const FIRST_LOGIN_KEY = 'hexora_first_login';
+const API_BASE = import.meta.env.VITE_API_URL || '';
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
@@ -14,38 +13,63 @@ export function AuthProvider({ children }) {
   const [isFirstLogin, setIsFirstLogin] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  // Check existing session on mount
+  // Check existing token on mount
   useEffect(() => {
-    try {
-      const token = localStorage.getItem(AUTH_KEY);
-      if (token) {
-        const parsed = JSON.parse(token);
-        if (parsed && parsed.username && parsed.expiry > Date.now()) {
-          setUser({ username: parsed.username, displayName: parsed.displayName, role: parsed.role });
-          setIsAuthenticated(true);
-        } else {
-          localStorage.removeItem(AUTH_KEY);
-        }
+    const token = localStorage.getItem(TOKEN_KEY);
+    const savedUser = localStorage.getItem(USER_KEY);
+    if (token && savedUser) {
+      try {
+        const parsed = JSON.parse(savedUser);
+        setUser(parsed);
+        setIsAuthenticated(true);
+        // Verify token in background
+        fetch(`${API_BASE}/api/auth/me`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+          .then(r => r.ok ? r.json() : Promise.reject())
+          .then(data => {
+            setUser(data.user);
+            localStorage.setItem(USER_KEY, JSON.stringify(data.user));
+          })
+          .catch(() => {
+            // Token expired or invalid — keep local session for offline
+          });
+      } catch {
+        localStorage.removeItem(TOKEN_KEY);
+        localStorage.removeItem(USER_KEY);
       }
-    } catch {
-      localStorage.removeItem(AUTH_KEY);
     }
     setLoading(false);
   }, []);
 
-  const login = (username, password) => {
-    if (username === VALID_USER.username && password === VALID_USER.password) {
-      const userData = {
-        username: VALID_USER.username,
-        displayName: VALID_USER.displayName,
-        role: VALID_USER.role,
-        expiry: Date.now() + 7 * 24 * 60 * 60 * 1000 // 7 days
-      };
-      localStorage.setItem(AUTH_KEY, JSON.stringify(userData));
-      setUser({ username: userData.username, displayName: userData.displayName, role: userData.role });
+  // Listen for auth-expired events from api.js
+  useEffect(() => {
+    const handleAuthExpired = () => {
+      setUser(null);
+      setIsAuthenticated(false);
+    };
+    window.addEventListener('hexora:auth-expired', handleAuthExpired);
+    return () => window.removeEventListener('hexora:auth-expired', handleAuthExpired);
+  }, []);
+
+  const login = async (email, password) => {
+    try {
+      const res = await fetch(`${API_BASE}/api/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        return { success: false, error: data.error || 'invalid_credentials' };
+      }
+
+      localStorage.setItem(TOKEN_KEY, data.token);
+      localStorage.setItem(USER_KEY, JSON.stringify(data.user));
+      setUser(data.user);
       setIsAuthenticated(true);
 
-      // Check if first login
       const hasLoggedBefore = localStorage.getItem(FIRST_LOGIN_KEY);
       if (!hasLoggedBefore) {
         setIsFirstLogin(true);
@@ -53,22 +77,52 @@ export function AuthProvider({ children }) {
       }
 
       return { success: true };
+    } catch (err) {
+      return { success: false, error: 'network_error' };
     }
-    return { success: false, error: 'invalid_credentials' };
+  };
+
+  const register = async (email, password, fullName) => {
+    try {
+      const res = await fetch(`${API_BASE}/api/auth/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password, fullName }),
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        return { success: false, error: data.error };
+      }
+
+      localStorage.setItem(TOKEN_KEY, data.token);
+      localStorage.setItem(USER_KEY, JSON.stringify(data.user));
+      setUser(data.user);
+      setIsAuthenticated(true);
+      setIsFirstLogin(true);
+      localStorage.setItem(FIRST_LOGIN_KEY, '1');
+
+      return { success: true };
+    } catch {
+      return { success: false, error: 'network_error' };
+    }
   };
 
   const logout = () => {
-    localStorage.removeItem(AUTH_KEY);
+    localStorage.removeItem(TOKEN_KEY);
+    localStorage.removeItem(USER_KEY);
     setUser(null);
     setIsAuthenticated(false);
   };
+
+  const getToken = () => localStorage.getItem(TOKEN_KEY);
 
   const clearFirstLogin = () => {
     setIsFirstLogin(false);
   };
 
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated, isFirstLogin, loading, login, logout, clearFirstLogin }}>
+    <AuthContext.Provider value={{ user, isAuthenticated, isFirstLogin, loading, login, register, logout, getToken, clearFirstLogin }}>
       {children}
     </AuthContext.Provider>
   );

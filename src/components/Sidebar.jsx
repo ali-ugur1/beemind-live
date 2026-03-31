@@ -1,11 +1,11 @@
-import { Home, List, Map, FileText, Settings, Package, User, Hexagon, X, Menu, GitCompareArrows, Calendar, Bell, HelpCircle, Info } from 'lucide-react';
-import { useState, useEffect, useCallback } from 'react';
+import { Home, List, Map, FileText, Settings, Package, User, X, Menu, GitCompareArrows, Calendar, Bell, HelpCircle, Info } from 'lucide-react';
+import { useState, useEffect } from 'react';
 import { useLiveData } from '../contexts/LiveDataContext';
 import { useLanguage } from '../contexts/LanguageContext';
 
 const readUserName = () => {
   try {
-    const saved = localStorage.getItem('beemind_settings');
+    const saved = localStorage.getItem('hexora_settings');
     if (saved) {
       const parsed = JSON.parse(saved);
       return parsed.fullName || 'Admin User';
@@ -26,10 +26,10 @@ const Sidebar = ({ activeTab, onTabChange }) => {
   useEffect(() => {
     const handleStorage = () => setUserName(readUserName());
     window.addEventListener('storage', handleStorage);
-    window.addEventListener('beemind-settings-updated', handleStorage);
+    window.addEventListener('hexora-settings-updated', handleStorage);
     return () => {
       window.removeEventListener('storage', handleStorage);
-      window.removeEventListener('beemind-settings-updated', handleStorage);
+      window.removeEventListener('hexora-settings-updated', handleStorage);
     };
   }, []);
 
@@ -107,13 +107,13 @@ const Sidebar = ({ activeTab, onTabChange }) => {
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 flex items-center justify-center bg-gray-900 rounded-lg p-1">
               <img 
-                src="/logo.png" 
-                alt="BeeMind Logo" 
+                src="/hexora-logo.svg" 
+                alt="Hexora Logo" 
                 className="w-full h-full object-contain"
-                style={{ filter: 'drop-shadow(0 0 8px rgba(245, 158, 11, 0.3))' }}
+                style={{ filter: 'drop-shadow(0 0 8px rgba(79, 70, 229, 0.5))' }}
               />
             </div>
-            <h1 className="text-xl font-bold text-amber-400">BeeMind</h1>
+            <h1 className="text-xl font-bold text-violet-400">Hexora</h1>
           </div>
         </div>
 

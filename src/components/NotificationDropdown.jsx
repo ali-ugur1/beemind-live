@@ -1,9 +1,11 @@
 import { useEffect, useRef } from 'react';
 import { X, CheckCheck } from 'lucide-react';
 import { getNotificationIcon } from '../data/mockData';
+import { useLanguage } from '../contexts/LanguageContext';
 
 const NotificationDropdown = ({ notifications, isOpen, onClose, onMarkAsRead, onMarkAllAsRead, onNotificationClick }) => {
   const dropdownRef = useRef(null);
+  const { t } = useLanguage();
 
   // Dışarı tıklayınca kapat
   useEffect(() => {
@@ -34,10 +36,10 @@ const NotificationDropdown = ({ notifications, isOpen, onClose, onMarkAsRead, on
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b border-gray-700">
         <div>
-          <h3 className="font-semibold text-gray-100">Bildirimler</h3>
+          <h3 className="font-semibold text-gray-100">{t.notifications.title}</h3>
           {unreadCount > 0 && (
             <p className="text-xs text-gray-500 mt-1">
-              {unreadCount} okunmamış bildirim
+              {unreadCount} {t.notifications.unread}
             </p>
           )}
         </div>
@@ -53,7 +55,7 @@ const NotificationDropdown = ({ notifications, isOpen, onClose, onMarkAsRead, on
       <div className="max-h-96 overflow-y-auto">
         {notifications.length === 0 ? (
           <div className="p-8 text-center text-gray-500">
-            <p>🔔 Henüz bildirim yok</p>
+            <p>{t.notifications.noNotifications}</p>
           </div>
         ) : (
           <div className="divide-y divide-gray-800">
@@ -105,7 +107,7 @@ const NotificationDropdown = ({ notifications, isOpen, onClose, onMarkAsRead, on
             className="flex items-center justify-center gap-2 w-full text-sm text-amber-400 hover:text-amber-300 transition-colors py-1"
           >
             <CheckCheck className="w-4 h-4" />
-            Tümünü Okundu Yap
+            {t.notifications.markAllRead}
           </button>
         </div>
       )}

@@ -23,7 +23,7 @@
 
 /* ==================== LOGO STYLES ==================== */
 /* Dark background için logo optimizasyonu */
-img[alt="BeeMind Logo"],
+img[alt="Hexora Logo"],
 img[alt="Gateway"] {
   /* Beyaz background'u transparant yap */
   mix-blend-mode: screen;
@@ -32,7 +32,7 @@ img[alt="Gateway"] {
 }
 
 /* Hover efekti */
-img[alt="BeeMind Logo"]:hover {
+img[alt="Hexora Logo"]:hover {
   filter: brightness(1.3) drop-shadow(0 0 12px rgba(245, 158, 11, 0.6));
   transition: filter 0.3s ease;
 }
@@ -445,7 +445,7 @@ select:focus {
 }
 
 /* Logo: undo dark-mode blend */
-.light-theme img[alt="BeeMind Logo"],
+.light-theme img[alt="Hexora Logo"],
 .light-theme img[alt="Gateway"] {
   mix-blend-mode: normal !important;
 }
@@ -474,5 +474,509 @@ select:focus {
 
 .light-theme .border-gray-600 {
   border-color: #c4c0b8 !important;
+}
+
+/* ---- Modal / Dialog overlays ---- */
+.light-theme .bg-black\/70 {
+  background-color: rgba(0, 0, 0, 0.4) !important;
+}
+
+.light-theme .bg-black\/20 {
+  background-color: rgba(0, 0, 0, 0.08) !important;
+}
+
+/* ---- Recharts tooltip ---- */
+.light-theme .recharts-default-tooltip {
+  background-color: #ffffff !important;
+  border: 1px solid #e0ddd5 !important;
+  border-radius: 8px;
+}
+
+.light-theme .recharts-tooltip-label {
+  color: #1a1a1a !important;
+}
+
+.light-theme .recharts-cartesian-grid line {
+  stroke: #e0ddd5 !important;
+}
+
+.light-theme .recharts-text {
+  fill: #888888 !important;
+}
+
+/* ---- Toast notifications ---- */
+.light-theme .bg-gray-900.border.border-gray-700 {
+  background-color: #ffffff !important;
+  border-color: #e0ddd5 !important;
+}
+
+/* ---- Status badge backgrounds ---- */
+.light-theme .bg-red-500\/10 {
+  background-color: rgba(239, 68, 68, 0.08) !important;
+}
+
+.light-theme .bg-amber-500\/10 {
+  background-color: rgba(245, 158, 11, 0.08) !important;
+}
+
+.light-theme .bg-emerald-500\/10 {
+  background-color: rgba(16, 185, 129, 0.08) !important;
+}
+
+.light-theme .bg-blue-500\/10 {
+  background-color: rgba(59, 130, 246, 0.08) !important;
+}
+
+.light-theme .bg-purple-500\/10 {
+  background-color: rgba(168, 85, 247, 0.08) !important;
+}
+
+.light-theme .bg-amber-500\/5 {
+  background-color: rgba(245, 158, 11, 0.05) !important;
+}
+
+/* ---- Login page ---- */
+.light-theme .bg-gray-950 {
+  background-color: #f5f5f0 !important;
+}
+
+.light-theme .from-gray-900 {
+  --tw-gradient-from: #f5f5f0 !important;
+}
+
+.light-theme .to-gray-950 {
+  --tw-gradient-to: #eae8e0 !important;
+}
+
+/* ---- Password / number inputs ---- */
+.light-theme input[type="password"],
+.light-theme input[type="number"] {
+  background-color: #f5f5f0 !important;
+  border-color: #d4d0c8 !important;
+  color: #1a1a1a !important;
+}
+
+/* ---- Map container ---- */
+.light-theme .bg-gray-900.border.border-gray-800.rounded-lg.overflow-hidden {
+  background-color: #ffffff !important;
+}
+
+/* ---- Skeleton loading ---- */
+.light-theme .skeleton {
+  background-color: #e0ddd5 !important;
+}
+
+.light-theme .skeleton::after {
+  background: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0) 0,
+    rgba(0, 0, 0, 0.03) 20%,
+    rgba(0, 0, 0, 0.06) 60%,
+    rgba(0, 0, 0, 0)
+  ) !important;
+}
+
+/* ---- Scrollbar for light ---- */
+.light-theme .custom-scroll::-webkit-scrollbar-thumb {
+  background: #cccccc !important;
+}
+
+.light-theme .custom-scroll::-webkit-scrollbar-thumb:hover {
+  background: #aaaaaa !important;
+}
+
+/* ---- Header ---- */
+.light-theme header {
+  background-color: #ffffff !important;
+  border-color: #e0ddd5 !important;
+}
+
+/* ---- Kbd keys (help page) ---- */
+.light-theme kbd {
+  background-color: #e0ddd5 !important;
+  border-color: #d4d0c8 !important;
+  color: #b45309 !important;
+}
+
+/* ---- Toggle switches ---- */
+.light-theme .bg-gray-700.rounded-full {
+  background-color: #cccccc !important;
+}
+
+/* ---- Hover states ---- */
+.light-theme .hover\:bg-gray-700:hover {
+  background-color: #e8e5dd !important;
+}
+
+/* ---- Disabled states ---- */
+.light-theme button:disabled {
+  opacity: 0.5;
+}
+
+/* ---- Code / mono text ---- */
+.light-theme .font-mono {
+  color: #b45309;
+}
+
+/* ---- Notification unread dot bg ---- */
+.light-theme .bg-amber-400 {
+  background-color: #f59e0b !important;
+}
+
+/* ---- Pie chart label ---- */
+.light-theme .recharts-pie-label-text {
+  fill: #1a1a1a !important;
+}
+
+/* ---- Focus ring for light ---- */
+.light-theme *:focus-visible {
+  outline-color: #d97706;
+}
+
+/* ==================== LANDING PAGE — LIGHT THEME ==================== */
+
+/* ---- Base backgrounds ---- */
+.light-theme .bg-gray-950 {
+  background-color: #faf9f6 !important;
+}
+
+.light-theme .bg-gray-900 {
+  background-color: #ffffff !important;
+}
+
+.light-theme .bg-gray-800 {
+  background-color: #f0eee8 !important;
+}
+
+.light-theme .bg-black {
+  background-color: #1a1a1a !important;
+}
+
+/* ---- Alpha backgrounds ---- */
+.light-theme .bg-gray-950\/90 {
+  background-color: rgba(250, 249, 246, 0.95) !important;
+}
+
+.light-theme .bg-gray-900\/90 {
+  background-color: rgba(255, 255, 255, 0.92) !important;
+}
+
+.light-theme .bg-gray-900\/80 {
+  background-color: rgba(255, 255, 255, 0.85) !important;
+}
+
+.light-theme .bg-gray-900\/70 {
+  background-color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.light-theme .bg-gray-900\/60 {
+  background-color: rgba(255, 255, 255, 0.75) !important;
+}
+
+.light-theme .bg-gray-900\/50,
+.light-theme .bg-gray-900\/40,
+.light-theme .bg-gray-900\/30,
+.light-theme .bg-gray-900\/20 {
+  background-color: rgba(245, 243, 238, 0.6) !important;
+}
+
+.light-theme .bg-gray-800\/80 {
+  background-color: rgba(240, 238, 232, 0.8) !important;
+}
+
+.light-theme .bg-gray-800\/60 {
+  background-color: rgba(240, 238, 232, 0.6) !important;
+}
+
+.light-theme .bg-gray-800\/50 {
+  background-color: rgba(240, 238, 232, 0.5) !important;
+}
+
+.light-theme .bg-gray-800\/30 {
+  background-color: rgba(240, 238, 232, 0.3) !important;
+}
+
+/* ---- Text colors ---- */
+.light-theme .text-gray-100 {
+  color: #1a1a1a !important;
+}
+
+.light-theme .text-gray-200 {
+  color: #2a2a2a !important;
+}
+
+.light-theme .text-gray-300 {
+  color: #444444 !important;
+}
+
+.light-theme .text-gray-400 {
+  color: #666666 !important;
+}
+
+.light-theme .text-gray-500 {
+  color: #888888 !important;
+}
+
+.light-theme .text-gray-600 {
+  color: #aaaaaa !important;
+}
+
+.light-theme .text-white {
+  color: #1a1a1a !important;
+}
+
+/* ---- Borders ---- */
+.light-theme .border-gray-800 {
+  border-color: #e0ddd5 !important;
+}
+
+.light-theme .border-gray-800\/80 {
+  border-color: rgba(224, 221, 213, 0.8) !important;
+}
+
+.light-theme .border-gray-800\/50 {
+  border-color: rgba(224, 221, 213, 0.5) !important;
+}
+
+.light-theme .border-gray-700 {
+  border-color: #d4d0c8 !important;
+}
+
+.light-theme .border-gray-700\/60 {
+  border-color: rgba(212, 208, 200, 0.6) !important;
+}
+
+.light-theme .border-gray-700\/50 {
+  border-color: rgba(212, 208, 200, 0.5) !important;
+}
+
+.light-theme .border-gray-700\/40 {
+  border-color: rgba(212, 208, 200, 0.4) !important;
+}
+
+/* ---- Navbar light ---- */
+.light-theme nav.bg-gray-950\/90 {
+  background-color: rgba(255, 255, 255, 0.92) !important;
+  border-color: #e0ddd5 !important;
+}
+
+/* ---- Hero overlay ---- */
+.light-theme .bg-gray-950\/80 {
+  background-color: rgba(250, 249, 246, 0.85) !important;
+}
+
+.light-theme .bg-gray-950\/60 {
+  background-color: rgba(250, 249, 246, 0.7) !important;
+}
+
+/* ---- Gradient sections ---- */
+.light-theme .bg-gradient-to-r.from-amber-500\/10 {
+  background: linear-gradient(to right, rgba(245, 158, 11, 0.06), rgba(249, 115, 22, 0.06)) !important;
+}
+
+.light-theme .bg-gradient-to-r.from-amber-500\/5 {
+  background: linear-gradient(to right, rgba(245, 158, 11, 0.04), rgba(249, 115, 22, 0.04)) !important;
+}
+
+.light-theme .bg-gradient-to-br.from-amber-500\/10 {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.06), rgba(249, 115, 22, 0.06)) !important;
+}
+
+.light-theme .bg-gradient-to-br.from-amber-500\/30 {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(249, 115, 22, 0.15)) !important;
+}
+
+/* ---- Section bg overrides ---- */
+.light-theme section.bg-gray-900\/20 {
+  background-color: rgba(245, 243, 238, 0.5) !important;
+}
+
+/* ---- Stats banner ---- */
+.light-theme .border-y.border-amber-500\/10 {
+  border-color: rgba(245, 158, 11, 0.15) !important;
+}
+
+/* ---- Cards & panels ---- */
+.light-theme .backdrop-blur-xl {
+  background-color: rgba(255, 255, 255, 0.9) !important;
+}
+
+/* ---- Dashboard mockup browser chrome ---- */
+.light-theme .bg-gray-950.border-b {
+  background-color: #f5f3ee !important;
+}
+
+/* ---- iPhone mockup ---- */
+.light-theme .bg-gray-800.rounded-\[3rem\] {
+  background-color: #d4d0c8 !important;
+}
+
+.light-theme .bg-gray-950.rounded-\[2\.4rem\] {
+  background-color: #ffffff !important;
+}
+
+/* ---- Comparison table ---- */
+.light-theme table {
+  color: #333333;
+}
+
+.light-theme tr.border-b {
+  border-color: #e0ddd5 !important;
+}
+
+.light-theme tr:hover {
+  background-color: rgba(245, 158, 11, 0.03) !important;
+}
+
+/* ---- ROI calculator slider ---- */
+.light-theme input[type="range"] {
+  background-color: #e0ddd5 !important;
+}
+
+/* ---- WhatsApp button — keep green ---- */
+.light-theme .bg-emerald-500 {
+  background-color: #10b981 !important;
+}
+
+/* ---- Footer ---- */
+.light-theme footer {
+  background-color: #f5f3ee !important;
+  border-color: #e0ddd5 !important;
+}
+
+.light-theme footer .text-gray-500,
+.light-theme footer .text-gray-600 {
+  color: #999999 !important;
+}
+
+/* ---- Amber accent colors — keep vibrant ---- */
+.light-theme .text-amber-400 {
+  color: #d97706 !important;
+}
+
+.light-theme .text-amber-300 {
+  color: #d97706 !important;
+}
+
+/* ---- Red accent — keep readable ---- */
+.light-theme .text-red-400 {
+  color: #dc2626 !important;
+}
+
+/* ---- Emerald accent ---- */
+.light-theme .text-emerald-400 {
+  color: #059669 !important;
+}
+
+/* ---- Purple accent ---- */
+.light-theme .text-purple-400 {
+  color: #7c3aed !important;
+}
+
+/* ---- Blue accent ---- */
+.light-theme .text-blue-400 {
+  color: #2563eb !important;
+}
+
+/* ---- Orange accent ---- */
+.light-theme .text-orange-400 {
+  color: #ea580c !important;
+}
+
+/* ---- Cyan accent ---- */
+.light-theme .text-cyan-400 {
+  color: #0891b2 !important;
+}
+
+/* ---- Shadow overrides ---- */
+.light-theme .shadow-2xl {
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.08) !important;
+}
+
+.light-theme .shadow-xl {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06) !important;
+}
+
+.light-theme .shadow-2xl.shadow-black\/40 {
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1) !important;
+}
+
+.light-theme .shadow-2xl.shadow-amber-500\/10 {
+  box-shadow: 0 4px 30px rgba(245, 158, 11, 0.1) !important;
+}
+
+.light-theme .shadow-xl.shadow-amber-500\/25 {
+  box-shadow: 0 4px 20px rgba(245, 158, 11, 0.15) !important;
+}
+
+/* ---- Colored bg tints — soften for light ---- */
+.light-theme .bg-red-500\/15 {
+  background-color: rgba(239, 68, 68, 0.08) !important;
+}
+
+.light-theme .bg-red-500\/5 {
+  background-color: rgba(239, 68, 68, 0.04) !important;
+}
+
+.light-theme .bg-amber-500\/15 {
+  background-color: rgba(245, 158, 11, 0.08) !important;
+}
+
+.light-theme .bg-orange-500\/15 {
+  background-color: rgba(249, 115, 22, 0.08) !important;
+}
+
+.light-theme .bg-purple-500\/15 {
+  background-color: rgba(168, 85, 247, 0.08) !important;
+}
+
+.light-theme .bg-emerald-500\/15 {
+  background-color: rgba(16, 185, 129, 0.08) !important;
+}
+
+.light-theme .bg-emerald-500\/10 {
+  background-color: rgba(16, 185, 129, 0.06) !important;
+}
+
+.light-theme .bg-blue-500\/10 {
+  background-color: rgba(59, 130, 246, 0.06) !important;
+}
+
+.light-theme .bg-purple-500\/10 {
+  background-color: rgba(168, 85, 247, 0.06) !important;
+}
+
+.light-theme .bg-amber-500\/5 {
+  background-color: rgba(245, 158, 11, 0.04) !important;
+}
+
+.light-theme .bg-orange-500\/5 {
+  background-color: rgba(249, 115, 22, 0.04) !important;
+}
+
+/* ---- Ring overrides ---- */
+.light-theme .ring-1.ring-amber-500\/30 {
+  --tw-ring-color: rgba(245, 158, 11, 0.2) !important;
+}
+
+/* ---- Animate pulse on light — tone down ---- */
+.light-theme .animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* ---- CTA buttons — keep bold ---- */
+.light-theme .bg-gradient-to-r.from-amber-500.to-orange-500 {
+  background: linear-gradient(to right, #f59e0b, #f97316) !important;
+  color: #000000 !important;
+}
+
+/* ---- Trusted By section opacity ---- */
+.light-theme .opacity-50 {
+  opacity: 0.6 !important;
+}
+
+/* ---- Line-through text (comparison solutions) ---- */
+.light-theme .line-through {
+  color: #aaaaaa !important;
 }
 

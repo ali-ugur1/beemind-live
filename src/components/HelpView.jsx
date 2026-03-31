@@ -10,21 +10,21 @@ const HelpView = () => {
   const toggleFaq = (id) => setOpenFaq(prev => prev === id ? null : id);
 
   const faqs = lang === 'tr' ? [
-    { id: 1, q: 'BeeMind nedir?', a: 'BeeMind, AI destekli bir IoT ariclik yonetim sistemidir. ESP32 tabanli sensorler araciligiyla kovanlarinizi uzaktan izleyebilir, sicaklik, nem, ses, titresim ve agirlik verilerini takip edebilirsiniz.' },
+    { id: 1, q: 'Hexora nedir?', a: 'Hexora, AI destekli bir IoT ariclik yonetim sistemidir. ESP32 tabanli sensorler araciligiyla kovanlarinizi uzaktan izleyebilir, sicaklik, nem, ses, titresim ve agirlik verilerini takip edebilirsiniz.' },
     { id: 2, q: 'Kovan verilerini nasil gorebilirim?', a: 'Dashboard sayfasindan tum kovanlarinizin anlk durumunu gorebilirsiniz. Kovan Listesi sayfasinda ise detayli filtreleme, siralama ve tek tek kovan detaylarina erisebilirsiniz.' },
     { id: 3, q: 'Kritik alarm geldiginde ne yapmaliyim?', a: 'Kritik alarm geldiginde ilgili kovanin detay sayfasina gidip AI onerilerini inceleyin. Ogul tespiti, devrilme alarmi veya asiri sicaklik gibi durumlarda fiziksel mudahale gerekebilir.' },
     { id: 4, q: 'Rapor nasil indirebilirim?', a: 'Raporlar sayfasindan CSV, Excel, JSON ve PDF formatlarinda rapor indirebilirsiniz. Tarih araligini secip ilgili butonlara tiklayarak rapor olusturabilirsiniz.' },
     { id: 5, q: 'Harita gorunumunde ne yapabilirim?', a: 'Harita gorunumunde kovanlarinizin cografi konumlarini gorebilir, durumlarina gore filtreleyebilir ve isretcilere tiklayarak detaylara erisebilirsiniz.' },
-    { id: 6, q: 'Bildirimler nasil calisir?', a: 'BeeMind kritik durumlarda otomatik bildirim gonderir. Ayarlar sayfasindan e-posta, SMS ve push bildirim tercihlerinizi yaplandirabilirsiniz.' },
+    { id: 6, q: 'Bildirimler nasil calisir?', a: 'Hexora kritik durumlarda otomatik bildirim gonderir. Ayarlar sayfasindan e-posta, SMS ve push bildirim tercihlerinizi yaplandirabilirsiniz.' },
     { id: 7, q: 'ESP32 cihazi nasil baglanir?', a: 'Yeni kovan ekle seceneginden ESP32 cihazinizin MAC adresini girerek baglantiyi kurabilirsiniz. Cihaz agiyla baglanti kuruldugunda sensor verileri otomatik akmaya baslar.' },
     { id: 8, q: 'Kovan karsilastirma nasil yapilir?', a: 'Karsilastir sayfasinda 2-3 kovan secerek sicaklik, nem, pil, ses ve agirlik metriklerini yan yana kiyaslayabilirsiniz.' },
   ] : [
-    { id: 1, q: 'What is BeeMind?', a: 'BeeMind is an AI-powered IoT beekeeping management system. You can remotely monitor your hives through ESP32-based sensors, tracking temperature, humidity, sound, vibration and weight data.' },
+    { id: 1, q: 'What is Hexora?', a: 'Hexora is an AI-powered IoT beekeeping management system. You can remotely monitor your hives through ESP32-based sensors, tracking temperature, humidity, sound, vibration and weight data.' },
     { id: 2, q: 'How can I see hive data?', a: 'You can see the real-time status of all your hives from the Dashboard page. On the Hive List page, you can access detailed filtering, sorting and individual hive details.' },
     { id: 3, q: 'What should I do when a critical alarm comes?', a: 'When a critical alarm comes, go to the detail page of the relevant hive and review AI suggestions. Physical intervention may be required for swarm detection, tipping alarm or excessive temperature.' },
     { id: 4, q: 'How can I download a report?', a: 'You can download reports in CSV, Excel, JSON and PDF formats from the Reports page. Select the date range and click the relevant buttons to generate reports.' },
     { id: 5, q: 'What can I do in map view?', a: 'In the map view, you can see geographic locations of your hives, filter by status, and click markers to access details.' },
-    { id: 6, q: 'How do notifications work?', a: 'BeeMind automatically sends notifications in critical situations. You can configure your email, SMS and push notification preferences from the Settings page.' },
+    { id: 6, q: 'How do notifications work?', a: 'Hexora automatically sends notifications in critical situations. You can configure your email, SMS and push notification preferences from the Settings page.' },
     { id: 7, q: 'How to connect an ESP32 device?', a: 'You can establish the connection by entering the MAC address of your ESP32 device from the Add New Hive option. Sensor data starts flowing automatically when connection is established.' },
     { id: 8, q: 'How to compare hives?', a: 'On the Compare page, you can select 2-3 hives to compare temperature, humidity, battery, sound and weight metrics side by side.' },
   ];
@@ -65,7 +65,7 @@ const HelpView = () => {
           </h1>
         </div>
         <p className="text-gray-500">
-          {lang === 'tr' ? 'BeeMind hakkinda bilmeniz gereken her sey' : 'Everything you need to know about BeeMind'}
+          {lang === 'tr' ? 'Hexora hakkinda bilmeniz gereken her sey' : 'Everything you need to know about Hexora'}
         </p>
       </div>
 
@@ -172,11 +172,11 @@ const HelpView = () => {
         <p className="text-sm text-gray-400 mb-4">
           {lang === 'tr'
             ? 'Teknik destek icin proje ekibiyle iletisime gecebilirsiniz.'
-            : 'Contact the project team for technical support.'}
+            : 'Contact hexoraproject@gmail.com for technical support.'}
         </p>
         <div className="flex items-center justify-center gap-3">
           <span className="px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-sm text-gray-300">
-            support@beemind.com
+            hexoraproject@gmail.com
           </span>
         </div>
       </div>

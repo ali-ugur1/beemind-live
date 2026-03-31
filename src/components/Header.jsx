@@ -112,13 +112,13 @@ const Header = ({ activeTab, notifications, onMarkAsRead, onMarkAllAsRead, onNot
             <div className="w-7 h-7 bg-amber-500/20 border border-amber-500/30 rounded-full flex items-center justify-center">
               <User className="w-4 h-4 text-amber-400" />
             </div>
-            <span className="hidden md:inline text-sm text-gray-300 font-medium">{user?.displayName || 'Admin'}</span>
+            <span className="hidden md:inline text-sm text-gray-300 font-medium">{user?.fullName || user?.displayName || 'Admin'}</span>
           </button>
 
           {isUserMenuOpen && (
             <div className="absolute right-0 top-full mt-2 w-48 bg-gray-900 border border-gray-700 rounded-lg shadow-xl z-50 overflow-hidden">
               <div className="px-4 py-3 border-b border-gray-800">
-                <p className="text-sm font-semibold text-gray-200">{user?.displayName || 'Admin'}</p>
+                <p className="text-sm font-semibold text-gray-200">{user?.fullName || user?.displayName || 'Admin'}</p>
                 <p className="text-xs text-gray-500">{user?.role === 'admin' ? (lang === 'tr' ? 'Yonetici' : 'Administrator') : user?.role}</p>
               </div>
               <button

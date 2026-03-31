@@ -1,11 +1,13 @@
 import { useMemo } from 'react';
-import { Activity, Server, Wifi, WifiOff, Cpu, HardDrive, Clock, CheckCircle, XCircle, AlertTriangle } from 'lucide-react';
+import { Activity, Server, Wifi, Cpu, HardDrive, Clock, CheckCircle, XCircle, AlertTriangle } from 'lucide-react';
 import { useLiveData } from '../contexts/LiveDataContext';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useTheme } from '../contexts/ThemeContext';
 
 const SystemHealthWidget = () => {
   const { hives, apiConnected, gateway } = useLiveData();
   const { lang } = useLanguage();
+  const { theme } = useTheme();
 
   const health = useMemo(() => {
     const total = hives.length;
@@ -85,7 +87,7 @@ const SystemHealthWidget = () => {
           <svg className="w-full h-full -rotate-90" viewBox="0 0 36 36">
             <path
               d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-              fill="none" stroke="#374151" strokeWidth="3"
+              fill="none" stroke={theme === 'dark' ? '#374151' : '#e0ddd5'} strokeWidth="3"
             />
             <path
               d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
