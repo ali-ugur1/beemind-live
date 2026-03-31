@@ -1,23 +1,26 @@
-// Varsayilan tek kovan - gercek kullanici kovani
+﻿// Varsayilan tek kovan - gercek kullanici kovani
 // Kullanici yeni kovan ekledikce localStorage'a kaydedilir
-
 export const DEFAULT_HIVE = {
-  id: '01',
-  name: 'Kovan 1 - Bahce',
+  id: 'hive-001',
+  name: 'Kovan 1',
   status: 'stable',
   alertType: null,
   temp: 34.5,
   humidity: 55,
+  pressure: 1013,
+  vibration: 120,
   battery: 92,
   weight: 28.4,
   sound: 45,
-  lastUpdate: 'Az once',
-  lastActivity: 'Tum Sistemler Normal',
+  soundDb: null,
+  lastUpdate: '',
+  lastActivity: '',
   priority: 3,
   lat: 37.8746,
   lng: 32.4932,
   location: 'Konya, Selcuklu',
   deviceSerial: 'AA:BB:CC:DD:EE:01',
+  hasData: true,
 };
 
 // Utility fonksiyonlari
@@ -34,12 +37,13 @@ export const getStatusColor = (status) => {
   }
 };
 
-export const getStatusText = (status) => {
+export const getStatusText = (status, lang) => {
+  const isTr = !lang || lang === 'tr';
   switch (status) {
-    case 'critical': return 'KRITIK';
-    case 'warning': return 'UYARI';
-    case 'stable': return 'STABIL';
-    default: return 'BILINMIYOR';
+    case 'critical': return isTr ? 'KRİTİK' : 'CRITICAL';
+    case 'warning': return isTr ? 'UYARI' : 'WARNING';
+    case 'stable': return isTr ? 'STABİL' : 'STABLE';
+    default: return isTr ? 'BİLİNMİYOR' : 'UNKNOWN';
   }
 };
 

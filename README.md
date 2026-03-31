@@ -1,4 +1,4 @@
-# 🐝 BeeMind Live - ESP32 IoT Kovan İzleme Sistemi
+# 🐝 Hexora Live - ESP32 IoT Kovan İzleme Sistemi
 
 **Gerçek zamanlı sensör verisi ile akıllı kovan takibi**
 
@@ -27,18 +27,18 @@ ESP32 + Sensörler → WiFi → Node.js Backend → PostgreSQL → React Web Pan
 ### 1. Backend
 ```bash
 # PostgreSQL başlat + Backend çalıştır
-C:\beemind-start.bat
+C:\hexora-start.bat
 ```
 
 ### 2. Web Panel
 ```bash
-cd beemind-live
+cd hexora-live
 npm install
 npm run dev
 ```
 
 ### 3. ESP32
-Arduino IDE ile `arduino/beemind_esp32.ino` dosyasını yükle.
+Arduino IDE ile `arduino/hexora_esp32.ino` dosyasını yükle.
 
 ## 🌐 WiFi Yapılandırması
 
@@ -72,9 +72,9 @@ ESP32 otomatik olarak sırayla şu ağlara bağlanmayı dener:
 ## 📁 Proje Yapısı
 
 ```
-beemind-live/
+hexora-live/
 ├── arduino/
-│   └── beemind_esp32.ino     # ESP32 firmware
+│   └── hexora_esp32.ino     # ESP32 firmware
 ├── src/
 │   ├── components/           # React bileşenleri
 │   ├── contexts/
@@ -88,4 +88,4 @@ beemind-live/
 
 ---
 
-**TÜBİTAK 2242 - BeeMind IoT Arıcılık İzleme Sistemi 🐝**
+**TÜBİTAK 2242 - Hexora IoT Arıcılık İzleme Sistemi 🐝**

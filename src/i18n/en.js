@@ -165,7 +165,7 @@ export const en = {
     reportCreating: 'Creating report...',
   },
   onboarding: {
-    welcome: 'Welcome to BeeMind! 🐝',
+    welcome: 'Welcome to Hexora! 🐝',
     step1Title: 'Overview',
     step1Desc: 'See the real-time status of all your hives on the dashboard.',
     step2Title: 'Hive List',
@@ -213,6 +213,13 @@ export const en = {
     serialEmpty: 'Device serial number is required',
     serialDuplicate: 'This serial is already linked to another hive',
     success: 'added successfully',
+    adapterType: 'Adapter Type',
+    adapterBasic: 'Basic',
+    adapterBasicDesc: 'Temperature, Humidity, Weight, Battery',
+    adapterStandard: 'Standard',
+    adapterStandardDesc: 'All sensors (Sound, Pressure, Vibration incl.)',
+    adapterPro: 'Pro',
+    adapterProDesc: 'All sensors + Camera',
   },
   editHive: {
     location: 'Location',

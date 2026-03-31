@@ -1,10 +1,8 @@
 import { useState, useEffect, useMemo, lazy, Suspense, useCallback } from 'react';
-import { ToastProvider, useToast } from './contexts/ToastContext';
+import { useToast } from './contexts/ToastContext';
 import { LiveDataProvider, useLiveData } from './contexts/LiveDataContext';
-import { ThemeProvider } from './contexts/ThemeContext';
-import { LanguageProvider, useLanguage } from './contexts/LanguageContext';
+import { useLanguage } from './contexts/LanguageContext';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
-import ErrorBoundary from './components/ErrorBoundary';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
 import StatsCards from './components/StatsCards';
@@ -23,6 +21,7 @@ import LoginPage from './components/LoginPage';
 import useKeyboardShortcuts from './hooks/useKeyboardShortcuts';
 import usePushNotifications from './hooks/usePushNotifications';
 import { SkeletonStats, SkeletonTable, SkeletonDetail } from './components/Skeleton';
+import ErrorBoundary from './components/ErrorBoundary';
 import './App.css';
 
 const OverviewDashboard = lazy(() => import('./components/OverviewDashboard'));
@@ -39,7 +38,7 @@ const AboutView = lazy(() => import('./components/AboutView'));
 
 function AppContent() {
   const toast = useToast();
-  const { hives, loading, notifications: liveNotifications } = useLiveData();
+  const { hives, loading, notifications: liveNotifications, updateHive } = useLiveData();
   const { t, lang } = useLanguage();
   const { isFirstLogin, clearFirstLogin } = useAuth();
 
@@ -56,7 +55,7 @@ function AppContent() {
   const [selectedHives, setSelectedHives] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [showAddHive, setShowAddHive] = useState(false);
-  const [showOnboarding, setShowOnboarding] = useState(() => isFirstLogin || shouldShowOnboarding);
+  const [showOnboarding, setShowOnboarding] = useState(() => isFirstLogin || shouldShowOnboarding());
   const [editHive, setEditHive] = useState(null);
   const [advancedFilters, setAdvancedFilters] = useState({ tempMin: '', tempMax: '', batteryMin: '', batteryMax: '' });
   const itemsPerPage = 10;
@@ -69,11 +68,41 @@ function AppContent() {
     }
   }, [isFirstLogin, clearFirstLogin]);
 
+  // Dynamic document.title
+  useEffect(() => {
+    const tabTitles = {
+      dashboard: lang === 'tr' ? 'Gösterge Paneli' : 'Dashboard',
+      list: lang === 'tr' ? 'Kovan Listesi' : 'Hive List',
+      map: lang === 'tr' ? 'Harita' : 'Map',
+      compare: lang === 'tr' ? 'Karşılaştır' : 'Compare',
+      calendar: lang === 'tr' ? 'Takvim' : 'Calendar',
+      reports: lang === 'tr' ? 'Raporlar' : 'Reports',
+      notificationHistory: lang === 'tr' ? 'Bildirimler' : 'Notifications',
+      settings: lang === 'tr' ? 'Ayarlar' : 'Settings',
+      profile: lang === 'tr' ? 'Profil' : 'Profile',
+      help: lang === 'tr' ? 'Yardım' : 'Help',
+      about: lang === 'tr' ? 'Hakkında' : 'About',
+    };
+    const detailHive = hives.find(h => h.id === selectedHiveId);
+    const detailName = detailHive?.name || selectedHiveId;
+    const title = currentView === 'detail' && selectedHiveId
+      ? `${detailName} | Hexora`
+      : `${tabTitles[activeTab] || 'Hexora'} | Hexora`;
+    document.title = title;
+  }, [activeTab, currentView, selectedHiveId, lang, hives]);
+
+  // Reset page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filter, searchQuery, sortBy, advancedFilters]);
+
   const filteredAndSortedHives = useMemo(() => {
     let result = [...hives];
     if (searchQuery) {
       result = result.filter(hive =>
-        hive.id.toLowerCase().includes(searchQuery.toLowerCase())
+        hive.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (hive.name && hive.name.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (hive.location && hive.location.toLowerCase().includes(searchQuery.toLowerCase()))
       );
     }
     if (filter !== 'all') {
@@ -137,7 +166,7 @@ function AppContent() {
   }, [currentView]);
 
   useKeyboardShortcuts(handleTabChange);
-  usePushNotifications(hives);
+  const pushNotifications = usePushNotifications(hives);
 
   const handleSelectHive = (hiveId) => {
     setSelectedHives(prev =>
@@ -223,15 +252,15 @@ function AppContent() {
         <div className="text-center">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-amber-500/10 border border-amber-500/30 rounded-2xl mb-4">
             <img
-              src="/logo.png"
-              alt="BeeMind"
+              src="/hexora-logo.svg"
+              alt="Hexora"
               className="w-10 h-10 object-contain animate-pulse"
               style={{ filter: 'drop-shadow(0 0 8px rgba(245, 158, 11, 0.5))' }}
               onError={(e) => { e.target.style.display = 'none'; }}
             />
           </div>
           <LoadingSpinner size="lg" />
-          <p className="text-amber-400 mt-4 text-lg font-semibold">BeeMind</p>
+          <p className="text-blue-400 mt-4 text-lg font-semibold">Hexora</p>
           <p className="text-gray-500 text-sm mt-1">{t.common.loading}</p>
           <div className="mt-4 w-48 h-1 bg-gray-800 rounded-full overflow-hidden mx-auto">
             <div className="h-full bg-amber-500 rounded-full animate-pulse" style={{ width: '60%' }} />
@@ -319,7 +348,7 @@ function AppContent() {
                 <ErrorBoundary><Suspense fallback={<LoadingSpinner size="lg" />}><NotificationHistoryView notifications={notifications} onViewDetail={handleViewDetail} /></Suspense></ErrorBoundary>
               )}
               {activeTab === 'settings' && (
-                <ErrorBoundary><Suspense fallback={<LoadingSpinner size="lg" />}><SettingsView /></Suspense></ErrorBoundary>
+                <ErrorBoundary><Suspense fallback={<LoadingSpinner size="lg" />}><SettingsView pushNotifications={pushNotifications} /></Suspense></ErrorBoundary>
               )}
               {activeTab === 'profile' && (
                 <ErrorBoundary><Suspense fallback={<LoadingSpinner size="lg" />}><ProfileView /></Suspense></ErrorBoundary>
@@ -346,7 +375,7 @@ function AppContent() {
       <AIAnalysisPanel isOpen={aiPanelOpen} onClose={() => setAiPanelOpen(false)} hive={aiHive} />
       <ConnectionStatus />
       <AddHiveModal isOpen={showAddHive} onClose={() => setShowAddHive(false)} />
-      <EditHiveModal hive={editHive} isOpen={!!editHive} onClose={() => setEditHive(null)} onSave={(id, data) => {}} />
+      <EditHiveModal hive={editHive} isOpen={!!editHive} onClose={() => setEditHive(null)} onSave={(id, data) => updateHive(id, data)} />
     </div>
   );
 }
@@ -376,17 +405,9 @@ function AuthGate() {
 
 function App() {
   return (
-    <ErrorBoundary>
-      <ToastProvider>
-        <ThemeProvider>
-          <LanguageProvider>
-            <AuthProvider>
-              <AuthGate />
-            </AuthProvider>
-          </LanguageProvider>
-        </ThemeProvider>
-      </ToastProvider>
-    </ErrorBoundary>
+    <AuthProvider>
+      <AuthGate />
+    </AuthProvider>
   );
 }
 

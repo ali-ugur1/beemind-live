@@ -6,7 +6,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 
 const CompareView = () => {
   const { hives } = useLiveData();
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const [selectedIds, setSelectedIds] = useState([]);
   const [showPicker, setShowPicker] = useState(false);
 
@@ -28,7 +28,7 @@ const CompareView = () => {
     { key: 'humidity', label: t.detail.humidity, icon: Droplets, unit: '%', color: 'text-cyan-400' },
     { key: 'battery', label: t.detail.battery, icon: Battery, unit: '%', color: 'text-emerald-400' },
     { key: 'sound', label: t.detail.soundLevel, icon: Volume2, unit: 'dB', color: 'text-purple-400' },
-    { key: 'weight', label: 'AĞIRLIK', icon: Weight, unit: 'kg', color: 'text-amber-400' },
+    { key: 'weight', label: lang === 'tr' ? 'AĞIRLIK' : 'WEIGHT', icon: Weight, unit: 'kg', color: 'text-amber-400' },
   ];
 
   return (
@@ -79,7 +79,7 @@ const CompareView = () => {
                       : 'bg-gray-800 border-gray-700 text-gray-400 hover:bg-gray-700'
                   }`}
                 >
-                  #{hive.id} {isSelected && '✓'}
+                  {hive.name || hive.id} {isSelected && '✓'}
                 </button>
               );
             })}
@@ -105,9 +105,9 @@ const CompareView = () => {
               const colors = getStatusColor(hive.status);
               return (
                 <div key={hive.id} className={`${colors.bg} ${colors.border} border rounded-lg p-4 text-center`}>
-                  <p className="text-xl font-bold text-gray-100">#{hive.id}</p>
+                  <p className="text-xl font-bold text-gray-100">{hive.name || hive.id}</p>
                   <span className={`text-xs font-semibold px-2 py-1 rounded ${colors.badge} text-white`}>
-                    {getStatusText(hive.status)}
+                    {getStatusText(hive.status, lang)}
                   </span>
                   {hive.alertType && (
                     <p className="text-xs text-gray-400 mt-2">{hive.alertType}</p>

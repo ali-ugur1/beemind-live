@@ -54,15 +54,15 @@ const WelcomeScreen = ({ onEnter }) => {
         <div className={`mb-8 transition-all duration-700 ${step >= 1 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
           <div className="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br from-amber-500/20 to-orange-500/20 border-2 border-amber-500/30 rounded-2xl mb-6 shadow-lg shadow-amber-500/10">
             <img
-              src="/logo.png"
-              alt="BeeMind Logo"
+              src="/hexora-logo.svg"
+              alt="Hexora Logo"
               className="w-16 h-16 object-contain"
               style={{ filter: 'drop-shadow(0 0 12px rgba(245, 158, 11, 0.5))' }}
               onError={(e) => { e.target.style.display = 'none'; }}
             />
           </div>
           <h1 className="text-5xl md:text-6xl font-bold text-white mb-3">
-            Bee<span className="text-amber-400">Mind</span>
+            Hex<span className="text-violet-400">ora</span>
           </h1>
           <p className="text-lg text-gray-400 font-medium">
             {isTr ? 'AI Destekli IoT Kovan Yonetim Sistemi' : 'AI-Powered IoT Hive Management System'}
@@ -105,7 +105,7 @@ const WelcomeScreen = ({ onEnter }) => {
 
       {/* Bottom Bar */}
       <div className="absolute bottom-6 left-0 right-0 flex items-center justify-center gap-6 text-xs text-gray-600">
-        <span>BeeMind v2.0</span>
+        <span>Hexora v2.0</span>
         <span>|</span>
         <span>TUBITAK 2204-A</span>
         <span>|</span>

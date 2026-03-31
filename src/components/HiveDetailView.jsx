@@ -1,13 +1,21 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
-import { ArrowLeft, CheckCircle, Sparkles, Crown, Thermometer, Droplet, Wind, Gauge, BarChart3, StickyNote, Plus, Trash2, Send, Image, X, Calendar, Clock } from 'lucide-react';
+import { ArrowLeft, CheckCircle, Sparkles, Crown, Thermometer, Droplet, Wind, Gauge, BarChart3, StickyNote, Plus, Trash2, Send, Image, X, Calendar, Clock, Weight, Activity, BatteryFull, Camera } from 'lucide-react';
 import { LineChart, Line, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid, AreaChart, Area } from 'recharts';
 import { getStatusColor, getStatusText } from '../data/mockData';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useTheme } from '../contexts/ThemeContext';
 import { api } from '../services/api';
 
-const NOTES_KEY = (id) => `beemind_notes_${id}`;
-const SENSOR_CACHE_KEY = (id) => `beemind_sensor_cache_${id}`;
-const CALENDAR_EVENTS_KEY = 'beemind_calendar_events';
+const NOTES_KEY = (id) => `hexora_notes_${id}`;
+const HIVE_PHOTO_KEY = (id) => `hexora_hive_photo_${id}`;
+const chartColors = (isDark) => ({
+  tooltip: { background: isDark ? '#1f2937' : '#ffffff', border: `1px solid ${isDark ? '#374151' : '#e0ddd5'}`, borderRadius: '8px' },
+  label: { color: isDark ? '#9ca3af' : '#666666' },
+  axis: isDark ? '#6b7280' : '#999999',
+  grid: isDark ? '#374151' : '#e0ddd5',
+});
+const SENSOR_CACHE_KEY = (id) => `hexora_sensor_cache_${id}`;
+const CALENDAR_EVENTS_KEY = 'hexora_calendar_events';
 
 // Son 24 saat sensor verisini simule et
 const generate24hData = (hive) => {
@@ -42,12 +50,58 @@ const EVENT_TYPES = {
 
 const HiveDetailView = ({ hive, onBack }) => {
   const { t, lang } = useLanguage();
+  const { theme } = useTheme();
+  const cc = chartColors(theme === 'dark');
   const [currentTime, setCurrentTime] = useState(new Date());
   const [activeTab, setActiveTab] = useState('general');
   const [notes, setNotes] = useState([]);
   const [newNote, setNewNote] = useState('');
   const [photoPreview, setPhotoPreview] = useState(null);
   const fileInputRef = useRef(null);
+  const profilePhotoRef = useRef(null);
+  const [hivePhoto, setHivePhoto] = useState(null);
+
+  const [photoUploading, setPhotoUploading] = useState(false);
+
+  // Kovan profil fotoğrafı yükle
+  useEffect(() => {
+    if (hive.photo) {
+      setHivePhoto(hive.photo);
+    } else {
+      try {
+        const saved = localStorage.getItem(HIVE_PHOTO_KEY(hive.id));
+        if (saved) setHivePhoto(saved);
+        else setHivePhoto(null);
+      } catch { setHivePhoto(null); }
+    }
+  }, [hive.id, hive.photo]);
+
+  const handleHivePhotoUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) return;
+    setPhotoUploading(true);
+    try {
+      const result = await api.uploadHivePhoto(hive.id, file);
+      setHivePhoto(result.photo);
+    } catch {
+      // Fallback: localStorage base64
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const base64 = ev.target.result;
+        setHivePhoto(base64);
+        try { localStorage.setItem(HIVE_PHOTO_KEY(hive.id), base64); } catch {}
+      };
+      reader.readAsDataURL(file);
+    } finally {
+      setPhotoUploading(false);
+    }
+  };
+
+  const removeHivePhoto = () => {
+    setHivePhoto(null);
+    try { localStorage.removeItem(HIVE_PHOTO_KEY(hive.id)); } catch {}
+  };
 
   // Etkinlikler — calendar'daki bu kovana ait etkinlikler
   const [hiveEvents, setHiveEvents] = useState([]);
@@ -207,7 +261,8 @@ const HiveDetailView = ({ hive, onBack }) => {
 
   // Heatmap verisi
   const heatmapData = useMemo(() => Array.from({ length: 10 }, (_, i) => {
-    const seed = ((parseInt(hive.id, 36) || 1) * (i + 1) * 137) % 100;
+    const idHash = hive.id.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0) || 1;
+    const seed = ((idHash) * (i + 1) * 137) % 100;
     const value = 25 + seed * 0.6;
     const status = seed < 30 ? 'low' : seed < 70 ? 'normal' : 'high';
     return { id: i + 1, value, status };
@@ -230,7 +285,7 @@ const HiveDetailView = ({ hive, onBack }) => {
   ];
 
   const colors = getStatusColor(hive.status);
-  const statusText = getStatusText(hive.status);
+  const statusText = getStatusText(hive.status, lang);
 
   const aiSuggestions = [
     {
@@ -272,12 +327,16 @@ const HiveDetailView = ({ hive, onBack }) => {
       seen: 'GORULDU',
       healthy: 'Saglikli',
       temp: 'SICAKLIK', humidity: 'NEM', sound: 'SES SEVIYESI', battery: 'PIL',
+      weight: 'AGIRLIK', vibration: 'TITRESIM', pressure: 'BASINC',
+      camera: 'KAMERA', cameraLive: 'Canli',
       goodCondition: 'Iyi Durumda',
       cachedWarning: 'ESP32 baglantisi yok — son bilinen degerler gosteriliyor',
       last24h: 'Son 24 Saat',
       tempChart: 'Sicaklik', humChart: 'Nem', soundChart: 'Ses Seviyesi', batChart: 'Pil',
+      weightChart: 'Agirlik',
       tempUnit: 'Kovan ic sicakligi (C)', humUnit: 'Kovan ic nem orani (%)',
       soundUnit: 'Kovan ses olcumu (dB)', batUnit: 'Pil seviyesi (%)',
+      weightUnit: 'Kovan agirligi (kg)',
       addNote: 'Not ekleyin...',
       noNotes: 'Henuz not eklenmedi',
       addPhoto: 'Fotograf ekle',
@@ -303,12 +362,16 @@ const HiveDetailView = ({ hive, onBack }) => {
       seen: 'SPOTTED',
       healthy: 'Healthy',
       temp: 'TEMPERATURE', humidity: 'HUMIDITY', sound: 'SOUND LEVEL', battery: 'BATTERY',
+      weight: 'WEIGHT', vibration: 'VIBRATION', pressure: 'PRESSURE',
+      camera: 'CAMERA', cameraLive: 'Live',
       goodCondition: 'Good Condition',
       cachedWarning: 'ESP32 not connected — showing last known values',
       last24h: 'Last 24 Hours',
       tempChart: 'Temperature', humChart: 'Humidity', soundChart: 'Sound Level', batChart: 'Battery',
+      weightChart: 'Weight',
       tempUnit: 'Hive internal temperature (C)', humUnit: 'Hive internal humidity (%)',
       soundUnit: 'Hive sound measurement (dB)', batUnit: 'Battery level (%)',
+      weightUnit: 'Hive weight (kg)',
       addNote: 'Add a note about this hive...',
       noNotes: 'No notes yet',
       addPhoto: 'Add photo',
@@ -336,9 +399,27 @@ const HiveDetailView = ({ hive, onBack }) => {
           <ArrowLeft className="w-5 h-5" />
           {tx.back}
         </button>
-        <div className="text-right">
-          <p className="text-xs text-gray-400">{tx.hive} #{hive.id}</p>
-          <p className="text-sm text-gray-300 font-mono">{formatDateTime(currentTime)}</p>
+        <div className="flex items-center gap-4">
+          {/* Kovan Profil Fotoğrafı */}
+          <div className="relative group">
+            <input type="file" ref={profilePhotoRef} accept="image/*" className="hidden" onChange={handleHivePhotoUpload} />
+            {hivePhoto ? (
+              <div className="relative">
+                <img src={hivePhoto} alt="Hive" className="w-14 h-14 rounded-lg object-cover border-2 border-gray-700 group-hover:border-amber-500 transition-colors cursor-pointer" onClick={() => profilePhotoRef.current?.click()} />
+                <button onClick={removeHivePhoto} className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                  <X className="w-3 h-3 text-white" />
+                </button>
+              </div>
+            ) : (
+              <button onClick={() => profilePhotoRef.current?.click()} className="w-14 h-14 rounded-lg border-2 border-dashed border-gray-700 hover:border-amber-500 flex items-center justify-center transition-colors">
+                <Image className="w-5 h-5 text-gray-600" />
+              </button>
+            )}
+          </div>
+          <div className="text-right">
+            <p className="text-xs text-gray-400">{hive.name || `${tx.hive} #${hive.id}`}</p>
+            <p className="text-sm text-gray-300 font-mono">{formatDateTime(currentTime)}</p>
+          </div>
         </div>
       </div>
 
@@ -466,25 +547,76 @@ const HiveDetailView = ({ hive, onBack }) => {
             </div>
           </div>
 
-          {/* Sensor Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            <SensorCard icon={Thermometer} title={tx.temp} value={`${sensorData.temp}°C`}
-              status={sensorData.cached ? tx.previousData : sensorData.temp > 37 ? tx.high : tx.goodCondition}
-              color={sensorData.cached ? 'text-gray-500' : sensorData.temp > 37 ? 'text-amber-400' : 'text-emerald-400'}
-              cached={sensorData.cached} />
-            <SensorCard icon={Droplet} title={tx.humidity} value={`${sensorData.humidity}%`}
-              status={sensorData.cached ? tx.previousData : tx.goodCondition}
-              color={sensorData.cached ? 'text-gray-500' : 'text-emerald-400'}
-              cached={sensorData.cached} />
-            <SensorCard icon={Wind} title={tx.sound} value={`${sensorData.sound}dB`}
-              status={sensorData.cached ? tx.previousData : sensorData.sound > 70 ? tx.high : tx.normal}
-              color={sensorData.cached ? 'text-gray-500' : sensorData.sound > 70 ? 'text-red-400' : 'text-emerald-400'}
-              cached={sensorData.cached} />
-            <SensorCard icon={Gauge} title={tx.battery} value={`${sensorData.battery}%`}
-              status={sensorData.cached ? tx.previousData : sensorData.battery < 20 ? tx.low : tx.goodCondition}
-              color={sensorData.cached ? 'text-gray-500' : sensorData.battery < 20 ? 'text-red-400' : 'text-emerald-400'}
-              cached={sensorData.cached} />
-          </div>
+          {/* Sensor Cards — adaptör tipine göre */}
+          {/* Basic: Sıcaklık, Nem, Ağırlık, Pil (4) */}
+          {/* Standard: Sıcaklık, Nem, Ağırlık, Pil, Ses, Basınç, Titreşim (7) */}
+          {/* Pro: Sıcaklık, Nem, Ağırlık, Pil, Ses, Basınç, Titreşim + Kamera (8) */}
+          {(() => {
+            const adapter = hive.adapterType || 'standard';
+            const isBasic = adapter === 'basic';
+            const isPro = adapter === 'pro';
+            const cards = [];
+            cards.push(
+              <SensorCard key="temp" icon={Thermometer} title={tx.temp} value={`${sensorData.temp}°C`}
+                status={sensorData.cached ? tx.previousData : sensorData.temp > 37 ? tx.high : tx.goodCondition}
+                color={sensorData.cached ? 'text-gray-500' : sensorData.temp > 37 ? 'text-amber-400' : 'text-emerald-400'}
+                cached={sensorData.cached} />
+            );
+            cards.push(
+              <SensorCard key="hum" icon={Droplet} title={tx.humidity} value={`${sensorData.humidity}%`}
+                status={sensorData.cached ? tx.previousData : tx.goodCondition}
+                color={sensorData.cached ? 'text-gray-500' : 'text-emerald-400'}
+                cached={sensorData.cached} />
+            );
+            cards.push(
+              <SensorCard key="weight" icon={Weight} title={tx.weight} value={`${sensorData.weight ?? 0}kg`}
+                status={sensorData.cached ? tx.previousData : tx.goodCondition}
+                color={sensorData.cached ? 'text-gray-500' : 'text-emerald-400'}
+                cached={sensorData.cached} />
+            );
+            cards.push(
+              <SensorCard key="bat" icon={BatteryFull} title={tx.battery} value={`${sensorData.battery}%`}
+                status={sensorData.cached ? tx.previousData : sensorData.battery < 20 ? tx.low : tx.goodCondition}
+                color={sensorData.cached ? 'text-gray-500' : sensorData.battery < 20 ? 'text-red-400' : 'text-emerald-400'}
+                cached={sensorData.cached} />
+            );
+            if (!isBasic) {
+              cards.push(
+                <SensorCard key="sound" icon={Wind} title={tx.sound} value={`${sensorData.sound ?? 0}dB`}
+                  status={sensorData.cached ? tx.previousData : (sensorData.sound ?? 0) > 70 ? tx.high : tx.normal}
+                  color={sensorData.cached ? 'text-gray-500' : (sensorData.sound ?? 0) > 70 ? 'text-red-400' : 'text-emerald-400'}
+                  cached={sensorData.cached} />
+              );
+              cards.push(
+                <SensorCard key="press" icon={Gauge} title={tx.pressure} value={`${hive.pressure ?? 0}hPa`}
+                  status={sensorData.cached ? tx.previousData : tx.normal}
+                  color={sensorData.cached ? 'text-gray-500' : 'text-emerald-400'}
+                  cached={sensorData.cached} />
+              );
+              cards.push(
+                <SensorCard key="vib" icon={Activity} title={tx.vibration} value={`${hive.vibration ?? 0}Hz`}
+                  status={sensorData.cached ? tx.previousData : tx.normal}
+                  color={sensorData.cached ? 'text-gray-500' : 'text-emerald-400'}
+                  cached={sensorData.cached} />
+              );
+            }
+            if (isPro) {
+              cards.push(
+                <div key="cam" className="bg-gray-900 border border-gray-800 rounded-lg p-4 flex flex-col items-center justify-center text-center">
+                  <Camera className="w-6 h-6 text-purple-400 mb-2" />
+                  <p className="text-xs font-semibold text-gray-400 uppercase">{tx.camera}</p>
+                  <p className="text-lg font-bold text-purple-400 mt-1">{tx.cameraLive}</p>
+                  <p className="text-xs text-emerald-400 mt-1">{tx.goodCondition}</p>
+                </div>
+              );
+            }
+            const colClass = cards.length <= 4 ? 'lg:grid-cols-4' : 'lg:grid-cols-4';
+            return (
+              <div className={`grid grid-cols-2 sm:grid-cols-2 ${colClass} gap-4`}>
+                {cards}
+              </div>
+            );
+          })()}
           {sensorData.cached && (
             <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-3 text-center">
               <p className="text-xs text-amber-400">{tx.cachedWarning}</p>
@@ -493,104 +625,51 @@ const HiveDetailView = ({ hive, onBack }) => {
         </>
       )}
 
-      {/* Charts Tab */}
-      {activeTab === 'charts' && (
-        <div className="space-y-6">
+      {/* Charts Tab — adaptör tipine göre */}
+      {activeTab === 'charts' && (() => {
+        const adapter = hive.adapterType || 'standard';
+        const isBasic = adapter === 'basic';
+        const isPro = adapter === 'pro';
+        const ChartBlock = ({ title, subtitle, dataKey, color, gradientId, domain, nameLabel }) => (
           <div className="bg-gray-900 border border-gray-800 rounded-lg p-6">
-            <h3 className="text-sm font-semibold text-gray-400 uppercase mb-1">{tx.last24h} — {tx.tempChart}</h3>
-            <p className="text-xs text-gray-600 mb-4">{tx.tempUnit}</p>
-            <div className="h-64">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={chartData}>
-                  <defs>
-                    <linearGradient id="tempGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#ef4444" stopOpacity={0.3} />
-                      <stop offset="100%" stopColor="#ef4444" stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                  <XAxis dataKey="time" stroke="#6b7280" tick={{ fontSize: 10 }} />
-                  <YAxis stroke="#6b7280" tick={{ fontSize: 10 }} domain={['auto', 'auto']} />
-                  <Tooltip contentStyle={{ background: '#1f2937', border: '1px solid #374151', borderRadius: '8px' }}
-                    labelStyle={{ color: '#9ca3af' }} itemStyle={{ color: '#ef4444' }} />
-                  <Area type="monotone" dataKey="temp" stroke="#ef4444" strokeWidth={2} fill="url(#tempGrad)" name={`${tx.tempChart} (°C)`} />
-                </AreaChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div className="bg-gray-900 border border-gray-800 rounded-lg p-6">
-              <h3 className="text-sm font-semibold text-gray-400 uppercase mb-1">{tx.last24h} — {tx.humChart}</h3>
-              <p className="text-xs text-gray-600 mb-4">{tx.humUnit}</p>
-              <div className="h-48">
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={chartData}>
-                    <defs>
-                      <linearGradient id="humGrad" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#06b6d4" stopOpacity={0.3} />
-                        <stop offset="100%" stopColor="#06b6d4" stopOpacity={0} />
-                      </linearGradient>
-                    </defs>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                    <XAxis dataKey="time" stroke="#6b7280" tick={{ fontSize: 10 }} />
-                    <YAxis stroke="#6b7280" tick={{ fontSize: 10 }} />
-                    <Tooltip contentStyle={{ background: '#1f2937', border: '1px solid #374151', borderRadius: '8px' }}
-                      labelStyle={{ color: '#9ca3af' }} />
-                    <Area type="monotone" dataKey="humidity" stroke="#06b6d4" strokeWidth={2} fill="url(#humGrad)" name={`${tx.humChart} (%)`} />
-                  </AreaChart>
-                </ResponsiveContainer>
-              </div>
-            </div>
-
-            <div className="bg-gray-900 border border-gray-800 rounded-lg p-6">
-              <h3 className="text-sm font-semibold text-gray-400 uppercase mb-1">{tx.last24h} — {tx.soundChart}</h3>
-              <p className="text-xs text-gray-600 mb-4">{tx.soundUnit}</p>
-              <div className="h-48">
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={chartData}>
-                    <defs>
-                      <linearGradient id="soundGrad" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#a855f7" stopOpacity={0.3} />
-                        <stop offset="100%" stopColor="#a855f7" stopOpacity={0} />
-                      </linearGradient>
-                    </defs>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                    <XAxis dataKey="time" stroke="#6b7280" tick={{ fontSize: 10 }} />
-                    <YAxis stroke="#6b7280" tick={{ fontSize: 10 }} />
-                    <Tooltip contentStyle={{ background: '#1f2937', border: '1px solid #374151', borderRadius: '8px' }}
-                      labelStyle={{ color: '#9ca3af' }} />
-                    <Area type="monotone" dataKey="sound" stroke="#a855f7" strokeWidth={2} fill="url(#soundGrad)" name={`${tx.soundChart} (dB)`} />
-                  </AreaChart>
-                </ResponsiveContainer>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-gray-900 border border-gray-800 rounded-lg p-6">
-            <h3 className="text-sm font-semibold text-gray-400 uppercase mb-1">{tx.last24h} — {tx.batChart}</h3>
-            <p className="text-xs text-gray-600 mb-4">{tx.batUnit}</p>
+            <h3 className="text-sm font-semibold text-gray-400 uppercase mb-1">{tx.last24h} — {title}</h3>
+            <p className="text-xs text-gray-600 mb-4">{subtitle}</p>
             <div className="h-48">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={chartData}>
                   <defs>
-                    <linearGradient id="batGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#10b981" stopOpacity={0.3} />
-                      <stop offset="100%" stopColor="#10b981" stopOpacity={0} />
+                    <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor={color} stopOpacity={0.3} />
+                      <stop offset="100%" stopColor={color} stopOpacity={0} />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                  <XAxis dataKey="time" stroke="#6b7280" tick={{ fontSize: 10 }} />
-                  <YAxis stroke="#6b7280" tick={{ fontSize: 10 }} domain={[0, 100]} />
-                  <Tooltip contentStyle={{ background: '#1f2937', border: '1px solid #374151', borderRadius: '8px' }}
-                    labelStyle={{ color: '#9ca3af' }} />
-                  <Area type="monotone" dataKey="battery" stroke="#10b981" strokeWidth={2} fill="url(#batGrad)" name={`${tx.batChart} (%)`} />
+                  <CartesianGrid strokeDasharray="3 3" stroke={cc.grid} />
+                  <XAxis dataKey="time" stroke={cc.axis} tick={{ fontSize: 10 }} />
+                  <YAxis stroke={cc.axis} tick={{ fontSize: 10 }} domain={domain || ['auto', 'auto']} />
+                  <Tooltip contentStyle={cc.tooltip} labelStyle={cc.label} />
+                  <Area type="monotone" dataKey={dataKey} stroke={color} strokeWidth={2} fill={`url(#${gradientId})`} name={nameLabel} />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
           </div>
+        );
+        return (
+        <div className="space-y-6">
+          <ChartBlock title={tx.tempChart} subtitle={tx.tempUnit} dataKey="temp" color="#ef4444" gradientId="tempGrad" nameLabel={`${tx.tempChart} (°C)`} />
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <ChartBlock title={tx.humChart} subtitle={tx.humUnit} dataKey="humidity" color="#06b6d4" gradientId="humGrad" nameLabel={`${tx.humChart} (%)`} />
+            <ChartBlock title={tx.weightChart} subtitle={tx.weightUnit} dataKey="weight" color="#f59e0b" gradientId="weightGrad" nameLabel={`${tx.weightChart} (kg)`} />
+          </div>
+
+          <ChartBlock title={tx.batChart} subtitle={tx.batUnit} dataKey="battery" color="#10b981" gradientId="batGrad" domain={[0, 100]} nameLabel={`${tx.batChart} (%)`} />
+
+          {!isBasic && (
+            <ChartBlock title={tx.soundChart} subtitle={tx.soundUnit} dataKey="sound" color="#a855f7" gradientId="soundGrad" nameLabel={`${tx.soundChart} (dB)`} />
+          )}
         </div>
-      )}
+        );
+      })()}
 
       {/* Notes Tab */}
       {activeTab === 'notes' && (

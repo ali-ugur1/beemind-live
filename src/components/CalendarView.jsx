@@ -4,7 +4,7 @@ import { useLiveData } from '../contexts/LiveDataContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useToast } from '../contexts/ToastContext';
 
-const EVENTS_KEY = 'beemind_calendar_events';
+const EVENTS_KEY = 'hexora_calendar_events';
 
 const EVENT_TYPES = {
   medication: { icon: Droplets, color: 'text-purple-400 bg-purple-500/10 border-purple-500/30' },
@@ -40,15 +40,18 @@ const CalendarView = ({ hives = [] }) => {
     try { localStorage.setItem(EVENTS_KEY, JSON.stringify(userEvents)); } catch {}
   }, [userEvents]);
 
-  // Generate auto events from hive statuses
+  // Generate auto events from hive statuses + seasonal maintenance reminders
   const autoEvents = useMemo(() => {
     const events = [];
     const now = new Date();
+    const yr = now.getFullYear();
+
+    // Hive alarm/warning events
     allHives.forEach(hive => {
       if (hive.status === 'critical') {
         events.push({
           id: `auto-alarm-${hive.id}`,
-          date: new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString(),
+          date: new Date(yr, now.getMonth(), now.getDate()).toISOString(),
           type: 'alarm',
           hiveId: hive.id,
           title: hive.alertType || (lang === 'tr' ? 'Kritik Alarm' : 'Critical Alarm'),
@@ -59,7 +62,7 @@ const CalendarView = ({ hives = [] }) => {
       if (hive.status === 'warning') {
         events.push({
           id: `auto-warning-${hive.id}`,
-          date: new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString(),
+          date: new Date(yr, now.getMonth(), now.getDate()).toISOString(),
           type: 'warning',
           hiveId: hive.id,
           title: hive.alertType || (lang === 'tr' ? 'Uyari' : 'Warning'),
@@ -68,6 +71,41 @@ const CalendarView = ({ hives = [] }) => {
         });
       }
     });
+
+    // ── Seasonal Maintenance Reminders ──
+    const isTr = lang === 'tr';
+    const schedule = [
+      // Haftalık kontrol — her Pazartesi
+      ...(() => {
+        const mondays = [];
+        const d = new Date(yr, now.getMonth(), 1);
+        while (d.getMonth() === now.getMonth()) {
+          if (d.getDay() === 1) {
+            mondays.push({
+              id: `maint-inspect-${d.getDate()}-${now.getMonth()}`,
+              date: new Date(yr, now.getMonth(), d.getDate()).toISOString(),
+              type: 'inspection',
+              title: isTr ? 'Haftalik Kovan Kontrolu' : 'Weekly Hive Inspection',
+              description: isTr ? 'Tum kovanlari kontrol edin: ana ari, yavru, besin, hastalik belirtileri' : 'Check all hives: queen, brood, food, disease signs',
+              auto: true,
+            });
+          }
+          d.setDate(d.getDate() + 1);
+        }
+        return mondays;
+      })(),
+      // Mevsimsel bakım
+      { id: `maint-varroa-spring-${yr}`, date: new Date(yr, 2, 15).toISOString(), type: 'medication', title: isTr ? 'Varroa Ilkbahar Tedavisi' : 'Spring Varroa Treatment', description: isTr ? 'Oksalik asit veya timol uygulama zamani' : 'Time for oxalic acid or thymol application', auto: true },
+      { id: `maint-varroa-fall-${yr}`, date: new Date(yr, 8, 1).toISOString(), type: 'medication', title: isTr ? 'Varroa Sonbahar Tedavisi' : 'Fall Varroa Treatment', description: isTr ? 'Hasat sonrasi varroa tedavisi' : 'Post-harvest varroa treatment', auto: true },
+      { id: `maint-feed-spring-${yr}`, date: new Date(yr, 2, 1).toISOString(), type: 'feeding', title: isTr ? 'Ilkbahar Beslemesi' : 'Spring Feeding', description: isTr ? 'Sekerli su veya kek ile besleme' : 'Feed with sugar syrup or patty', auto: true },
+      { id: `maint-feed-fall-${yr}`, date: new Date(yr, 9, 1).toISOString(), type: 'feeding', title: isTr ? 'Sonbahar Beslemesi' : 'Fall Feeding', description: isTr ? 'Kis oncesi besin depolamasi icin besleme' : 'Feeding for winter food storage', auto: true },
+      { id: `maint-harvest-${yr}`, date: new Date(yr, 6, 15).toISOString(), type: 'harvest', title: isTr ? 'Bal Hasadi Donemi' : 'Honey Harvest Season', description: isTr ? 'Ana hasat donemi — petekleri kontrol edin' : 'Main harvest period — check frames', auto: true },
+      { id: `maint-winter-prep-${yr}`, date: new Date(yr, 10, 1).toISOString(), type: 'maintenance', title: isTr ? 'Kis Hazirlik' : 'Winter Preparation', description: isTr ? 'Kovanlari yalitin, giris daraltma, fare koruma' : 'Insulate hives, reduce entrance, mouse guard', auto: true },
+      { id: `maint-spring-check-${yr}`, date: new Date(yr, 1, 15).toISOString(), type: 'inspection', title: isTr ? 'Ilkbahar Ilk Kontrol' : 'First Spring Check', description: isTr ? 'Ana ari kontrolu, besin durumu, koloni gucu' : 'Queen check, food status, colony strength', auto: true },
+      { id: `maint-queen-check-${yr}`, date: new Date(yr, 4, 1).toISOString(), type: 'inspection', title: isTr ? 'Ana Ari Kontrolu' : 'Queen Bee Check', description: isTr ? 'Ana ari performansi ve yumurtlama kontrolu' : 'Queen performance and laying check', auto: true },
+    ];
+
+    events.push(...schedule);
     return events;
   }, [allHives, lang]);
 
@@ -450,7 +488,7 @@ const EventModal = ({ event, hives, selectedDay, currentMonth, currentYear, lang
               className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-gray-100 focus:border-amber-500/50 focus:outline-none"
             >
               {hives.map(h => (
-                <option key={h.id} value={h.id}>{lang === 'tr' ? 'Kovan' : 'Hive'} #{h.id}</option>
+                <option key={h.id} value={h.id}>{h.name || `${lang === 'tr' ? 'Kovan' : 'Hive'} #${h.id}`}</option>
               ))}
             </select>
           </div>

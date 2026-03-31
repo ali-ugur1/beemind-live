@@ -1,16 +1,21 @@
 import { AlertTriangle, X } from 'lucide-react';
 import { useEffect } from 'react';
+import { useLanguage } from '../contexts/LanguageContext';
 
 const ConfirmDialog = ({ 
   isOpen, 
   onClose, 
   onConfirm, 
-  title = 'Emin misiniz?',
+  title,
   message,
-  confirmText = 'Onayla',
-  cancelText = 'İptal',
+  confirmText,
+  cancelText,
   type = 'warning' // 'warning', 'danger', 'info'
 }) => {
+  const { lang } = useLanguage();
+  const _title = title || (lang === 'tr' ? 'Emin misiniz?' : 'Are you sure?');
+  const _confirmText = confirmText || (lang === 'tr' ? 'Onayla' : 'Confirm');
+  const _cancelText = cancelText || (lang === 'tr' ? 'İptal' : 'Cancel');
   // ESC tuşu ile kapat
   useEffect(() => {
     const handleEsc = (e) => {
@@ -56,7 +61,7 @@ const ConfirmDialog = ({
         <div className="flex items-start justify-between p-6 border-b border-gray-800">
           <div className="flex items-center gap-3">
             <Icon className={`w-6 h-6 ${config.color}`} />
-            <h3 className="text-lg font-semibold text-gray-100">{title}</h3>
+            <h3 className="text-lg font-semibold text-gray-100">{_title}</h3>
           </div>
           <button
             onClick={onClose}
@@ -77,7 +82,7 @@ const ConfirmDialog = ({
             onClick={onClose}
             className="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg font-medium transition-colors"
           >
-            {cancelText}
+            {_cancelText}
           </button>
           <button
             onClick={() => {
@@ -86,7 +91,7 @@ const ConfirmDialog = ({
             }}
             className={`px-4 py-2 ${config.bg} ${config.bgHover} text-white rounded-lg font-medium transition-colors`}
           >
-            {confirmText}
+            {_confirmText}
           </button>
         </div>
       </div>

@@ -7,8 +7,8 @@ export default {
   theme: {
     extend: {
       colors: {
-        'beemind-yellow': '#fbbf24',
-        'beemind-amber': '#f59e0b',
+        'hexora-yellow': '#fbbf24',
+        'hexora-amber': '#f59e0b',
       },
       animation: {
         'pulse': 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',

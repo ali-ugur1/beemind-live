@@ -21,9 +21,9 @@ const Footer = ({ onTabChange }) => {
       return;
     }
     // Open mailto
-    const subject = encodeURIComponent(contactForm.subject || 'BeeMind Destek');
+    const subject = encodeURIComponent(contactForm.subject || 'Hexora Destek');
     const body = encodeURIComponent(`${lang === 'tr' ? 'Gonderen' : 'From'}: ${contactForm.name} (${contactForm.email})\n\n${contactForm.message}`);
-    window.open(`mailto:aliugurpamuk@gmail.com?subject=${subject}&body=${body}`, '_self');
+    window.open(`mailto:hexoraproject@gmail.com?subject=${subject}&body=${body}`, '_self');
     toast.success(lang === 'tr' ? 'Mail istemcisi aciliyor...' : 'Opening mail client...');
     setContactForm({ name: '', email: '', subject: '', message: '' });
     setShowContactForm(false);
@@ -38,14 +38,14 @@ const Footer = ({ onTabChange }) => {
             <div className="flex items-center gap-2 mb-2">
               <div className="w-6 h-6 bg-amber-500/20 rounded flex items-center justify-center">
                 <img
-                  src="/logo.png"
-                  alt="BeeMind"
+                  src="/hexora-logo.svg"
+                  alt="Hexora"
                   className="w-4 h-4 object-contain"
                   style={{ filter: 'brightness(1.2)' }}
                   onError={(e) => { e.target.style.display = 'none'; }}
                 />
               </div>
-              <span className="text-sm font-bold text-amber-400">BeeMind</span>
+              <span className="text-sm font-bold text-blue-400">Hexora</span>
               <span className="text-xs text-gray-600">v2.0</span>
             </div>
             <p className="text-xs text-gray-500 leading-relaxed">
@@ -96,7 +96,7 @@ const Footer = ({ onTabChange }) => {
             <ul className="space-y-1 text-xs text-gray-500">
               <li>ESP32 + DHT22 + HX711</li>
               <li>React 18 + Vite + TailwindCSS</li>
-              <li>Node.js + PostgreSQL</li>
+              <li>Node.js + Express + JSON</li>
             </ul>
           </div>
 
@@ -112,7 +112,7 @@ const Footer = ({ onTabChange }) => {
               <Mail className="w-3 h-3" />
               {lang === 'tr' ? 'Bize Ulasin' : 'Contact Us'}
             </button>
-            <p className="text-xs text-gray-600">aliugurpamuk@gmail.com</p>
+            <p className="text-xs text-gray-600">hexoraproject@gmail.com</p>
           </div>
         </div>
 
@@ -167,7 +167,7 @@ const Footer = ({ onTabChange }) => {
         {/* Bottom Bar */}
         <div className="border-t border-gray-800 pt-4 flex flex-col sm:flex-row items-center justify-between gap-2">
           <p className="text-xs text-gray-600">
-            &copy; {year} BeeMind. {lang === 'tr' ? 'Tum haklari saklidir.' : 'All rights reserved.'}
+            &copy; {year} Hexora. {lang === 'tr' ? 'Tum haklari saklidir.' : 'All rights reserved.'}
           </p>
           <div className="flex items-center gap-4 text-xs text-gray-600">
             <span className="flex items-center gap-1">

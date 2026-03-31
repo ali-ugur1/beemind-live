@@ -13,7 +13,7 @@ export const useLiveData = () => {
   return context;
 };
 
-const HIVES_STORAGE_KEY = 'beemind_hives';
+const HIVES_STORAGE_KEY = 'hexora_hives';
 
 // localStorage'dan kovanları al, yoksa varsayılan tek kovan
 const getLocalHives = () => {
@@ -95,7 +95,7 @@ export const LiveDataProvider = ({ children }) => {
     try {
       let locationName = 'Konya';
       try {
-        const saved = localStorage.getItem('beemind_settings');
+        const saved = localStorage.getItem('hexora_settings');
         if (saved) {
           const parsed = JSON.parse(saved);
           if (parsed.location) {
@@ -104,7 +104,7 @@ export const LiveDataProvider = ({ children }) => {
         }
       } catch {}
 
-      const lang = localStorage.getItem('beemind_language') || 'tr';
+      const lang = localStorage.getItem('hexora_language') || 'tr';
       const weatherData = await fetchWeather(locationName, lang);
       if (weatherData) setWeather(weatherData);
     } catch (err) {
@@ -127,28 +127,36 @@ export const LiveDataProvider = ({ children }) => {
     };
   }, [fetchLiveData, fetchAuxData]);
 
-  const deleteHive = useCallback((hiveId) => {
+  const deleteHive = useCallback(async (hiveId) => {
     setHives(prev => prev.filter(h => h.id !== hiveId));
+    try { await api.deleteHive(hiveId); } catch (err) { console.warn('Backend hive delete failed:', err.message); }
   }, []);
 
   const addHive = useCallback((newHive) => {
     setHives(prev => [...prev, newHive]);
   }, []);
 
+  const updateHive = useCallback((hiveId, data) => {
+    setHives(prev => prev.map(h => h.id === hiveId ? { ...h, ...data } : h));
+  }, []);
+
   // Bildirimler otomatik kovan durumlarından
   const notifications = useMemo(() => {
+    const lang = localStorage.getItem('hexora_language') || 'tr';
+    const isTr = lang === 'tr';
     const notifs = [];
     let id = 1;
     hives.forEach(hive => {
       if (hive.status === 'critical') {
-        notifs.push({ id: id++, type: 'critical', hiveId: hive.id, message: hive.alertType || 'Kritik durum algilandi', time: hive.lastUpdate, read: false });
+        notifs.push({ id: id++, type: 'critical', hiveId: hive.id, message: hive.alertType || (isTr ? 'Kritik durum algilandi' : 'Critical status detected'), time: hive.lastUpdate, read: false });
       } else if (hive.status === 'warning') {
-        notifs.push({ id: id++, type: 'warning', hiveId: hive.id, message: hive.alertType || 'Uyari durumu', time: hive.lastUpdate, read: false });
+        notifs.push({ id: id++, type: 'warning', hiveId: hive.id, message: hive.alertType || (isTr ? 'Uyari durumu' : 'Warning status'), time: hive.lastUpdate, read: false });
       }
     });
     hives.filter(h => h.battery < 20).forEach(hive => {
-      if (!notifs.find(n => n.hiveId === hive.id && n.message.includes('Pil'))) {
-        notifs.push({ id: id++, type: 'warning', hiveId: hive.id, message: `Dusuk Pil Seviyesi (%${hive.battery})`, time: hive.lastUpdate, read: true });
+      const batMsg = isTr ? `Dusuk Pil Seviyesi (%${hive.battery})` : `Low Battery Level (${hive.battery}%)`;
+      if (!notifs.find(n => n.hiveId === hive.id && (n.message.includes('Pil') || n.message.includes('Battery')))) {
+        notifs.push({ id: id++, type: 'warning', hiveId: hive.id, message: batMsg, time: hive.lastUpdate, read: true });
       }
     });
     return notifs;
@@ -156,7 +164,7 @@ export const LiveDataProvider = ({ children }) => {
 
   const value = {
     hives, apiConnected, lastApiUpdate, loading, error,
-    refreshData: fetchLiveData, deleteHive, addHive,
+    refreshData: fetchLiveData, deleteHive, addHive, updateHive,
     gateway, weather, notifications
   };
 
