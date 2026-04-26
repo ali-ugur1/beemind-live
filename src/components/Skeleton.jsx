@@ -1,86 +1,344 @@
-// Skeleton için base component
-const SkeletonBase = ({ className = '', animate = true }) => (
-  <div
-    className={`bg-gray-800 rounded ${animate ? 'animate-pulse' : ''} ${className}`}
-  />
-);
+import { useEffect, useRef } from "react";
 
-// Kart skeleton
+// ─── Shimmer keyframe injection ───────────────────────────────────────────────
+const SHIMMER_CSS = `
+  @keyframes shimmer {
+    0%   { background-position: -600px 0; }
+    100% { background-position:  600px 0; }
+  }
+  @keyframes skeleton-fade {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.55; }
+  }
+  .skeleton-shimmer {
+    background: linear-gradient(
+      90deg,
+      #1a1f2e 0%,
+      #252b3b 40%,
+      #2e3650 50%,
+      #252b3b 60%,
+      #1a1f2e 100%
+    );
+    background-size: 600px 100%;
+    animation: shimmer 1.8s ease-in-out infinite;
+    border-radius: 6px;
+  }
+  .skeleton-pulse {
+    background: #1a1f2e;
+    animation: skeleton-fade 1.8s ease-in-out infinite;
+    border-radius: 6px;
+  }
+`;
+
+function useStyleInjection() {
+  const injected = useRef(false);
+  useEffect(() => {
+    if (injected.current) return;
+    injected.current = true;
+    const el = document.createElement("style");
+    el.textContent = SHIMMER_CSS;
+    document.head.appendChild(el);
+    return () => document.head.removeChild(el);
+  }, []);
+}
+
+// ─── SkeletonBase ─────────────────────────────────────────────────────────────
+const SkeletonBase = ({
+  className = "",
+  style = {},
+  animate = true,
+  shimmer = true,
+}) => {
+  useStyleInjection();
+  const effect = !animate
+    ? ""
+    : shimmer
+      ? "skeleton-shimmer"
+      : "skeleton-pulse";
+  return (
+    <div
+      className={`${effect} ${className}`}
+      style={style}
+      aria-hidden="true"
+    />
+  );
+};
+
+// ─── SkeletonCard ─────────────────────────────────────────────────────────────
 export const SkeletonCard = () => (
-  <div className="bg-gray-900 border border-gray-800 rounded-lg p-6 space-y-4">
-    <SkeletonBase className="h-4 w-24" />
-    <SkeletonBase className="h-10 w-32" />
-    <SkeletonBase className="h-3 w-full" />
+  <div
+    style={{
+      background: "linear-gradient(135deg, #0f1318 0%, #141920 100%)",
+      border: "1px solid #1e2535",
+      boxShadow: "0 4px 24px rgba(0,0,0,0.35)",
+      borderRadius: "12px",
+      padding: "24px",
+      display: "flex",
+      flexDirection: "column",
+      gap: "16px",
+    }}
+  >
+    <SkeletonBase style={{ height: "12px", width: "80px" }} />
+    <SkeletonBase style={{ height: "36px", width: "112px" }} />
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: "8px",
+        paddingTop: "4px",
+      }}
+    >
+      <SkeletonBase
+        style={{ height: "12px", width: "12px", borderRadius: "50%" }}
+      />
+      <SkeletonBase style={{ height: "12px", width: "144px" }} />
+    </div>
   </div>
 );
 
-// Stats card skeleton
+// ─── SkeletonStats ────────────────────────────────────────────────────────────
 export const SkeletonStats = () => (
-  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-    {[1, 2, 3].map(i => (
-      <SkeletonCard key={i} />
+  <div
+    style={{
+      display: "grid",
+      gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+      gap: "20px",
+      marginBottom: "24px",
+    }}
+  >
+    {[0, 1, 2].map((i) => (
+      <div key={i} style={{ animationDelay: `${i * 120}ms` }}>
+        <SkeletonCard />
+      </div>
     ))}
   </div>
 );
 
-// Tablo satırı skeleton
-export const SkeletonTableRow = () => (
-  <div className="grid grid-cols-12 gap-4 px-6 py-5 border-b border-gray-800">
-    <div className="col-span-1">
-      <SkeletonBase className="h-4 w-4 rounded" />
+// ─── SkeletonTableRow ─────────────────────────────────────────────────────────
+export const SkeletonTableRow = ({ index = 0 }) => (
+  <div
+    style={{
+      display: "grid",
+      gridTemplateColumns: "repeat(12, 1fr)",
+      gap: "16px",
+      padding: "18px 24px",
+      borderBottom: "1px solid #1a2030",
+      alignItems: "center",
+    }}
+  >
+    {/* checkbox */}
+    <div style={{ gridColumn: "span 1" }}>
+      <SkeletonBase
+        style={{ height: "16px", width: "16px", borderRadius: "4px" }}
+      />
     </div>
-    <div className="col-span-1">
-      <SkeletonBase className="h-3 w-3 rounded-full" />
+    {/* status dot */}
+    <div style={{ gridColumn: "span 1" }}>
+      <SkeletonBase
+        style={{ height: "12px", width: "12px", borderRadius: "50%" }}
+      />
     </div>
-    <div className="col-span-1">
-      <SkeletonBase className="h-5 w-12" />
+    {/* badge */}
+    <div style={{ gridColumn: "span 1" }}>
+      <SkeletonBase
+        style={{ height: "20px", width: "56px", borderRadius: "999px" }}
+      />
     </div>
-    <div className="col-span-5">
-      <SkeletonBase className="h-4 w-48" />
+    {/* main label */}
+    <div style={{ gridColumn: "span 5" }}>
+      <SkeletonBase style={{ height: "14px", width: "176px" }} />
     </div>
-    <div className="col-span-1">
-      <SkeletonBase className="h-4 w-12" />
+    {/* meta */}
+    <div style={{ gridColumn: "span 1" }}>
+      <SkeletonBase style={{ height: "14px", width: "40px" }} />
     </div>
-    <div className="col-span-3 flex justify-end gap-2">
-      <SkeletonBase className="h-9 w-24" />
-      <SkeletonBase className="h-9 w-16" />
+    {/* actions */}
+    <div
+      style={{
+        gridColumn: "span 3",
+        display: "flex",
+        justifyContent: "flex-end",
+        gap: "8px",
+      }}
+    >
+      <SkeletonBase
+        style={{ height: "32px", width: "96px", borderRadius: "8px" }}
+      />
+      <SkeletonBase
+        style={{ height: "32px", width: "64px", borderRadius: "8px" }}
+      />
     </div>
   </div>
 );
 
-// Liste skeleton
+// ─── SkeletonTable ────────────────────────────────────────────────────────────
 export const SkeletonTable = ({ rows = 5 }) => (
-  <div className="bg-gray-900 border border-gray-800 rounded-lg overflow-hidden">
-    <div className="px-6 py-4 bg-gray-800 border-b border-gray-700">
-      <SkeletonBase className="h-4 w-full" />
+  <div
+    style={{
+      background: "#0c1017",
+      border: "1px solid #1a2030",
+      borderRadius: "12px",
+      overflow: "hidden",
+      boxShadow: "0 8px 32px rgba(0,0,0,0.4)",
+    }}
+  >
+    {/* header */}
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: "16px",
+        padding: "16px 24px",
+        background: "linear-gradient(90deg, #111620 0%, #141b28 100%)",
+        borderBottom: "1px solid #1a2030",
+      }}
+    >
+      <SkeletonBase
+        style={{
+          height: "12px",
+          width: "12px",
+          borderRadius: "50%",
+          flexShrink: 0,
+        }}
+      />
+      <SkeletonBase style={{ height: "12px", width: "160px" }} />
+      <div style={{ marginLeft: "auto" }}>
+        <SkeletonBase
+          style={{ height: "28px", width: "112px", borderRadius: "8px" }}
+        />
+      </div>
     </div>
+
+    {/* rows */}
     {Array.from({ length: rows }).map((_, i) => (
-      <SkeletonTableRow key={i} />
+      <SkeletonTableRow key={i} index={i} />
     ))}
+
+    {/* footer */}
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        padding: "12px 24px",
+        borderTop: "1px solid #1a2030",
+        background: "#0c1017",
+      }}
+    >
+      <SkeletonBase style={{ height: "12px", width: "96px" }} />
+      <div style={{ display: "flex", gap: "8px" }}>
+        {[0, 1, 2].map((i) => (
+          <SkeletonBase
+            key={i}
+            style={{ height: "28px", width: "28px", borderRadius: "6px" }}
+          />
+        ))}
+      </div>
+    </div>
   </div>
 );
 
-// Detay sayfası skeleton
+// ─── SkeletonDetail ───────────────────────────────────────────────────────────
 export const SkeletonDetail = () => (
-  <div className="space-y-6">
-    <div className="flex items-center justify-between">
-      <SkeletonBase className="h-10 w-32" />
-      <SkeletonBase className="h-6 w-48" />
-    </div>
-    <div className="bg-gray-900 border border-gray-800 rounded-lg p-6 space-y-4">
-      <SkeletonBase className="h-8 w-64" />
-      <SkeletonBase className="h-4 w-full" />
-      <SkeletonBase className="h-32 w-full" />
-    </div>
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      <div className="lg:col-span-2">
-        <SkeletonBase className="h-64 w-full rounded-lg" />
+  <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+    {/* breadcrumb row */}
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+      }}
+    >
+      <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+        <SkeletonBase
+          style={{ height: "32px", width: "32px", borderRadius: "8px" }}
+        />
+        <SkeletonBase style={{ height: "16px", width: "128px" }} />
       </div>
-      <div>
-        <SkeletonBase className="h-64 w-full rounded-lg" />
+      <SkeletonBase
+        style={{ height: "20px", width: "192px", borderRadius: "999px" }}
+      />
+    </div>
+
+    {/* main info card */}
+    <div
+      style={{
+        background: "#0c1017",
+        border: "1px solid #1a2030",
+        borderRadius: "12px",
+        padding: "24px",
+        display: "flex",
+        flexDirection: "column",
+        gap: "20px",
+        boxShadow: "0 8px 32px rgba(0,0,0,0.4)",
+      }}
+    >
+      <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+        <SkeletonBase
+          style={{
+            height: "40px",
+            width: "40px",
+            flexShrink: 0,
+            borderRadius: "10px",
+          }}
+        />
+        <div
+          style={{
+            flex: 1,
+            display: "flex",
+            flexDirection: "column",
+            gap: "8px",
+          }}
+        >
+          <SkeletonBase style={{ height: "20px", width: "224px" }} />
+          <SkeletonBase style={{ height: "12px", width: "320px" }} />
+        </div>
+        <SkeletonBase
+          style={{ height: "32px", width: "96px", borderRadius: "8px" }}
+        />
+      </div>
+
+      {/* divider */}
+      <div style={{ height: "1px", background: "#1a2030" }} />
+
+      {/* text lines */}
+      <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+        {[1, 0.9, 0.95, 0.7].map((w, i) => (
+          <SkeletonBase
+            key={i}
+            style={{ height: "12px", width: `${w * 100}%` }}
+          />
+        ))}
+      </div>
+
+      {/* content block */}
+      <SkeletonBase
+        style={{ height: "112px", width: "100%", borderRadius: "10px" }}
+      />
+    </div>
+
+    {/* two-column section */}
+    <div
+      style={{
+        display: "grid",
+        gridTemplateColumns: "2fr 1fr",
+        gap: "20px",
+      }}
+    >
+      <SkeletonBase
+        style={{ height: "260px", width: "100%", borderRadius: "12px" }}
+      />
+      <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+        <SkeletonBase
+          style={{ height: "120px", width: "100%", borderRadius: "12px" }}
+        />
+        <SkeletonBase
+          style={{ height: "128px", width: "100%", borderRadius: "12px" }}
+        />
       </div>
     </div>
   </div>
 );
 
+// ─── Preview (default export) ─────────────────────────────────────────────────
 export default SkeletonBase;
