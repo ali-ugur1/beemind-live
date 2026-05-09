@@ -1,6 +1,6 @@
 #!/bin/bash
 # ╔══════════════════════════════════════════════════════════════════╗
-# ║  Hexora — Ubuntu Production Deployment Script                     ║
+# ║  BeeMora — Ubuntu Production Deployment Script                    ║
 # ║                                                                 ║
 # ║  Bu script ilk kurulum veya güncelleme için kullanılır.        ║
 # ║  Kullanım:                                                     ║
@@ -25,13 +25,13 @@ error() { echo -e "${RED}[ERROR]${NC} $1"; exit 1; }
 
 # ── Değişkenler ──────────────────────────────────────────────────
 APP_DIR="$(cd "$(dirname "$0")" && pwd)"
-APP_NAME="hexora-api"
+APP_NAME="beemora-api"
 NODE_VERSION="20"
 MODE="${1:-full}"  # "full" veya "update"
 
 echo ""
 echo "════════════════════════════════════════════════════"
-echo "  Hexora Deployment Script"
+echo "  BeeMora Deployment Script"
 echo "  Mode: $MODE"
 echo "  Directory: $APP_DIR"
 echo "════════════════════════════════════════════════════"
@@ -143,8 +143,8 @@ echo "  sudo env PATH=\$PATH:$(which node) $(which pm2) startup systemd -u $USER
 if [ "$MODE" = "full" ]; then
   if [ -f "nginx.conf" ]; then
     info "Nginx yapılandırılıyor..."
-    sudo cp nginx.conf /etc/nginx/sites-available/hexora
-    sudo ln -sf /etc/nginx/sites-available/hexora /etc/nginx/sites-enabled/hexora
+    sudo cp nginx.conf /etc/nginx/sites-available/beemora
+    sudo ln -sf /etc/nginx/sites-available/beemora /etc/nginx/sites-enabled/beemora
     sudo rm -f /etc/nginx/sites-enabled/default 2>/dev/null || true
 
     if sudo nginx -t 2>/dev/null; then
@@ -153,7 +153,7 @@ if [ "$MODE" = "full" ]; then
     else
       warn "Nginx yapılandırma hatası! Lütfen kontrol edin:"
       warn "  sudo nginx -t"
-      warn "  sudo nano /etc/nginx/sites-available/hexora"
+      warn "  sudo nano /etc/nginx/sites-available/beemora"
     fi
 
     echo ""
@@ -178,7 +178,7 @@ fi
 # ── Özet ─────────────────────────────────────────────────────────
 echo ""
 echo "════════════════════════════════════════════════════"
-echo -e "  ${GREEN}Hexora Deploy Tamamlandı!${NC}"
+echo -e "  ${GREEN}BeeMora Deploy Tamamlandı!${NC}"
 echo "════════════════════════════════════════════════════"
 echo ""
 echo "  Faydalı komutlar:"

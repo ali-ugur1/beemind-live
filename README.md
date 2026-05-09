@@ -1,4 +1,4 @@
-# 🐝 Hexora Live - ESP32 IoT Kovan İzleme Sistemi
+# 🐝 BeeMora Live - IoT Kovan İzleme Sistemi
 
 **Gerçek zamanlı sensör verisi ile akıllı kovan takibi**
 
@@ -7,53 +7,26 @@
 ## 📡 Sistem Mimarisi
 
 ```
-ESP32 + Sensörler → WiFi → Node.js Backend → PostgreSQL → React Web Panel
+IoT Sensörler → WiFi → Node.js Backend → React Web Panel
 ```
-
-## 🔧 Donanım
-
-| Bileşen | Açıklama |
-|---------|----------|
-| **ESP32** | Ana mikrodenetleyici |
-| **DHT22** | Sıcaklık & Nem sensörü |
-| **BMP280** | Barometrik basınç sensörü |
-| **Piezo** | Titreşim algılama |
-| **INMP441** | Dijital mikrofon - arı sesi analizi *(yakında)* |
-| **SD Kart Modülü** | Yedek veri kaydı *(yakında)* |
-| **SIM7600E-H** | 4G bağlantı *(yakında)* |
 
 ## 🚀 Kurulum
 
 ### 1. Backend
 ```bash
-# PostgreSQL başlat + Backend çalıştır
-C:\hexora-start.bat
+C:\beemora-start.bat
 ```
 
 ### 2. Web Panel
 ```bash
-cd hexora-live
+cd beemora-live
 npm install
 npm run dev
 ```
 
-### 3. ESP32
-Arduino IDE ile `arduino/hexora_esp32.ino` dosyasını yükle.
-
-## 🌐 WiFi Yapılandırması
-
-ESP32 otomatik olarak sırayla şu ağlara bağlanmayı dener:
-
-| # | SSID | Açıklama | Backend IP |
-|---|------|----------|------------|
-| 1 | AUgur | Telefon hotspot | 172.20.10.3:3000 |
-| 2 | UGUR_HOME | Ev WiFi | 192.168.1.100:3000 |
-| 3 | TTNET_ZyXEL_HFHY | Ev WiFi | 192.168.1.100:3000 |
-
 ## 📊 Özellikler
 
-- ✅ Gerçek zamanlı sensör izleme (5 dk aralık, deep sleep)
-- ✅ Çoklu WiFi desteği (otomatik geçiş)
+- ✅ Gerçek zamanlı sensör izleme
 - ✅ Otomatik durum tespiti (stable / warning / critical)
 - ✅ Canlı bildirimler (sensör eşik değerleri)
 - ✅ Dashboard + Kovan detay + Harita + Raporlar
@@ -62,19 +35,15 @@ ESP32 otomatik olarak sırayla şu ağlara bağlanmayı dener:
 
 ## 🔮 Planlanan Geliştirmeler
 
-- [ ] INMP441 ile arı sesi frekans analizi (FFT)
-- [ ] CCS811 CO2 sensörü entegrasyonu
-- [ ] MPU6050 ivme sensörü (hırsızlık/devrilme tespiti)
-- [ ] SIM7600 4G gateway (ESP-NOW ile çoklu kovan)
-- [ ] SD kart yedek veri kaydı
-- [ ] Güneş paneli + 18650 pil sistemi
+- [ ] Arı sesi frekans analizi (FFT)
+- [ ] CO2 izleme entegrasyonu
+- [ ] Hırsızlık/devrilme tespiti
+- [ ] 4G gateway desteği
 
 ## 📁 Proje Yapısı
 
 ```
-hexora-live/
-├── arduino/
-│   └── hexora_esp32.ino     # ESP32 firmware
+beemora-live/
 ├── src/
 │   ├── components/           # React bileşenleri
 │   ├── contexts/
@@ -88,4 +57,4 @@ hexora-live/
 
 ---
 
-**TÜBİTAK 2242 - Hexora IoT Arıcılık İzleme Sistemi 🐝**
+**BeeMora — IoT Arıcılık İzleme Sistemi 🐝**

@@ -52,8 +52,8 @@ const WelcomeScreen = ({ onEnter }) => {
       icon: Wifi,
       title: isTr ? "Canlı IoT Verisi" : "Live IoT Data",
       desc: isTr
-        ? "ESP32 sensörlerinden anlık veri akışı"
-        : "Real-time stream from ESP32 sensors",
+        ? "IoT sensörlerinden anlık veri akışı"
+        : "Real-time stream from IoT sensors",
     },
     {
       icon: Shield,
@@ -184,16 +184,16 @@ const WelcomeScreen = ({ onEnter }) => {
           </div>
 
           <h1 className="mb-3 text-5xl font-bold tracking-tight text-white md:text-6xl">
-            Hex
+            Bee
             <span className="bg-gradient-to-r from-violet-400 to-fuchsia-400 bg-clip-text text-transparent">
-              ora
+              Mora
             </span>
           </h1>
 
           <p className="text-base font-medium text-gray-400 md:text-lg">
             {isTr
-              ? "AI Destekli IoT Kovan Yönetim Sistemi"
-              : "AI-Powered IoT Hive Management System"}
+              ? "AI Destekli Arıcılık Platformu"
+              : "AI-Powered Beekeeping Platform"}
           </p>
 
           <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
@@ -266,7 +266,7 @@ const WelcomeScreen = ({ onEnter }) => {
       <div className="absolute bottom-6 left-0 right-0 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 px-4 text-xs text-gray-600">
         <span>BeeMora v2.0</span>
         <span aria-hidden="true">•</span>
-        <span>TÜBİTAK 2204-A</span>
+        <span>IoT + AI</span>
         <span aria-hidden="true">•</span>
         <span>2025</span>
       </div>

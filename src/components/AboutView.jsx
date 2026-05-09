@@ -24,7 +24,7 @@ const AboutView = () => {
       desc: "BeeMora, arıcılık sektörüne yönelik geliştirilmiş akıllı kovan izleme sistemidir. IoT sensörleri ile kovan içi sıcaklık, nem, basınç, ağırlık, ses analizi ve titreşim gibi kritik verileri gerçek zamanlı olarak izler.",
       howTitle: "Nasıl Çalışır?",
       howDesc:
-        "Kovanlara yerleştirilen ESP32 tabanlı sensör modülleri, verileri düzenli aralıklarla bulut sunucuya gönderir. Web paneli ve mobil uygulama üzerinden bu verileri anlık olarak takip edebilir, geçmiş verilerle karşılaştırma yapabilirsiniz.",
+        "Kovanlara yerleştirilen IoT sensör modülleri, verileri düzenli aralıklarla bulut sunucuya gönderir. Web paneli ve mobil uygulama üzerinden bu verileri anlık olarak takip edebilir, geçmiş verilerle karşılaştırma yapabilirsiniz.",
       whyTitle: "Neden BeeMora?",
       whyDesc:
         "Geleneksel arıcılık yöntemlerinde kovan kontrolü için fiziksel ziyaret gerekir. BeeMora ile kovanlarınızı 7/24 uzaktan izleyebilir, anormal durumları anında tespit edebilir ve zamanında müdahale edebilirsiniz.",
@@ -57,10 +57,10 @@ const AboutView = () => {
         },
       },
       tech: {
-        esp32: "Mikrodenetleyici",
-        dht22: "Sıcaklık & Nem",
-        hx711: "Ağırlık Sensörü",
-        inmp441: "Ses Sensörü",
+        esp32: "IoT Modülü",
+        dht22: "Sıcaklık & Nem Takibi",
+        hx711: "Ağırlık Takibi",
+        inmp441: "Ses Analizi",
       },
       stats: {
         components: "Bileşen",
@@ -74,7 +74,7 @@ const AboutView = () => {
       desc: "BeeMora is a smart hive monitoring system developed for the beekeeping industry. It monitors critical data such as hive temperature, humidity, pressure, weight, sound analysis and vibration in real-time using IoT sensors.",
       howTitle: "How Does It Work?",
       howDesc:
-        "ESP32-based sensor modules placed in hives send data to the cloud server at regular intervals. You can track this data in real-time through the web panel and mobile app, and compare it with historical data.",
+        "IoT sensor modules placed in hives send data to the cloud server at regular intervals. You can track this data in real-time through the web panel and mobile app, and compare it with historical data.",
       whyTitle: "Why BeeMora?",
       whyDesc:
         "Traditional beekeeping methods require physical visits for hive inspection. With BeeMora, you can remotely monitor your hives 24/7, instantly detect abnormal conditions, and intervene in time.",
@@ -104,10 +104,10 @@ const AboutView = () => {
         },
       },
       tech: {
-        esp32: "Microcontroller",
-        dht22: "Temp & Humidity",
-        hx711: "Weight Sensor",
-        inmp441: "Sound Sensor",
+        esp32: "IoT Module",
+        dht22: "Temp & Humidity Tracking",
+        hx711: "Weight Tracking",
+        inmp441: "Sound Analysis",
       },
       stats: {
         components: "Components",
@@ -130,10 +130,10 @@ const AboutView = () => {
   ];
 
   const techStack = [
-    { name: "ESP32", desc: t.tech.esp32, icon: Cpu },
-    { name: "DHT22", desc: t.tech.dht22, icon: Thermometer },
-    { name: "HX711", desc: t.tech.hx711, icon: Droplets },
-    { name: "INMP441", desc: t.tech.inmp441, icon: Volume2 },
+    { name: "IoT", desc: t.tech.esp32, icon: Cpu },
+    { name: "Sıcaklık/Nem", desc: t.tech.dht22, icon: Thermometer },
+    { name: "Ağırlık", desc: t.tech.hx711, icon: Droplets },
+    { name: "Ses", desc: t.tech.inmp441, icon: Volume2 },
     { name: "Node.js", desc: "Backend API", icon: Server },
     { name: "React", desc: "Web Dashboard", icon: Monitor },
   ];
@@ -141,7 +141,7 @@ const AboutView = () => {
   const architecture = [
     {
       icon: Cpu,
-      label: "ESP32 Sensor",
+      label: "IoT Sensor",
       color: "text-emerald-400 bg-emerald-500/10 border-emerald-500/30",
     },
     {
@@ -297,10 +297,10 @@ const AboutView = () => {
               📧
             </span>{" "}
             <a
-              href="mailto:hexoraproject@gmail.com"
+              href="mailto:beemoraproject@gmail.com"
               className="hover:text-amber-400 transition-colors"
             >
-              hexoraproject@gmail.com
+              beemoraproject@gmail.com
             </a>
           </p>
           <p>

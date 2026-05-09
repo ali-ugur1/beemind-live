@@ -49,7 +49,7 @@ const Footer = ({ onTabChange }) => {
       `${t("Gönderen", "From")}: ${name.trim()} (${email.trim()})\n\n${message.trim()}`,
     );
 
-    window.location.href = `mailto:hexoraproject@gmail.com?subject=${mailSubject}&body=${mailBody}`;
+    window.location.href = `mailto:beemoraproject@gmail.com?subject=${mailSubject}&body=${mailBody}`;
 
     toast.success(t("Mail istemcisi açılıyor...", "Opening mail client..."));
     setContactForm({ name: "", email: "", subject: "", message: "" });
@@ -92,8 +92,8 @@ const Footer = ({ onTabChange }) => {
             </div>
             <p className="text-xs text-gray-500 leading-relaxed">
               {t(
-                "AI destekli IoT arıcılık yönetim sistemi. ESP32 tabanlı sensör ağıyla kovanlarınızı akıllı şekilde izleyin.",
-                "AI-powered IoT beekeeping management system. Monitor your hives smartly with ESP32-based sensor network.",
+                "AI destekli IoT arıcılık yönetim sistemi. Kovanlarınızı akıllı şekilde izleyin.",
+                "AI-powered IoT beekeeping management system. Monitor your hives smartly.",
               )}
             </p>
           </div>
@@ -125,7 +125,7 @@ const Footer = ({ onTabChange }) => {
               {t("Teknik Bilgi", "Technical Info")}
             </h4>
             <ul className="space-y-1 text-xs text-gray-500">
-              <li>ESP32 + DHT22 + HX711</li>
+              <li>IoT Sensör Ağı</li>
               <li>React 18 + Vite + TailwindCSS</li>
               <li>Node.js + Express + JSON</li>
             </ul>
@@ -147,10 +147,10 @@ const Footer = ({ onTabChange }) => {
               {t("Bize Ulaşın", "Contact Us")}
             </button>
             <a
-              href="mailto:hexoraproject@gmail.com"
+              href="mailto:beemoraproject@gmail.com"
               className="text-xs text-gray-600 hover:text-gray-400 transition-colors block"
             >
-              hexoraproject@gmail.com
+              beemoraproject@gmail.com
             </a>
           </div>
         </div>

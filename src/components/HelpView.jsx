@@ -30,7 +30,7 @@ const HelpView = () => {
           {
             id: 1,
             q: "BeeMora Nedir?",
-            a: "BeeMora, AI destekli bir IoT arıcılık yönetim sistemidir. ESP32 tabanlı sensörler aracılığıyla kovanlarınızı uzaktan izleyebilir; sıcaklık, nem, ses, titreşim ve ağırlık verilerini takip edebilirsiniz.",
+            a: "BeeMora, AI destekli bir IoT arıcılık yönetim sistemidir. IoT sensörler aracılığıyla kovanlarınızı uzaktan izleyebilir; sıcaklık, nem, ses, titreşim ve ağırlık verilerini takip edebilirsiniz.",
           },
           {
             id: 2,
@@ -59,8 +59,8 @@ const HelpView = () => {
           },
           {
             id: 7,
-            q: "ESP32 cihazı nasıl bağlanır?",
-            a: "Yeni kovan ekle seçeneğinden ESP32 cihazınızın MAC adresini girerek bağlantıyı kurabilirsiniz. Cihaz ağıyla bağlantı kurulduğunda sensör verileri otomatik akmaya başlar.",
+            q: "Sensör cihazı nasıl bağlanır?",
+            a: "Yeni kovan ekle seçeneğinden cihazınızın MAC adresini girerek bağlantıyı kurabilirsiniz. Cihaz ağıyla bağlantı kurulduğunda sensör verileri otomatik akmaya başlar.",
           },
           {
             id: 8,
@@ -72,7 +72,7 @@ const HelpView = () => {
           {
             id: 1,
             q: "What is BeeMora?",
-            a: "BeeMora is an AI-powered IoT beekeeping management system. You can remotely monitor your hives through ESP32-based sensors, tracking temperature, humidity, sound, vibration and weight data.",
+            a: "BeeMora is an AI-powered IoT beekeeping management system. You can remotely monitor your hives through IoT sensors, tracking temperature, humidity, sound, vibration and weight data.",
           },
           {
             id: 2,
@@ -101,8 +101,8 @@ const HelpView = () => {
           },
           {
             id: 7,
-            q: "How to connect an ESP32 device?",
-            a: "You can establish the connection by entering the MAC address of your ESP32 device from the Add New Hive option. Sensor data starts flowing automatically when connection is established.",
+            q: "How to connect a sensor device?",
+            a: "You can establish the connection by entering the MAC address of your device from the Add New Hive option. Sensor data starts flowing automatically when connection is established.",
           },
           {
             id: 8,
@@ -333,10 +333,10 @@ const HelpView = () => {
         </p>
         <div className="flex items-center justify-center gap-3">
           <a
-            href="mailto:hexoraproject@gmail.com"
+            href="mailto:beemoraproject@gmail.com"
             className="px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-sm text-gray-300 hover:border-amber-500/40 hover:text-amber-400 transition-colors"
           >
-            hexoraproject@gmail.com
+            beemoraproject@gmail.com
           </a>
         </div>
       </div>

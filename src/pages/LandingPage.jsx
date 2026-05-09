@@ -449,40 +449,40 @@ const LandingPage = () => {
     {
       q: isTr ? "BeeMora Nedir?" : "What is BeeMora?",
       a: isTr
-        ? "BeeMora, TÜBİTAK 2204-A ödüllü bir araştırma projesi olarak 2025'te başlayan, IoT sensörler ve yapay zeka teknolojileri ile arı kovanlarını 7/24 uzaktan izleme ve yönetme platformudur. Kovan içi sıcaklık, nem, ses, titreşim, ağırlık ve basınç gibi kritik verileri gerçek zamanlı toplayarak arıcılara anlık bildirimler, AI destekli tahminler (oğul riski, hastalık tespiti) ve detaylı raporlar sunar. Amacımız Türkiye'deki yıllık %30 koloni kaybını teknoloji ile minimuma indirmektir."
-        : "BeeMora is a platform that started in 2025 as a TÜBİTAK 2204-A award-winning research project, providing 24/7 remote hive monitoring and management with IoT sensors and AI technology. It collects critical real-time data such as internal temperature, humidity, sound, vibration, weight and pressure, offering beekeepers instant notifications, AI-powered predictions (swarm risk, disease detection) and detailed reports. Our goal is to minimize Turkey's annual 30% colony loss through technology.",
+        ? "BeeMora, 2025'te başlayan, yapay zeka teknolojileri ile arı kovanlarını 7/24 uzaktan izleme ve yönetme platformudur. Kovan içi sıcaklık, nem, ses, titreşim, ağırlık ve basınç gibi kritik verileri gerçek zamanlı analiz ederek arıcılara anlık bildirimler, AI destekli tahminler (oğul riski, hastalık tespiti) ve detaylı raporlar sunar. Amacımız Türkiye'deki yıllık %30 koloni kaybını teknoloji ile minimuma indirmektir."
+        : "BeeMora is a platform that started in 2025, providing 24/7 remote hive monitoring and management with AI technology. It analyzes critical real-time data such as internal temperature, humidity, sound, vibration, weight and pressure, offering beekeepers instant notifications, AI-powered predictions (swarm risk, disease detection) and detailed reports. Our goal is to minimize Turkey's annual 30% colony loss through technology.",
     },
     {
       q: isTr
         ? "Sistem tam olarak ne ölçüyor ve nasıl çalışıyor?"
         : "What exactly does the system measure and how does it work?",
       a: isTr
-        ? "Sensör adaptörlerimiz 6 temel parametreyi sürekli izler: (1) Kovan içi sıcaklık — ±0.1°C hassasiyetle, 32-36°C optimal aralık dışına çıkıldığında anında uyarı. (2) Nem — %50-70 ideal aralık takibi, küf ve mantar riski tespiti. (3) Ses frekansı — arı vızıltı paternlerini analiz ederek Varroa enfestasyonu ve oğul hazırlığını 2-3 hafta önceden tespit. (4) Titreşim — ivmeölçer ile devrilme, hırsızlık ve anormal hareket algılama. (5) Ağırlık — ±10g hassasiyetle bal üretim takibi, ani düşüşlerde alarm. (6) Basınç — hava koşulu değişimlerini izleme. Veriler 10 saniyede bir bulut sunucumuza iletilir ve AI motorumuz tarafından gerçek zamanlı analiz edilir."
-        : "Our sensor adapters continuously monitor 6 key parameters: (1) Internal temperature — ±0.1°C precision, instant alert when outside 32-36°C optimal range. (2) Humidity — 50-70% ideal range tracking, mold and fungus risk detection. (3) Sound frequency — analyzes bee buzz patterns to detect Varroa infestation and swarm preparation 2-3 weeks in advance. (4) Vibration — accelerometer detects tipping, theft and abnormal movement. (5) Weight — ±10g precision for honey production tracking, alarm on sudden drops. (6) Pressure — weather condition change monitoring. Data is transmitted to our cloud server every 10 seconds and analyzed in real-time by our AI engine.",
+        ? "Platformumuz 6 temel parametreyi sürekli izler: (1) Kovan içi sıcaklık — 32-36°C optimal aralık dışına çıkıldığında anında uyarı. (2) Nem — %50-70 ideal aralık takibi, küf ve mantar riski tespiti. (3) Ses frekansı — arı vızıltı paternlerini analiz ederek Varroa enfestasyonu ve oğul hazırlığını 2-3 hafta önceden tespit. (4) Titreşim — devrilme, hırsızlık ve anormal hareket algılama. (5) Ağırlık — bal üretim takibi, ani düşüşlerde alarm. (6) Basınç — hava koşulu değişimlerini izleme. Veriler bulut sunucumuza iletilir ve AI motorumuz tarafından gerçek zamanlı analiz edilir."
+        : "Our platform continuously monitors 6 key parameters: (1) Internal temperature — instant alert when outside 32-36°C optimal range. (2) Humidity — 50-70% ideal range tracking, mold and fungus risk detection. (3) Sound frequency — analyzes bee buzz patterns to detect Varroa infestation and swarm preparation 2-3 weeks in advance. (4) Vibration — detects tipping, theft and abnormal movement. (5) Weight — honey production tracking, alarm on sudden drops. (6) Pressure — weather condition change monitoring. Data is transmitted to our cloud server and analyzed in real-time by our AI engine.",
     },
     {
       q: isTr
         ? "Kurulum zor mu? Teknik bilgi gerekiyor mu?"
         : "Is installation difficult? Do I need technical knowledge?",
       a: isTr
-        ? "Kesinlikle hayır. Sensör adaptörlerimiz tam anlamıyla tak-çalıştır (plug & play) mantığıyla tasarlanmıştır. Kutudan çıkarın, kovanınızın iç duvarına manyetik klips ile takın, telefonunuzdaki BeeMora uygulamasından QR kodu okutun — hepsi bu. Tüm süreç 5 dakikadan kısa sürer ve hiçbir kablo, lehim veya teknik bilgi gerektirmez. Ayrıca ilk kurulumda video rehberimiz ve canlı destek hattımız sizi adım adım yönlendirir. Wi-Fi kapsama alanı dışındaki arılıklar için LoRa gateway seçeneğimiz de mevcuttur (Pro ve Ultra modellerde dahil)."
-        : "Absolutely not. Our sensor adapters are designed with a true plug & play approach. Take it out of the box, attach it to your hive's inner wall with magnetic clips, scan the QR code from the BeeMora app on your phone — that's it. The entire process takes less than 5 minutes and requires no cables, soldering or technical knowledge. Additionally, our video guide and live support line will walk you through the first setup step by step. For apiaries outside Wi-Fi coverage, we also offer a LoRa gateway option (included in Pro and Ultra models).",
+        ? "Kesinlikle hayır. BeeMora platformu tamamen web tabanlıdır — telefonunuzdan veya bilgisayarınızdan herhangi bir modern tarayıcı ile hemen kullanmaya başlayabilirsiniz. Hesabınızı oluşturun, kovanlarınızı ekleyin ve platformun sunduğu tüm AI analiz, bildirim ve raporlama özelliklerinden yararlanın. Hiçbir teknik bilgi gerektirmez. Ayrıca ilk kurulumda video rehberimiz ve canlı destek hattımız sizi adım adım yönlendirir."
+        : "Absolutely not. BeeMora is a fully web-based platform — you can start using it immediately from your phone or computer with any modern browser. Create your account, add your hives and benefit from all AI analysis, notification and reporting features. No technical knowledge required. Additionally, our video guide and live support line will walk you through the first setup step by step.",
     },
     {
       q: isTr
         ? "Kaç kovan destekleniyor? Büyük arılıklar için uygun mu?"
         : "How many hives are supported? Is it suitable for large apiaries?",
       a: isTr
-        ? "Ölçeklenebilir bulut altyapımız sayesinde tek bir hesaptan 1'den 500+ kovana kadar eş zamanlı izleme yapabilirsiniz. BeeMora Lite adaptörü Wi-Fi üzerinden tek kovan izler; BeeMora Pro'daki LoRa gateway ise 2 km yarıçapta 50+ kovanı tek bir ağ geçidine bağlar. BeeMora Ultra'daki 4G/LTE modülü ise internet altyapısı olmayan dağ arılıklarında bile çalışır. Kurumsal müşterilerimiz için çoklu arılık yönetimi, alt kullanıcı yetkilendirme ve özel API erişimi de sunuyoruz. Kademeli abonelik modeli sayesinde (1-50 kovan: ₺50, 51-100: ₺45, 100+: ₺40/kovan/ay) bütçenizi tam kontrol altında tutarsınız."
-        : "Thanks to our scalable cloud infrastructure, you can monitor from 1 to 500+ hives simultaneously from a single account. The BeeMora Lite adapter monitors a single hive via Wi-Fi; the LoRa gateway in BeeMora Pro connects 50+ hives within a 2km radius to a single gateway. The 4G/LTE module in BeeMora Ultra works even in mountain apiaries without internet infrastructure. For enterprise customers, we also offer multi-apiary management, sub-user authorization and custom API access. With our tiered subscription (1-50 hives: ₺50, 51-100: ₺45, 100+: ₺40/hive/mo), you keep your budget fully under control.",
+        ? "Ölçeklenebilir bulut altyapımız sayesinde tek bir hesaptan 1'den 500+ kovana kadar eş zamanlı izleme yapabilirsiniz. Kurumsal müşterilerimiz için çoklu arılık yönetimi, alt kullanıcı yetkilendirme ve özel API erişimi de sunuyoruz. Kademeli abonelik modeli sayesinde (1-50 kovan: ₺50, 51-100: ₺45, 100+: ₺40/kovan/ay) bütçenizi tam kontrol altında tutarsınız."
+        : "Thanks to our scalable cloud infrastructure, you can monitor from 1 to 500+ hives simultaneously from a single account. For enterprise customers, we also offer multi-apiary management, sub-user authorization and custom API access. With our tiered subscription (1-50 hives: ₺50, 51-100: ₺45, 100+: ₺40/hive/mo), you keep your budget fully under control.",
     },
     {
       q: isTr
-        ? "Mobil cihazlarda çalışıyor mu? İnternet olmadan kullanılabilir mi?"
-        : "Does it work on mobile? Can it be used without internet?",
+        ? "Mobil cihazlarda çalışıyor mu?"
+        : "Does it work on mobile?",
       a: isTr
-        ? "Evet, BeeMora paneli tamamen responsive tasarlanmıştır — iPhone, Android, tablet veya bilgisayardan herhangi bir modern tarayıcı ile erişebilirsiniz. Push bildirimleri sayesinde kritik uyarılar telefonunuza anında gelir, uygulamayı açmanıza bile gerek kalmaz. İnternet bağlantısı olmayan bölgelerde BeeMora Ultra'nın 4G/LTE modülü devreye girer ve sensör verilerini mobil şebeke üzerinden iletir. Ayrıca sensörler yerel olarak 72 saatlik veri depolayabilir — bağlantı kesilse bile veri kaybı yaşanmaz, bağlantı geldiğinde otomatik senkronize olur."
-        : "Yes, the BeeMora panel is fully responsive — you can access it from iPhone, Android, tablet or computer with any modern browser. Thanks to push notifications, critical alerts come to your phone instantly without even opening the app. In areas without internet, BeeMora Ultra's 4G/LTE module kicks in and transmits sensor data over mobile network. Additionally, sensors can store 72 hours of data locally — even if connection is lost, no data is lost and it auto-syncs when connection returns.",
+        ? "Evet, BeeMora paneli tamamen responsive tasarlanmıştır — iPhone, Android, tablet veya bilgisayardan herhangi bir modern tarayıcı ile erişebilirsiniz. Push bildirimleri sayesinde kritik uyarılar telefonunuza anında gelir, uygulamayı açmanıza bile gerek kalmaz."
+        : "Yes, the BeeMora panel is fully responsive — you can access it from iPhone, Android, tablet or computer with any modern browser. Thanks to push notifications, critical alerts come to your phone instantly without even opening the app.",
     },
     {
       q: isTr
@@ -497,16 +497,16 @@ const LandingPage = () => {
         ? "Fiyatlandırma nasıl çalışıyor? Gizli ücret var mı?"
         : "How does pricing work? Are there hidden fees?",
       a: isTr
-        ? "Fiyatlandırmamız iki bileşenden oluşur: (1) Donanım — sensör adaptörünüzü bir kez satın alırsınız (Lite ₺2.500, Pro ₺5.000, Ultra ₺12.000). Donanım tamamen size aittir, abonelik iptal etseniz bile sensör sizde kalır. (2) Kademeli yazılım aboneliği — 1-50 kovan: ₺50/kovan/ay, 51-100 kovan: ₺45/kovan/ay, 100+ kovan: ₺40/kovan/ay. Tüm paketlerde aynı özellikler: AI analiz, anlık bildirimler, raporlama, 7/24 destek ve tüm yazılım güncellemeleri. Gizli ücret, kurulum ücreti veya sözleşme zorunluluğu yoktur. İlk 30 gün ücretsiz deneme sunuyoruz — memnun kalmazsanız tam iade garantisi veriyoruz."
-        : "Our pricing consists of two components: (1) Hardware — you buy your sensor adapter once (Lite ₺2,500, Pro ₺5,000, Ultra ₺12,000). The hardware is fully yours, even if you cancel the subscription the sensor stays with you. (2) Tiered software subscription — 1-50 hives: ₺50/hive/mo, 51-100 hives: ₺45/hive/mo, 100+ hives: ₺40/hive/mo. Same features in all tiers: AI analysis, instant notifications, reporting, 24/7 support and all software updates. No hidden fees, setup fees or contract obligations. We offer a free 30-day trial — if you're not satisfied, we provide a full refund guarantee.",
+        ? "Kademeli abonelik modelimiz şu şekilde çalışır: 1-50 kovan: ₺50/kovan/ay, 51-100 kovan: ₺45/kovan/ay, 100+ kovan: ₺40/kovan/ay. Tüm paketlerde aynı özellikler: AI analiz, anlık bildirimler, raporlama, 7/24 destek ve tüm yazılım güncellemeleri. Gizli ücret, kurulum ücreti veya sözleşme zorunluluğu yoktur. İlk 30 gün ücretsiz deneme sunuyoruz — memnun kalmazsanız tam iade garantisi veriyoruz."
+        : "Our tiered subscription works as follows: 1-50 hives: ₺50/hive/mo, 51-100 hives: ₺45/hive/mo, 100+ hives: ₺40/hive/mo. Same features in all tiers: AI analysis, instant notifications, reporting, 24/7 support and all software updates. No hidden fees, setup fees or contract obligations. We offer a free 30-day trial — if you're not satisfied, we provide a full refund guarantee.",
     },
     {
       q: isTr
-        ? "Sensörlerin pil ömrü ne kadar? Şarj etmem gerekiyor mu?"
-        : "How long is the sensor battery life? Do I need to charge it?",
+        ? "Verilerim güvende mi?"
+        : "Is my data secure?",
       a: isTr
-        ? "Pil ömrü modele göre değişir: BeeMora Lite 6 ay, BeeMora Pro 12 ay sürekli çalışır. BeeMora Ultra ise güneş paneli ile kendini şarj eder, bu yüzden pil değişimi gerektirmez. Lite ve Pro modellerinde pil seviyesi düştüğünde (<%20) otomatik bildirim alırsınız ve standart CR123A pil ile kolayca değiştirebilirsiniz. Pil değişimi 30 saniye sürer, herhangi bir alet gerektirmez. Sensörler düşük güç modunda çalışarak pil ömrünü maksimize eder — veri iletimi sırasında aktif olur, arada uyku moduna geçer."
-        : "Battery life varies by model: BeeMora Lite runs for 6 months, BeeMora Pro for 12 months continuously. BeeMora Ultra charges itself with a solar panel, so it requires no battery replacement. With Lite and Pro models, you receive an automatic notification when battery drops below 20%, and you can easily replace it with a standard CR123A battery. Battery replacement takes 30 seconds and requires no tools. Sensors operate in low-power mode to maximize battery life — active during data transmission, sleep mode in between.",
+        ? "Evet, tüm verileriniz şifreli bulut sunucularımızda güvenle saklanır. SSL/TLS şifreleme ile veri aktarımı korunur, düzenli yedeklemeler yapılır ve KVKK uyumlu veri saklama politikamız mevcuttur. Hesabınıza yalnızca siz erişebilirsiniz ve iki faktörlü kimlik doğrulama (2FA) desteği sunuyoruz."
+        : "Yes, all your data is securely stored on our encrypted cloud servers. Data transmission is protected with SSL/TLS encryption, regular backups are performed and we have a GDPR-compliant data storage policy. Only you can access your account and we offer two-factor authentication (2FA) support.",
     },
   ];
 
@@ -534,7 +534,7 @@ const LandingPage = () => {
         "",
         msg,
       ].join("%0A");
-      window.location.href = `mailto:hexoraproject@gmail.com?subject=Demo%20Talebi%20%7C%20BeeMora%20-%20${encodeURIComponent(name)}&body=${body}`;
+      window.location.href = `mailto:beemoraproject@gmail.com?subject=Demo%20Talebi%20%7C%20BeeMora%20-%20${encodeURIComponent(name)}&body=${body}`;
     },
     [isTr],
   );
@@ -1128,7 +1128,7 @@ const LandingPage = () => {
                   : "Turkey Beekeepers Assoc.",
                 abbr: "TAB",
               },
-              { name: "TÜBİTAK", abbr: "TÜBİTAK" },
+              { name: isTr ? "Konya Teknopark" : "Konya Technopark", abbr: "KTP" },
               {
                 name: isTr
                   ? "Konya Arıcılık Kooperatifi"
@@ -1598,13 +1598,13 @@ const LandingPage = () => {
               <div className="grid grid-cols-2 gap-2 mb-4">
                 {[
                   {
-                    name: "ESP32 Gateway",
+                    name: isTr ? "Bulut Sunucu" : "Cloud Server",
                     status: isTr ? "Bağlı" : "Connected",
                     ok: true,
                   },
                   { name: "API Server", status: "< 50ms", ok: true },
                   {
-                    name: isTr ? "Sensör Ağı" : "Sensor Network",
+                    name: isTr ? "Veri Akışı" : "Data Stream",
                     status: "12/12",
                     ok: true,
                   },
@@ -2217,13 +2217,13 @@ const LandingPage = () => {
             </p>
             <h2 className="text-4xl font-bold mb-4">
               {isTr
-                ? "Donanım + Kademeli Abonelik"
-                : "Hardware + Tiered Subscription"}
+                ? "Kademeli Abonelik"
+                : "Tiered Subscription"}
             </h2>
             <p className="text-gray-400 max-w-2xl mx-auto">
               {isTr
-                ? "Sensör adaptörünüzü bir kez satın alın, kovan sayınıza göre kademeli abonelik ile tüm yazılım özelliklerine erişin. Gizli ücret yok."
-                : "Buy your sensor adapter once, access all software features with tiered subscription based on your hive count. No hidden fees."}
+                ? "Kovan sayınıza göre kademeli abonelik ile tüm yazılım özelliklerine erişin. Gizli ücret yok."
+                : "Access all software features with tiered subscription based on your hive count. No hidden fees."}
             </p>
           </div>
 
@@ -2322,177 +2322,7 @@ const LandingPage = () => {
             ))}
           </div>
 
-          {/* Hardware products */}
-          <h3 className="text-center text-xl font-bold text-gray-200 mb-2">
-            {isTr ? "Sensör Adaptörleri" : "Sensor Adapters"}
-          </h3>
-          <p className="text-center text-sm text-gray-500 mb-8">
-            {isTr
-              ? "İhtiyacınıza göre donanım seçin — tek seferlik ödeme, ömür boyu kullanım"
-              : "Choose hardware based on your needs — one-time payment, lifetime use"}
-          </p>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-            {[
-              {
-                name: "BeeMora Lite",
-                price: "₺2.500",
-                desc: isTr
-                  ? "Hobi arıcılar için temel izleme"
-                  : "Basic monitoring for hobby beekeepers",
-                specs: isTr
-                  ? [
-                      "Sıcaklık sensörü (±0.1°C)",
-                      "Nem sensörü",
-                      "Batarya izleme",
-                      "Wi-Fi bağlantı",
-                      "6 ay pil ömrü",
-                      "Tak-çalıştır kurulum",
-                    ]
-                  : [
-                      "Temperature sensor (±0.1°C)",
-                      "Humidity sensor",
-                      "Battery monitoring",
-                      "Wi-Fi connectivity",
-                      "6-month battery life",
-                      "Plug & play setup",
-                    ],
-                badge: null,
-                border: "border-gray-800",
-                popular: false,
-                icon: "📡",
-              },
-              {
-                name: "BeeMora Pro",
-                price: "₺5.000",
-                desc: isTr
-                  ? "Profesyonel arıcılar için tam donanım"
-                  : "Full equipment for professional beekeepers",
-                specs: isTr
-                  ? [
-                      "Sıcaklık + Nem + Basınç",
-                      "Ses & titreşim analizi",
-                      "Ağırlık sensörü (±10g)",
-                      "İvmeölçer (devrilme algılama)",
-                      "LoRa + Wi-Fi bağlantı",
-                      "12 ay pil ömrü",
-                      "Hava koşullarına dayanıklı IP65",
-                    ]
-                  : [
-                      "Temp + Humidity + Pressure",
-                      "Sound & vibration analysis",
-                      "Weight sensor (±10g)",
-                      "Accelerometer (tipping detection)",
-                      "LoRa + Wi-Fi connectivity",
-                      "12-month battery life",
-                      "Weather-resistant IP65",
-                    ],
-                badge: isTr ? "En Çok Satan" : "Best Seller",
-                border: "border-amber-500/50",
-                popular: true,
-                icon: "🔬",
-              },
-              {
-                name: "BeeMora Ultra",
-                price: "₺12.000",
-                desc: isTr
-                  ? "Endüstriyel operasyonlar için gelişmiş"
-                  : "Advanced for industrial operations",
-                specs: isTr
-                  ? [
-                      "Pro'daki tüm sensörler",
-                      "GPS konum takibi",
-                      "Kamera modülü (görüntü AI)",
-                      "Güneş paneli ile şarj",
-                      "4G/LTE bağlantı",
-                      "Hırsızlık alarm sireni",
-                      "Çoklu kovan gateway",
-                      "Ömür boyu garanti",
-                    ]
-                  : [
-                      "All Pro sensors",
-                      "GPS location tracking",
-                      "Camera module (image AI)",
-                      "Solar panel charging",
-                      "4G/LTE connectivity",
-                      "Theft alarm siren",
-                      "Multi-hive gateway",
-                      "Lifetime warranty",
-                    ],
-                badge: null,
-                border: "border-gray-800",
-                popular: false,
-                icon: "🛰️",
-              },
-            ].map((hw, i) => (
-              <div
-                key={i}
-                className={`relative bg-gray-900/70 border ${hw.border} rounded-2xl p-6 flex flex-col ${
-                  hw.popular
-                    ? "ring-1 ring-amber-500/30 shadow-xl shadow-amber-500/10"
-                    : ""
-                }`}
-              >
-                {hw.badge && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 bg-amber-500 text-black text-[10px] font-bold uppercase tracking-wider rounded-full">
-                    {hw.badge}
-                  </div>
-                )}
-                <div className="flex items-center gap-3 mb-3">
-                  <span className="text-3xl" aria-hidden="true">
-                    {hw.icon}
-                  </span>
-                  <div>
-                    <h3 className="text-lg font-bold text-gray-100">
-                      {hw.name}
-                    </h3>
-                    <p className="text-[10px] text-gray-500">{hw.desc}</p>
-                  </div>
-                </div>
-                <div className="mb-4">
-                  <span className="text-3xl font-extrabold text-amber-400">
-                    {hw.price}
-                  </span>
-                  <span className="text-sm text-gray-500 ml-1">
-                    {isTr ? "(tek seferlik)" : "(one-time)"}
-                  </span>
-                </div>
-                <ul className="space-y-2 mb-6 flex-1">
-                  {hw.specs.map((s, j) => (
-                    <li
-                      key={j}
-                      className="flex items-start gap-2 text-sm text-gray-400"
-                    >
-                      <CheckCircle
-                        className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0 mt-0.5"
-                        aria-hidden="true"
-                      />
-                      {s}
-                    </li>
-                  ))}
-                </ul>
-                <button
-                  type="button"
-                  onClick={handleNavigatePanel}
-                  className={`w-full py-3 rounded-lg font-semibold text-sm transition-all overflow-hidden ${
-                    hw.popular
-                      ? "bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-black shadow-lg shadow-amber-500/20"
-                      : "bg-gray-800 hover:bg-gray-700 text-gray-200 border border-gray-700"
-                  }`}
-                >
-                  {isTr ? "Sipariş Ver" : "Order Now"}
-                </button>
-                <p className="text-[10px] text-gray-600 text-center mt-2">
-                  +{" "}
-                  {isTr
-                    ? "kademeli abonelik (₺40-50/kovan/ay)"
-                    : "tiered subscription (₺40-50/hive/mo)"}
-                </p>
-              </div>
-            ))}
-          </div>
-
-          {/* Comparison note */}
+          {/* Why this model note */}
           <div className="bg-gray-900/60 border border-gray-800 rounded-xl p-5 max-w-2xl mx-auto">
             <h4 className="text-sm font-bold text-gray-200 mb-3 text-center">
               {isTr ? "Neden Bu Model?" : "Why This Model?"}
@@ -2501,13 +2331,13 @@ const LandingPage = () => {
               {(isTr
                 ? [
                     "Kademeli fiyat — büyüdükçe birim fiyat düşer",
-                    "Donanım size ait — abonelik iptal etseniz bile sensör sizde kalır",
+                    "Aylık esneklik — dilediğiniz zaman iptal edin",
                     "Tüm yazılım güncellemeleri ve yeni özellikler dahil",
                     "İlk 30 gün ücretsiz deneme — memnun kalmazsanız iade",
                   ]
                 : [
                     "Tiered pricing — unit price drops as you scale",
-                    "Hardware is yours — even if you cancel, the sensor stays with you",
+                    "Monthly flexibility — cancel anytime",
                     "All software updates and new features included",
                     "First 30 days free trial — refund if not satisfied",
                   ]
@@ -2637,8 +2467,8 @@ const LandingPage = () => {
                   ? "Uçtan Uca Türk Mühendisliği"
                   : "End-to-End Turkish Engineering",
                 desc: isTr
-                  ? "Donanım, yazılım ve AI — hepsi Türkiye'de tasarlanıp üretiliyor. Dışa bağımlılık yok, yerel destek var."
-                  : "Hardware, software and AI — all designed and produced in Turkey. No foreign dependency, local support.",
+                  ? "Yazılım ve AI — hepsi Türkiye'de tasarlanıp geliştiriliyor. Dışa bağımlılık yok, yerel destek var."
+                  : "Software and AI — all designed and developed in Turkey. No foreign dependency, local support.",
                 icon: "🇹🇷",
                 highlight: true,
               },
@@ -2816,8 +2646,8 @@ const LandingPage = () => {
                     comp: "$150-300",
                   },
                   {
-                    feature: isTr ? "Donanım Maliyeti" : "Hardware Cost",
-                    bm: isTr ? "₺2.500'den" : "From ₺2,500",
+                    feature: isTr ? "Kurulum Ücreti" : "Setup Fee",
+                    bm: isTr ? "Ücretsiz" : "Free",
                     trad: "₺0",
                     comp: "$200-500",
                   },
@@ -3038,20 +2868,8 @@ const LandingPage = () => {
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-10">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-10 max-w-3xl mx-auto">
             {[
-              {
-                icon: "🏆",
-                tag: "TÜBİTAK 2204-A",
-                tagColor: "bg-amber-500/10 border-amber-500/20 text-amber-400",
-                title: isTr
-                  ? "Ödüllü Araştırma Projesi"
-                  : "Award-Winning Research Project",
-                date: "2025",
-                desc: isTr
-                  ? "BeeMora, TÜBİTAK 2204-A Lise Öğrencileri Araştırma Projeleri Yarışması'nda ödül kazandı."
-                  : "BeeMora won an award at the TÜBİTAK 2204-A High School Students Research Projects Competition.",
-              },
               {
                 icon: "🚀",
                 tag: "Beta",
@@ -3064,16 +2882,16 @@ const LandingPage = () => {
                   : "Platform launched in beta. First beekeeper users are actively testing the system.",
               },
               {
-                icon: "📡",
-                tag: "IoT",
+                icon: "🤖",
+                tag: "AI",
                 tagColor: "bg-blue-500/10 border-blue-500/20 text-blue-400",
                 title: isTr
-                  ? "ESP32 Sensör Prototipi"
-                  : "ESP32 Sensor Prototype",
+                  ? "AI Analiz Motoru"
+                  : "AI Analysis Engine",
                 date: "2025 Q3",
                 desc: isTr
-                  ? "6 farklı parametreyi tek modülde ölçen sensör adaptörü prototip üretimi tamamlandı."
-                  : "Sensor adapter prototype measuring 6 different parameters in a single module completed.",
+                  ? "6 farklı parametreyi analiz eden yapay zeka motorumuz tamamlandı ve üretime alındı."
+                  : "Our AI engine analyzing 6 different parameters was completed and deployed to production.",
               },
             ].map((item, i) => (
               <div
@@ -3172,7 +2990,7 @@ const LandingPage = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
             <div className="space-y-5">
               <a
-                href="mailto:hexoraproject@gmail.com"
+                href="mailto:beemoraproject@gmail.com"
                 className="flex items-center gap-4 p-5 bg-gray-900/70 border border-gray-800 rounded-2xl hover:border-amber-500/30 transition-all group"
               >
                 <div className="w-14 h-14 bg-amber-500/10 border border-amber-500/20 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
@@ -3183,7 +3001,7 @@ const LandingPage = () => {
                     {isTr ? "E-posta" : "Email"}
                   </p>
                   <p className="text-amber-400 font-medium">
-                    hexoraproject@gmail.com
+                    beemoraproject@gmail.com
                   </p>
                   <p className="text-[10px] text-gray-500 mt-0.5">
                     {isTr
@@ -3437,19 +3255,19 @@ const LandingPage = () => {
                   </div>
                   <div>
                     <span className="text-amber-400 font-bold text-lg">
-                      TÜBİTAK 2204-A
+                      BeeMora
                     </span>
                     <p className="text-[10px] text-gray-500">
                       {isTr
-                        ? "Ödüllü Araştırma Projesi"
-                        : "Award-Winning Research Project"}
+                        ? "Akıllı Arıcılık Platformu"
+                        : "Smart Beekeeping Platform"}
                     </p>
                   </div>
                 </div>
                 <p className="text-sm text-gray-400 leading-relaxed mb-4">
                   {isTr
-                    ? "Ödüllü araştırma projesi olarak başlayan yolculuğumuz, endüstriyel bir platforma dönüştü."
-                    : "Our journey that started as an award-winning research project has evolved into an industrial platform."}
+                    ? "Ar-Ge projesi olarak başlayan yolculuğumuz, endüstriyel bir platforma dönüştü."
+                    : "Our journey that started as an R&D project has evolved into an industrial platform."}
                 </p>
               </div>
 
@@ -3462,7 +3280,7 @@ const LandingPage = () => {
                     "React 18",
                     "Node.js",
                     "Express",
-                    "ESP32",
+                    "IoT",
                     "Vite",
                     "TailwindCSS",
                     "Web Push",
@@ -3481,16 +3299,16 @@ const LandingPage = () => {
               <div className="mt-4 flex items-center gap-4">
                 {[
                   {
-                    label: isTr ? "Donanım" : "Hardware",
-                    icon: Cpu,
-                    color: "text-amber-400",
-                  },
-                  {
                     label: isTr ? "Yazılım" : "Software",
                     icon: Database,
                     color: "text-blue-400",
                   },
                   { label: "AI/ML", icon: Zap, color: "text-purple-400" },
+                  {
+                    label: "IoT",
+                    icon: Wifi,
+                    color: "text-amber-400",
+                  },
                 ].map((d, i) => {
                   const Icon = d.icon;
                   return (
@@ -3526,8 +3344,8 @@ const LandingPage = () => {
               </p>
               <p className="text-gray-400 leading-relaxed mb-8">
                 {isTr
-                  ? "Konya merkezli ekibimiz, donanım mühendisliği, yazılım geliştirme, veri bilimi ve arıcılık uzmanlığını bir araya getirerek sektörde fark yaratıyor."
-                  : "Our Konya-based team combines hardware engineering, software development, data science and beekeeping expertise to make a difference in the sector."}
+                  ? "Konya merkezli ekibimiz, yazılım geliştirme, veri bilimi, IoT ve arıcılık uzmanlığını bir araya getirerek sektörde fark yaratıyor."
+                  : "Our Konya-based team combines software development, data science, IoT and beekeeping expertise to make a difference in the sector."}
               </p>
 
               <div className="grid grid-cols-2 gap-4">
@@ -3546,13 +3364,13 @@ const LandingPage = () => {
                   },
                   {
                     icon: Award,
-                    val: "1",
-                    label: isTr ? "TÜBİTAK Proje" : "TÜBİTAK Project",
+                    val: "6",
+                    label: isTr ? "AI Modülü" : "AI Modules",
                   },
                   {
                     icon: MapPin,
-                    val: isTr ? "3 Tip" : "3 Types",
-                    label: isTr ? "Adaptör Modeli" : "Adapter Models",
+                    val: "7/24",
+                    label: isTr ? "Canlı İzleme" : "Live Monitoring",
                   },
                 ].map((stat, i) => {
                   const Icon = stat.icon;
@@ -3591,22 +3409,22 @@ const LandingPage = () => {
                   year: "2025 Q1",
                   title: isTr ? "Kuruluş & Ar-Ge" : "Founded & R&D",
                   desc: isTr
-                    ? "Fikir doğdu, ilk Ar-Ge çalışmaları başlatıldı. İlk ESP32 sensör prototipi geliştirildi."
-                    : "The idea was born, initial R&D started. First ESP32 sensor prototype developed.",
+                    ? "Fikir doğdu, ilk Ar-Ge çalışmaları başlatıldı. Platform mimarisi tasarlandı."
+                    : "The idea was born, initial R&D started. Platform architecture designed.",
                 },
                 {
                   year: "2025 Q2",
-                  title: isTr ? "Prototip & Test" : "Prototype & Test",
+                  title: isTr ? "AI Geliştirme" : "AI Development",
                   desc: isTr
-                    ? "Sensör adaptörü prototipleri test edildi. TÜBİTAK 2204-A projesi hazırlandı."
-                    : "Sensor adapter prototypes tested. TÜBİTAK 2204-A project prepared.",
+                    ? "Yapay zeka modülleri geliştirildi. Oğul tahmini ve hastalık tespit algoritmaları oluşturuldu."
+                    : "AI modules developed. Swarm prediction and disease detection algorithms created.",
                 },
                 {
                   year: "2025 Q3",
                   title: isTr ? "Platform Geliştirme" : "Platform Development",
                   desc: isTr
-                    ? "Web paneli ve AI modülü geliştirildi. 3 farklı adaptör tipi tasarlandı."
-                    : "Web panel and AI module developed. 3 different adapter types designed.",
+                    ? "Web paneli ve AI modülü geliştirildi. Dashboard ve raporlama sistemi tamamlandı."
+                    : "Web panel and AI module developed. Dashboard and reporting system completed.",
                 },
                 {
                   year: "2026",
@@ -3649,7 +3467,7 @@ const LandingPage = () => {
                 roleColor: "text-amber-400",
                 bio: isTr
                   ? "Yazılım mimarisi, IoT sistem tasarımı ve yapay zeka geliştirme alanlarında uzmanlaşmış. BeeMora'nın tüm teknik altyapısını ve AI motorunu tasarlayıp geliştirdi."
-                  : "Specialized in software architecture, IoT system design and AI development. Designed and developed BeeMora's entire technical infrastructure and AI engine.",
+                  : "Specialized in software architecture, IoT systems and AI development. Designed and developed BeeMora's entire technical infrastructure and AI engine.",
                 quote: isTr
                   ? '"Teknolojiyi arıcıların hizmetine sunarak koloni kayıplarını azaltmak, benim için sadece bir proje değil — bir misyon."'
                   : '"Putting technology at the service of beekeepers to reduce colony losses is not just a project for me — it\'s a mission."',
@@ -3661,8 +3479,8 @@ const LandingPage = () => {
                 avatarBg: "from-blue-500/20 to-cyan-500/20 border-blue-500/30",
                 roleColor: "text-blue-400",
                 bio: isTr
-                  ? "Donanım mühendisliği, saha operasyonları ve iş geliştirme alanlarında deneyimli. Sensör modüllerinin tasarımı, üretimi ve arıcılarla saha testlerini yönetiyor."
-                  : "Experienced in hardware engineering, field operations and business development. Manages sensor module design, production and field testing with beekeepers.",
+                  ? "Saha operasyonları, iş geliştirme ve müşteri ilişkileri alanlarında deneyimli. Arıcılarla birebir çalışarak platformun geliştirilmesini ve saha testlerini yönetiyor."
+                  : "Experienced in field operations, business development and customer relations. Works closely with beekeepers to manage platform development and field testing.",
                 quote: isTr
                   ? '"Sahada arıcılarla çalışmak bize gerçek ihtiyaçları gösterdi. BeeMora, laboratuvardan değil — kovanın yanından doğdu."'
                   : '"Working with beekeepers in the field showed us the real needs. BeeMora was born not from a lab — but from beside the hive."',
@@ -3716,9 +3534,6 @@ const LandingPage = () => {
               <span className="px-3 py-1 bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-semibold rounded-full">
                 {isTr ? "2025'ten beri" : "Since 2025"}
               </span>
-              <span className="px-3 py-1 bg-blue-500/10 border border-blue-500/30 text-blue-400 text-xs font-semibold rounded-full">
-                TÜBİTAK 2204-A
-              </span>
               <span className="px-3 py-1 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-semibold rounded-full">
                 IoT + AI
               </span>
@@ -3755,9 +3570,6 @@ const LandingPage = () => {
                   : "Turkey's leading smart beekeeping platform. Monitor your hives 24/7 with IoT sensors and AI, prevent colony losses."}
               </p>
               <div className="flex items-center gap-3">
-                <span className="px-2.5 py-1 bg-amber-500/10 border border-amber-500/20 text-amber-400 text-[10px] font-semibold rounded-full">
-                  TÜBİTAK 2204-A
-                </span>
                 <span className="px-2.5 py-1 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-semibold rounded-full">
                   IoT + AI
                 </span>
@@ -3796,11 +3608,11 @@ const LandingPage = () => {
               </h4>
               <div className="space-y-3 text-sm text-gray-500">
                 <a
-                  href="mailto:hexoraproject@gmail.com"
+                  href="mailto:beemoraproject@gmail.com"
                   className="flex items-center gap-2 hover:text-amber-400 transition-colors"
                 >
                   <Mail className="w-4 h-4 text-gray-600" aria-hidden="true" />
-                  <span>hexoraproject@gmail.com</span>
+                  <span>beemoraproject@gmail.com</span>
                 </a>
                 <a
                   href="https://wa.me/905523478015"

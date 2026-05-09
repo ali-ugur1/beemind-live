@@ -110,7 +110,7 @@ const SystemHealthWidget = () => {
   const services = useMemo(
     () => [
       {
-        name: "ESP32 Gateway",
+        name: "IoT Gateway",
         status: gateway?.status === "online" ? "online" : "offline",
         icon: Server,
       },

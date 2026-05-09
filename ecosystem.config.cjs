@@ -1,18 +1,18 @@
 /**
- * Hexora — PM2 Ecosystem Configuration
+ * BeeMora — PM2 Ecosystem Configuration
  *
  * Kullanım:
  *   pm2 start ecosystem.config.cjs
  *   pm2 reload ecosystem.config.cjs
- *   pm2 stop hexora-api
- *   pm2 logs hexora-api
+ *   pm2 stop beemora-api
+ *   pm2 logs beemora-api
  *   pm2 monit
  */
 
 module.exports = {
   apps: [
     {
-      name: 'hexora-api',
+      name: 'beemora-api',
       script: 'server.js',
       cwd: __dirname,
 
@@ -46,8 +46,8 @@ module.exports = {
 
       // Log dosyaları
       log_date_format: 'YYYY-MM-DD HH:mm:ss',
-      error_file: './logs/hexora-error.log',
-      out_file: './logs/hexora-out.log',
+      error_file: './logs/beemora-error.log',
+      out_file: './logs/beemora-out.log',
       merge_logs: true,
       log_type: 'json',
 

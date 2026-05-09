@@ -1,6 +1,6 @@
 ﻿/*
  * BeeMora Backend — Express.js API Sunucusu
- * ESP32'den gelen sensör verilerini alır, JSON dosyasına kaydeder
+ * IoT sensörlerden gelen verileri alır, JSON dosyasına kaydeder
  *
  * Düzeltmeler:
  *  - Atomic dosya yazma (write-then-rename) — veri bozulması önlendi
@@ -64,7 +64,7 @@ const log = (...args) => {
 const VAPID_PUBLIC = process.env.VAPID_PUBLIC_KEY || "";
 const VAPID_PRIVATE = process.env.VAPID_PRIVATE_KEY || "";
 const VAPID_SUBJECT =
-  process.env.VAPID_SUBJECT || "mailto:hexoraproject@gmail.com";
+  process.env.VAPID_SUBJECT || "mailto:beemoraproject@gmail.com";
 
 if (VAPID_PUBLIC && VAPID_PRIVATE) {
   webpush.setVapidDetails(VAPID_SUBJECT, VAPID_PUBLIC, VAPID_PRIVATE);
@@ -123,7 +123,7 @@ if (!fs.existsSync(USERS_FILE)) {
   const defaultUsers = [
     {
       id: "user-001",
-      email: "admin@hexora.app",
+      email: "admin@beemora.app",
       password: defaultHash,
       fullName: "Ahmet Yılmaz",
       role: "admin",

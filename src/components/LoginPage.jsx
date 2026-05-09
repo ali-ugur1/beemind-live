@@ -775,14 +775,14 @@ const LoginPage = () => {
               </div>
               <h2 className="text-2xl font-extrabold text-gray-100 mb-1">
                 <span className="bg-gradient-to-r from-amber-400 to-orange-400 bg-clip-text text-transparent">
-                  Hex
+                  Bee
                 </span>
-                ora
+                Mora
               </h2>
               <p className="text-gray-500 text-xs">
                 {isTr
-                  ? "Akıllı Kovan İzleme Sistemi"
-                  : "Smart Hive Monitoring System"}
+                  ? "AI Destekli Arıcılık Platformu"
+                  : "AI-Powered Beekeeping Platform"}
               </p>
             </div>
 
@@ -1118,8 +1118,8 @@ const LoginPage = () => {
                         <CheckCircle className="w-3 h-3 flex-shrink-0" />
                         <span className="truncate">
                           {isTr
-                            ? "hexoraproject@gmail.com ile iletişime geçin"
-                            : "Contact hexoraproject@gmail.com"}
+                            ? "beemoraproject@gmail.com ile iletişime geçin"
+                            : "Contact beemoraproject@gmail.com"}
                         </span>
                       </span>
                     )}
