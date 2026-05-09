@@ -1,90 +1,91 @@
-# 🐝 BeeMind ULTIMATE - Production-Ready + Demo Simülasyon
+# 🐝 Hexora Live - ESP32 IoT Kovan İzleme Sistemi
 
-**Version 5.0 ULTIMATE** - Jüri Sunumu Hazır, Canlı Demo Özellikli
-
----
-
-## 🎬 YENİ: DEMO SİMÜLASYON MODU
-
-### Jüri Sunumu İçin Canlı Demo Sistemi
-
-BeeMind artık **gerçek zamanlı simülasyon** desteği ile geliyor! Jüri sunumlarında sistemi canlı göstermek için özel olarak tasarlandı.
-
-#### Özellikler:
-
-### 1. **Heartbeat Engine (Organik Veri Üretici)** ⚡
-
-- ✅ **2 saniyede bir** tüm kovan verileri organik olarak güncellenir
-- ✅ **Smooth transitions**: Veriler `Math.random()` ile atlamaz, yavaşça değişir
-- ✅ **Realistic noise**: Sıcaklık ±0.2°C, nem ±0.5%, ses ±1dB değişir
-- ✅ **Grafik uyumlu**: Dashboard grafikleri düzgün eğriler çizer
+**Gerçek zamanlı sensör verisi ile akıllı kovan takibi**
 
 ---
 
-### 2. **God Mode (Senaryo Yönetimi)** 🎮
+## 📡 Sistem Mimarisi
 
-Ekranın sağ alt köşesinde **mor "Demo Simülasyon"** butonu var. Buradan 5 farklı senaryo çalıştırabilirsiniz:
+```
+ESP32 + Sensörler → WiFi → Node.js Backend → PostgreSQL → React Web Panel
+```
 
-#### Senaryo 1: Her Şey Normal ✅
-- Tüm kovanlar 'stable' moda geçer
-- Sıcaklık: 34-36°C
-- Dashboard: Tüm yeşil
+## 🔧 Donanım
 
-#### Senaryo 2: Hırsızlık/Devrilme 🚨 (10s)
-- Kovan #12 kritik duruma geçer
-- Titreşim alarmı
-- Dashboard: Kırmızı + pulse
+| Bileşen | Açıklama |
+|---------|----------|
+| **ESP32** | Ana mikrodenetleyici |
+| **DHT22** | Sıcaklık & Nem sensörü |
+| **BMP280** | Barometrik basınç sensörü |
+| **Piezo** | Titreşim algılama |
+| **INMP441** | Dijital mikrofon - arı sesi analizi *(yakında)* |
+| **SD Kart Modülü** | Yedek veri kaydı *(yakında)* |
+| **SIM7600E-H** | 4G bağlantı *(yakında)* |
 
-#### Senaryo 3: Oğul Verme (Swarm) ⚠️ (30s)
-- Kovan #04 kademeli alarm
-- Ses: 60dB -> 90dB
-- Progress bar ile takip
+## 🚀 Kurulum
 
-#### Senaryo 4: Çoklu Alarm 🔥 (15s)
-- 3 kovan aynı anda alarm
-- Dashboard: Çoklu kırmızı
-
-#### Senaryo 5: Toplu Düşük Pil 🔋 (10s)
-- 5 kovan düşük pil
-- Warning durumu
-
----
-
-## 🎯 JÜRİ SUNUMUNDA KULLANIM
-
-### 5 Dakikalık Demo Akışı
-
-1. **Normal Durum** (30s) → Genel bakış
-2. **Heartbeat** (30s) → Canlı veri akışı
-3. **Hırsızlık** (15s) → Kritik alarm
-4. **Oğul Verme** (40s) → Kademeli uyarı
-5. **Harita & Raporlar** (1dk) → Görselleştirme
-6. **Finale** (30s) → Normale dön
-
----
-
-## 🚀 KURULUM
-
+### 1. Backend
 ```bash
-cd beemind-ultimate
+# PostgreSQL başlat + Backend çalıştır
+C:\hexora-start.bat
+```
+
+### 2. Web Panel
+```bash
+cd hexora-live
 npm install
 npm run dev
 ```
 
-Sağ altta **"Demo Simülasyon"** butonu görünecek!
+### 3. ESP32
+Arduino IDE ile `arduino/hexora_esp32.ino` dosyasını yükle.
+
+## 🌐 WiFi Yapılandırması
+
+ESP32 otomatik olarak sırayla şu ağlara bağlanmayı dener:
+
+| # | SSID | Açıklama | Backend IP |
+|---|------|----------|------------|
+| 1 | AUgur | Telefon hotspot | 172.20.10.3:3000 |
+| 2 | UGUR_HOME | Ev WiFi | 192.168.1.100:3000 |
+| 3 | TTNET_ZyXEL_HFHY | Ev WiFi | 192.168.1.100:3000 |
+
+## 📊 Özellikler
+
+- ✅ Gerçek zamanlı sensör izleme (5 dk aralık, deep sleep)
+- ✅ Çoklu WiFi desteği (otomatik geçiş)
+- ✅ Otomatik durum tespiti (stable / warning / critical)
+- ✅ Canlı bildirimler (sensör eşik değerleri)
+- ✅ Dashboard + Kovan detay + Harita + Raporlar
+- ✅ AI analiz paneli
+- ✅ Bağlantı durumu göstergesi
+
+## 🔮 Planlanan Geliştirmeler
+
+- [ ] INMP441 ile arı sesi frekans analizi (FFT)
+- [ ] CCS811 CO2 sensörü entegrasyonu
+- [ ] MPU6050 ivme sensörü (hırsızlık/devrilme tespiti)
+- [ ] SIM7600 4G gateway (ESP-NOW ile çoklu kovan)
+- [ ] SD kart yedek veri kaydı
+- [ ] Güneş paneli + 18650 pil sistemi
+
+## 📁 Proje Yapısı
+
+```
+hexora-live/
+├── arduino/
+│   └── hexora_esp32.ino     # ESP32 firmware
+├── src/
+│   ├── components/           # React bileşenleri
+│   ├── contexts/
+│   │   └── LiveDataContext.jsx  # Canlı veri yönetimi
+│   ├── data/
+│   │   └── helpers.js        # Utility fonksiyonları
+│   └── services/
+│       └── api.js            # Backend API servisi
+└── public/
+```
 
 ---
 
-## ✨ TÜM ÖZELLİKLER
-
-- ✅ Responsive tasarım (mobil/tablet/desktop)
-- ✅ Gateway + Hava durumu widget
-- ✅ AI analiz paneli
-- ✅ Google Maps entegrasyonu
-- ✅ Grafikler + raporlar
-- ✅ Toast notifications
-- ✅ Loading states
-- ✅ Error boundaries
-- ✅ **Canlı demo simülasyonu** 🎬
-
-**TÜBİTAK JÜRİSİNİ ETKİLEYECEK SİSTEM! 🚀🐝✨**
+**TÜBİTAK 2242 - Hexora IoT Arıcılık İzleme Sistemi 🐝**
