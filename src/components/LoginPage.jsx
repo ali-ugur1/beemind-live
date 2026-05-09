@@ -1226,8 +1226,8 @@ const LoginPage = () => {
               <p className="text-gray-700 text-[10px] flex items-center justify-center gap-1">
                 <MapPin className="w-3 h-3" />
                 {isTr
-                  ? "Konya, Türkiye • © 2026 Hexora - BeeMora"
-                  : "Konya, Turkey • © 2026 Hexora - BeeMora"}
+                  ? "Konya, Türkiye • © 2026 BeeMora"
+                  : "Konya, Turkey • © 2026 BeeMora"}
               </p>
             </div>
           </div>

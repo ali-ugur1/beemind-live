@@ -238,7 +238,7 @@ const Footer = ({ onTabChange }) => {
         {/* Bottom Bar */}
         <div className="border-t border-gray-800 pt-4 flex flex-col sm:flex-row items-center justify-between gap-2">
           <p className="text-xs text-gray-600">
-            &copy; {year} Hexora - BeeMora.{" "}
+            &copy; {year} BeeMora.{" "}
             {t("Tüm hakları saklıdır.", "All rights reserved.")}
           </p>
           <div className="flex items-center gap-4 text-xs text-gray-600">
