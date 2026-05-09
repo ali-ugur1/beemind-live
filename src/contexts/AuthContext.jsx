@@ -1,4 +1,4 @@
-import {
+﻿import {
   createContext,
   useContext,
   useState,
@@ -9,7 +9,7 @@ import {
 
 const AuthContext = createContext(null);
 
-const TOKEN_KEY = "hexora_jwt";
+const TOKEN_KEY = "beemora_jwt";
 const USER_KEY = "hexora_user";
 const FIRST_LOGIN_KEY = "hexora_first_login";
 const API_BASE = import.meta.env.VITE_API_URL || "";
@@ -83,9 +83,9 @@ export function AuthProvider({ children }) {
       setUser(null);
       setIsAuthenticated(false);
     };
-    window.addEventListener("hexora:auth-expired", handleAuthExpired);
+    window.addEventListener("beemora:auth-expired", handleAuthExpired);
     return () =>
-      window.removeEventListener("hexora:auth-expired", handleAuthExpired);
+      window.removeEventListener("beemora:auth-expired", handleAuthExpired);
   }, []);
 
   const login = useCallback(async (email, password) => {

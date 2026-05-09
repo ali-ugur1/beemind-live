@@ -1,4 +1,4 @@
-import { ExternalLink, Mail, Send } from "lucide-react";
+﻿import { ExternalLink, Mail, Send } from "lucide-react";
 import { useState } from "react";
 import { useLanguage } from "../contexts/LanguageContext";
 import { useToast } from "../contexts/ToastContext";
@@ -44,7 +44,7 @@ const Footer = ({ onTabChange }) => {
       return;
     }
 
-    const mailSubject = encodeURIComponent(subject.trim() || "Hexora Destek");
+    const mailSubject = encodeURIComponent(subject.trim() || "BeeMora Destek");
     const mailBody = encodeURIComponent(
       `${t("Gönderen", "From")}: ${name.trim()} (${email.trim()})\n\n${message.trim()}`,
     );
@@ -79,7 +79,7 @@ const Footer = ({ onTabChange }) => {
               <div className="w-6 h-6 bg-amber-500/20 rounded flex items-center justify-center">
                 <img
                   src="/hexora-logo.svg"
-                  alt="Hexora"
+                  alt="BeeMora"
                   className="w-4 h-4 object-contain"
                   style={{ filter: "brightness(1.2)" }}
                   onError={(e) => {
@@ -87,7 +87,7 @@ const Footer = ({ onTabChange }) => {
                   }}
                 />
               </div>
-              <span className="text-sm font-bold text-blue-400">Hexora</span>
+              <span className="text-sm font-bold text-blue-400">BeeMora</span>
               <span className="text-xs text-gray-600">v2.0</span>
             </div>
             <p className="text-xs text-gray-500 leading-relaxed">
@@ -238,7 +238,7 @@ const Footer = ({ onTabChange }) => {
         {/* Bottom Bar */}
         <div className="border-t border-gray-800 pt-4 flex flex-col sm:flex-row items-center justify-between gap-2">
           <p className="text-xs text-gray-600">
-            &copy; {year} Hexora.{" "}
+            &copy; {year} Hexora - BeeMora.{" "}
             {t("Tüm hakları saklıdır.", "All rights reserved.")}
           </p>
           <div className="flex items-center gap-4 text-xs text-gray-600">

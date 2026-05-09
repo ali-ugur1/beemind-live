@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+﻿import { useState, useEffect, useRef, useCallback } from "react";
 
 const API_BASE = import.meta.env.VITE_API_URL || "";
 
@@ -9,7 +9,7 @@ const isPushSupported = () =>
   "Notification" in window;
 
 const getAuthHeaders = (extra = {}) => {
-  const token = localStorage.getItem("hexora_jwt");
+  const token = localStorage.getItem("beemora_jwt");
   return {
     "Content-Type": "application/json",
     ...(token && { Authorization: `Bearer ${token}` }),
@@ -22,7 +22,7 @@ const getLang = () => localStorage.getItem("hexora_language") || "tr";
 const t = (tr, en) => (getLang() === "tr" ? tr : en);
 
 /**
- * Hexora Push Notifications Hook
+ * BeeMora Push Notifications Hook
  *
  * 1) Service Worker push subscription (backend → push → SW → notification)
  * 2) Local browser notifications for critical hive alerts (fallback)

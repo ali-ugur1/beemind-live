@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect } from "react";
+﻿import { useMemo, useState, useEffect } from "react";
 import {
   LineChart,
   Line,
@@ -680,7 +680,7 @@ function exportCSV(hives, lang = "tr") {
   const csv = [headers, ...rows]
     .map((row) => row.map(csvEscape).join(","))
     .join("\n");
-  downloadBlob(`\uFEFF${csv}`, `hexora-report-${todayISO()}.csv`, "text/csv");
+  downloadBlob(`\uFEFF${csv}`, `beemora-report-${todayISO()}.csv`, "text/csv");
 }
 
 // ---------- Excel Export (CSV with .csv; Excel açar) ----------
@@ -727,7 +727,7 @@ function exportExcel(hives, stats, statusCounts, lang = "tr") {
 
   const summaryRows = [
     [],
-    [isTr ? "Hexora Özet Rapor" : "Hexora Summary Report"],
+    [isTr ? "BeeMora Özet Rapor" : "BeeMora Summary Report"],
     [
       isTr ? "Tarih" : "Date",
       new Date().toLocaleDateString(isTr ? "tr-TR" : "en-US"),
@@ -759,7 +759,7 @@ function exportExcel(hives, stats, statusCounts, lang = "tr") {
     .join("\n");
   downloadBlob(
     `\uFEFF${csv}`,
-    `hexora-${isTr ? "rapor" : "report"}-${todayISO()}.csv`,
+    `beemora-${isTr ? "rapor" : "report"}-${todayISO()}.csv`,
     "text/csv",
   );
 }
@@ -782,7 +782,7 @@ function exportPDF(
   // Header
   doc.setFontSize(20);
   doc.setTextColor(245, 158, 11);
-  doc.text("Hexora", 14, 20);
+  doc.text("BeeMora", 14, 20);
   doc.setFontSize(10);
   doc.setTextColor(150, 150, 150);
   doc.text(t(`${isTr ? "Rapor Tarihi" : "Report Date"}: ${date}`), 14, 28);
@@ -897,14 +897,14 @@ function exportPDF(
     doc.setTextColor(180, 180, 180);
     doc.text(
       t(
-        `Hexora - ${isTr ? "AI Destekli IoT Kovan Yönetim Sistemi" : "AI-Powered IoT Hive Management"} | ${date} | ${i}/${pageCount}`,
+        `BeeMora - ${isTr ? "AI Destekli IoT Kovan Yönetim Sistemi" : "AI-Powered IoT Hive Management"} | ${date} | ${i}/${pageCount}`,
       ),
       14,
       pageHeight - 10,
     );
   }
 
-  doc.save(`hexora-${isTr ? "rapor" : "report"}-${todayISO()}.pdf`);
+  doc.save(`beemora-${isTr ? "rapor" : "report"}-${todayISO()}.pdf`);
 }
 
 // ---------- JSON Export ----------

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+﻿import { useState, useEffect, useCallback } from "react";
 import {
   ArrowRight,
   Wifi,
@@ -96,7 +96,7 @@ const WelcomeScreen = ({ onEnter }) => {
     <div
       role="dialog"
       aria-modal="true"
-      aria-label={isTr ? "Hexora Karşılama Ekranı" : "Hexora Welcome Screen"}
+      aria-label={isTr ? "BeeMora Karşılama Ekranı" : "BeeMora Welcome Screen"}
       className={`fixed inset-0 z-[100] flex flex-col items-center justify-center overflow-hidden bg-gray-950 transition-opacity duration-500 ${
         loaded ? "opacity-100" : "opacity-0"
       }`}
@@ -164,7 +164,7 @@ const WelcomeScreen = ({ onEnter }) => {
             {!logoError ? (
               <img
                 src="/hexora-logo.svg"
-                alt="Hexora"
+                alt="BeeMora"
                 className="h-16 w-16 object-contain"
                 style={{
                   filter: "drop-shadow(0 0 12px rgba(245, 158, 11, 0.5))",
@@ -264,7 +264,7 @@ const WelcomeScreen = ({ onEnter }) => {
 
       {/* Alt bilgi çubuğu */}
       <div className="absolute bottom-6 left-0 right-0 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 px-4 text-xs text-gray-600">
-        <span>Hexora v2.0</span>
+        <span>BeeMora v2.0</span>
         <span aria-hidden="true">•</span>
         <span>TÜBİTAK 2204-A</span>
         <span aria-hidden="true">•</span>

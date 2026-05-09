@@ -1,7 +1,7 @@
-// sw.js
+﻿// sw.js
 const VERSION = "v2";
-const STATIC_CACHE = `hexora-static-${VERSION}`;
-const RUNTIME_CACHE = `hexora-runtime-${VERSION}`;
+const STATIC_CACHE = `beemora-static-${VERSION}`;
+const RUNTIME_CACHE = `beemora-runtime-${VERSION}`;
 const OFFLINE_URL = "/offline.html";
 
 const STATIC_ASSETS = [
@@ -155,7 +155,7 @@ async function updateCache(request, response) {
 // ============================================================
 self.addEventListener("push", (event) => {
   const defaultData = {
-    title: "Hexora",
+    title: "BeeMora",
     body: "Yeni bildirim",
     icon: "/hexora-logo.svg",
     badge: "/hexora-logo.svg",

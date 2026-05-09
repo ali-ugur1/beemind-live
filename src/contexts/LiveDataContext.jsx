@@ -1,4 +1,4 @@
-import {
+﻿import {
   createContext,
   useContext,
   useState,
@@ -21,7 +21,7 @@ export const useLiveData = () => {
 };
 
 const HIVES_STORAGE_KEY = "hexora_hives";
-const SETTINGS_STORAGE_KEY = "hexora_settings";
+const SETTINGS_STORAGE_KEY = "beemora_settings";
 const LANG_STORAGE_KEY = "hexora_language";
 const POLL_INTERVAL_MS = 30_000; // 30 sn
 const WEATHER_INTERVAL_MS = 15 * 60_000; // 15 dk

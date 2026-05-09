@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useRef, useCallback } from "react";
+﻿import { useState, useMemo, useEffect, useRef, useCallback } from "react";
 import {
   MapPin,
   Layers,
@@ -250,7 +250,7 @@ const MapView = ({ hives, onViewDetail }) => {
         marker = L.marker([hive.lat, hive.lng], {
           icon: createHiveIcon(hive.status),
         });
-        marker.bindPopup(popupHtml, { className: "hexora-popup" });
+        marker.bindPopup(popupHtml, { className: "beemora-popup" });
         marker.on("click", () => setSelectedHive(hive));
         marker.addTo(map);
         existing.set(id, marker);

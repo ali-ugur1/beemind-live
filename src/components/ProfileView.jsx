@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+﻿import { useMemo } from "react";
 import {
   User,
   Mail,
@@ -13,7 +13,7 @@ import { useLiveData } from "../contexts/LiveDataContext";
 import { useLanguage } from "../contexts/LanguageContext";
 import { useAuth } from "../contexts/AuthContext";
 
-const SETTINGS_KEY = "hexora_settings";
+const SETTINGS_KEY = "beemora_settings";
 
 const ProfileView = () => {
   const { hives } = useLiveData();
