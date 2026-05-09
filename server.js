@@ -1094,7 +1094,7 @@ app.get("/api/backup", authMiddleware, (req, res) => {
     };
     res.setHeader(
       "Content-Disposition",
-      `attachment; filename="hexora-backup-${safeDate}.json"`,
+      `attachment; filename="beemora-backup-${safeDate}.json"`,
     );
     res.setHeader("Content-Type", "application/json");
     return res.json(backup);
@@ -1199,11 +1199,11 @@ app.post("/api/push/send", authMiddleware, async (req, res) => {
   try {
     const { title, body, url, tag } = req.body;
     const payload = JSON.stringify({
-      title: title || "Hexora",
+      title: title || "BeeMora",
       body: body || "Yeni bildirim",
       icon: "/beemora-logo.svg",
       url: url || "/panel",
-      tag: tag || "hexora-alert",
+      tag: tag || "beemora-alert",
     });
 
     const subs = readSubscriptions();
@@ -1323,7 +1323,7 @@ if (fs.existsSync(distDir)) {
 // ── Sunucuyu Başlat ───────────────────────────────────────────────────────
 const server = app.listen(PORT, "0.0.0.0", () => {
   console.log(`\n========================================`);
-  console.log(`  Hexora API Sunucusu (${NODE_ENV})`);
+  console.log(`  BeeMora API Sunucusu (${NODE_ENV})`);
   console.log(`  http://localhost:${PORT}`);
   console.log(`  http://0.0.0.0:${PORT} (LAN)`);
   console.log(`========================================\n`);
