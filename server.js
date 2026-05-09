@@ -1201,7 +1201,7 @@ app.post("/api/push/send", authMiddleware, async (req, res) => {
     const payload = JSON.stringify({
       title: title || "Hexora",
       body: body || "Yeni bildirim",
-      icon: "/hexora-logo.svg",
+      icon: "/beemora-logo.svg",
       url: url || "/panel",
       tag: tag || "hexora-alert",
     });
@@ -1285,7 +1285,7 @@ async function checkAndSendAlarms(entry) {
     const payload = JSON.stringify({
       title: `⚠️ ${threshold.label} Alarmı!`,
       body: `${threshold.label} ${isHigh ? "çok yüksek" : "çok düşük"}: ${value}${threshold.unit} (limit: ${isHigh ? threshold.max : threshold.min}${threshold.unit})`,
-      icon: "/hexora-logo.svg",
+      icon: "/beemora-logo.svg",
       url: "/panel",
       tag: `alarm-${key}`,
     });

@@ -4,7 +4,7 @@
 
 function _getLang() {
   try {
-    return localStorage.getItem("hexora_language") || "tr";
+    return localStorage.getItem("beemora_language") || "tr";
   } catch {
     return "tr";
   }
@@ -21,7 +21,7 @@ function _getToken() {
 function _clearSession() {
   try {
     localStorage.removeItem("beemora_jwt");
-    localStorage.removeItem("hexora_user");
+    localStorage.removeItem("beemora_user");
     window.dispatchEvent(new CustomEvent("beemora:auth-expired"));
   } catch {
     /* intentional */

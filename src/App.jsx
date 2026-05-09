@@ -500,7 +500,7 @@ function AppContent() {
         <div className="text-center">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-amber-500/10 border border-amber-500/30 rounded-2xl mb-4">
             <img
-              src="/hexora-logo.svg"
+              src="/beemora-logo.svg"
               alt="BeeMora"
               className="w-10 h-10 object-contain animate-pulse"
               style={{ filter: "drop-shadow(0 0 8px rgba(245, 158, 11, 0.5))" }}

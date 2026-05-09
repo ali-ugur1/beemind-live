@@ -1,4 +1,4 @@
-import {
+﻿import {
   createContext,
   useContext,
   useState,
@@ -10,7 +10,7 @@ import { tr } from "../i18n/tr";
 import { en } from "../i18n/en";
 
 const LanguageContext = createContext(null);
-const LANG_KEY = "hexora_language";
+const LANG_KEY = "beemora_language";
 const DEFAULT_LANG = "tr";
 const SUPPORTED_LANGS = ["tr", "en"];
 

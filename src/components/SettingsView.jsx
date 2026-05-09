@@ -738,7 +738,7 @@ const PushNotificationToggle = ({ pushNotifications }) => {
         body: isTr
           ? "Push bildirimleri aktif! Sensör alarmları telefonunuza gelecek."
           : "Push notifications enabled! Sensor alerts will come to your device.",
-        icon: "/hexora-logo.svg",
+        icon: "/beemora-logo.svg",
       };
       if (reg && "showNotification" in reg) {
         await reg.showNotification("BeeMora ⬡", opts);

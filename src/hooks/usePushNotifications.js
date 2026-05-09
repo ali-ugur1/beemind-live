@@ -17,7 +17,7 @@ const getAuthHeaders = (extra = {}) => {
   };
 };
 
-const getLang = () => localStorage.getItem("hexora_language") || "tr";
+const getLang = () => localStorage.getItem("beemora_language") || "tr";
 
 const t = (tr, en) => (getLang() === "tr" ? tr : en);
 
@@ -146,8 +146,8 @@ const usePushNotifications = (hives = []) => {
               "Kovan kritik durumda! Acil müdahale gerekiyor.",
               "Hive is in critical condition! Immediate action required.",
             ),
-          icon: "/hexora-logo.svg",
-          tag: `hexora-critical-${hive.id}`,
+          icon: "/beemora-logo.svg",
+          tag: `beemora-critical-${hive.id}`,
           requireInteraction: true,
         },
       );

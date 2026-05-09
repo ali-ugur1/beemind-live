@@ -925,7 +925,7 @@ function exportJSON(hives) {
   }));
   downloadBlob(
     JSON.stringify(data, null, 2),
-    `hexora-rapor-${todayISO()}.json`,
+    `beemora-rapor-${todayISO()}.json`,
     "application/json",
   );
 }

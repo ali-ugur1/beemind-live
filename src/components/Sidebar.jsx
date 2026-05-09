@@ -158,7 +158,7 @@ const Sidebar = ({ activeTab, onTabChange }) => {
           className="fixed top-4 left-4 z-[60] p-2 bg-black border border-gray-800 rounded-lg text-amber-400 hover:bg-gray-900 transition-colors lg:hidden"
           aria-label={isOpen ? "Close menu" : "Open menu"}
           aria-expanded={isOpen}
-          aria-controls="hexora-sidebar"
+          aria-controls="beemora-sidebar"
         >
           {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
         </button>
@@ -175,7 +175,7 @@ const Sidebar = ({ activeTab, onTabChange }) => {
 
       {/* Sidebar */}
       <aside
-        id="hexora-sidebar"
+        id="beemora-sidebar"
         aria-label="Main navigation"
         className={`${
           isMobile
@@ -190,7 +190,7 @@ const Sidebar = ({ activeTab, onTabChange }) => {
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 flex items-center justify-center bg-gray-900 rounded-lg p-1">
               <img
-                src="/hexora-logo.svg"
+                src="/beemora-logo.svg"
                 alt="BeeMora Logo"
                 className="w-full h-full object-contain"
                 style={{

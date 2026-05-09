@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect, useRef, useCallback } from "react";
+﻿import { useMemo, useState, useEffect, useRef, useCallback } from "react";
 import { motion } from "framer-motion";
 import {
   Wifi,
@@ -196,7 +196,7 @@ const OverviewDashboard = ({ stats, hives, onViewDetail, onNavigate }) => {
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 bg-amber-500/20 rounded-full flex items-center justify-center p-2">
                 <img
-                  src="/hexora-logo.svg"
+                  src="/beemora-logo.svg"
                   alt="Gateway"
                   className="w-full h-full object-contain"
                   style={{

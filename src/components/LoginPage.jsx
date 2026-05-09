@@ -156,7 +156,7 @@ const LiveMockup = ({ isTr }) => {
         <div className="w-2.5 h-2.5 bg-amber-500/80 rounded-full" />
         <div className="w-2.5 h-2.5 bg-emerald-500/80 rounded-full" />
         <span className="ml-2 text-[10px] font-mono text-gray-600">
-          hexora.app/panel
+          beemora.io/panel
         </span>
         <div className="ml-auto flex items-center gap-1 px-2 py-0.5 bg-emerald-500/10 border border-emerald-500/20 rounded-full">
           <div className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" />
@@ -522,7 +522,7 @@ const LoginPage = () => {
   };
 
   const fillDemo = () => {
-    setEmail("admin@hexora.app");
+    setEmail("admin@beemora.io");
     setPassword("admin123");
     setError("");
     setShowDemo(false);
@@ -1183,7 +1183,7 @@ const LoginPage = () => {
                         {isTr ? "Kullanıcı:" : "User:"}
                       </span>
                       <code className="text-amber-300 bg-gray-800 px-1.5 py-0.5 rounded text-[10px]">
-                        admin@hexora.app
+                        admin@beemora.io
                       </code>
                       <span className="text-gray-500">
                         {isTr ? "Şifre:" : "Pass:"}

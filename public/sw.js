@@ -7,7 +7,7 @@ const OFFLINE_URL = "/offline.html";
 const STATIC_ASSETS = [
   "/",
   "/offline.html",
-  "/hexora-logo.svg",
+  "/beemora-logo.svg",
   "/manifest.json",
 ];
 
@@ -157,8 +157,8 @@ self.addEventListener("push", (event) => {
   const defaultData = {
     title: "BeeMora",
     body: "Yeni bildirim",
-    icon: "/hexora-logo.svg",
-    badge: "/hexora-logo.svg",
+    icon: "/beemora-logo.svg",
+    badge: "/beemora-logo.svg",
     url: "/panel",
     tag: "hexora-alert",
   };

@@ -1,4 +1,4 @@
-import {
+﻿import {
   createContext,
   useContext,
   useState,
@@ -64,8 +64,8 @@ export const ACCENT_COLORS = Object.freeze({
 const ACCENT_KEYS = /** @type {AccentKey[]} */ (Object.keys(ACCENT_COLORS));
 
 const STORAGE_KEYS = /** @type {const} */ ({
-  THEME: "hexora_theme",
-  ACCENT: "hexora_accent",
+  THEME: "beemora_theme",
+  ACCENT: "beemora_accent",
 });
 
 // ─── Storage helpers (safe — never throws) ───────────────────────────────────

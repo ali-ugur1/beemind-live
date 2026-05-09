@@ -163,7 +163,7 @@ const WelcomeScreen = ({ onEnter }) => {
           <div className="mb-6 inline-flex h-24 w-24 items-center justify-center rounded-2xl border-2 border-amber-500/30 bg-gradient-to-br from-amber-500/20 to-orange-500/20 shadow-lg shadow-amber-500/10">
             {!logoError ? (
               <img
-                src="/hexora-logo.svg"
+                src="/beemora-logo.svg"
                 alt="BeeMora"
                 className="h-16 w-16 object-contain"
                 style={{

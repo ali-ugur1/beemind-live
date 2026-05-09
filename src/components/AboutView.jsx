@@ -174,7 +174,7 @@ const AboutView = () => {
       <div className="text-center py-8">
         <div className="inline-flex items-center justify-center w-20 h-20 bg-amber-500/10 border-2 border-amber-500/30 rounded-2xl mb-4">
           <img
-            src="/hexora-logo.svg"
+            src="/beemora-logo.svg"
             alt="BeeMora"
             className="w-12 h-12 object-contain"
             style={{ filter: "drop-shadow(0 0 8px rgba(245, 158, 11, 0.5))" }}

@@ -107,7 +107,7 @@ const RoiCalculator = ({ isTr }) => {
   const avgHoneyPerHive = 15;
   const honeyPricePerKg = 300;
   const lossRate = 0.2;
-  const hexoraReduction = 0.6;
+  const beemoraReduction = 0.6;
   const colonyPrice = 2000;
   const yieldBoost = 0.1;
 
@@ -125,7 +125,7 @@ const RoiCalculator = ({ isTr }) => {
           ? "Endüstriyel / Filo"
           : "Industrial / Fleet";
 
-  const savedColonies = Math.round(hiveCount * lossRate * hexoraReduction);
+  const savedColonies = Math.round(hiveCount * lossRate * beemoraReduction);
   const savedColonyValue = savedColonies * colonyPrice;
   const savedHoneyRevenue = savedColonies * avgHoneyPerHive * honeyPricePerKg;
   const boostRevenue = Math.round(
@@ -912,7 +912,7 @@ const LandingPage = () => {
                   aria-hidden="true"
                 />
                 <span className="ml-3 text-[10px] font-mono text-gray-600">
-                  hexora.app/panel
+                  beemora.io/panel
                 </span>
                 <div className="ml-auto flex items-center gap-1.5 px-2 py-1 bg-emerald-500/10 border border-emerald-500/30 rounded-full">
                   <div
@@ -1778,7 +1778,7 @@ const LandingPage = () => {
                 aria-hidden="true"
               />
               <span className="ml-4 text-xs text-gray-600 font-mono">
-                hexora.app/panel
+                beemora.io/panel
               </span>
             </div>
             <div className="p-5 md:p-7">
@@ -2609,7 +2609,7 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* ═══════════ THE HEXORA DIFFERENCE ═══════════ */}
+      {/* ═══════════ THE BEEMORA DIFFERENCE ═══════════ */}
       <section
         data-animate
         id="difference"

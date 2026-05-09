@@ -78,7 +78,7 @@ const Footer = ({ onTabChange }) => {
             <div className="flex items-center gap-2 mb-2">
               <div className="w-6 h-6 bg-amber-500/20 rounded flex items-center justify-center">
                 <img
-                  src="/hexora-logo.svg"
+                  src="/beemora-logo.svg"
                   alt="BeeMora"
                   className="w-4 h-4 object-contain"
                   style={{ filter: "brightness(1.2)" }}

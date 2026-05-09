@@ -10,8 +10,8 @@
 const AuthContext = createContext(null);
 
 const TOKEN_KEY = "beemora_jwt";
-const USER_KEY = "hexora_user";
-const FIRST_LOGIN_KEY = "hexora_first_login";
+const USER_KEY = "beemora_user";
+const FIRST_LOGIN_KEY = "beemora_first_login";
 const API_BASE = import.meta.env.VITE_API_URL || "";
 
 export function AuthProvider({ children }) {
