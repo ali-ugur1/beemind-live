@@ -1,4 +1,4 @@
-import {
+﻿import {
   useState,
   useEffect,
   useMemo,
@@ -179,9 +179,9 @@ function AppContent() {
     const pageLabel =
       currentView === "detail" && selectedHiveId
         ? detailName
-        : (tabTitles[activeTab] ?? "Hexora");
+        : (tabTitles[activeTab] ?? "BeeMora");
 
-    document.title = `${pageLabel} | Hexora`;
+    document.title = `${pageLabel} | BeeMora`;
   }, [activeTab, currentView, selectedHiveId, lang, hives]);
 
   // ---------------------------------------------------------------------------
@@ -367,7 +367,7 @@ function AppContent() {
     const url = URL.createObjectURL(blob);
     const a = Object.assign(document.createElement("a"), {
       href: url,
-      download: `hexora-bulk-report-${new Date().toISOString().slice(0, 10)}.csv`,
+      download: `beemora-bulk-report-${new Date().toISOString().slice(0, 10)}.csv`,
     });
 
     document.body.appendChild(a);
@@ -389,7 +389,7 @@ function AppContent() {
     if (selectedHives.length === 0) return;
     setIsLoading(true);
     try {
-      const token = localStorage.getItem("hexora_jwt");
+      const token = localStorage.getItem("beemora_jwt");
       const res = await fetch("/api/push/send", {
         method: "POST",
         headers: {
@@ -501,7 +501,7 @@ function AppContent() {
           <div className="inline-flex items-center justify-center w-16 h-16 bg-amber-500/10 border border-amber-500/30 rounded-2xl mb-4">
             <img
               src="/hexora-logo.svg"
-              alt="Hexora"
+              alt="BeeMora"
               className="w-10 h-10 object-contain animate-pulse"
               style={{ filter: "drop-shadow(0 0 8px rgba(245, 158, 11, 0.5))" }}
               onError={(e) => {
@@ -510,7 +510,7 @@ function AppContent() {
             />
           </div>
           <LoadingSpinner size="lg" />
-          <p className="text-blue-400 mt-4 text-lg font-semibold">Hexora</p>
+          <p className="text-blue-400 mt-4 text-lg font-semibold">BeeMora</p>
           <p className="text-gray-500 text-sm mt-1">{t.common.loading}</p>
           <div className="mt-4 w-48 h-1 bg-gray-800 rounded-full overflow-hidden mx-auto">
             <div

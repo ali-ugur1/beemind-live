@@ -1,4 +1,4 @@
-import {
+﻿import {
   Home,
   List,
   Map,
@@ -18,7 +18,7 @@ import { useState, useEffect, useCallback, useMemo } from "react";
 import { useLiveData } from "../contexts/LiveDataContext";
 import { useLanguage } from "../contexts/LanguageContext";
 
-const STORAGE_KEY = "hexora_settings";
+const STORAGE_KEY = "beemora_settings";
 const DEFAULT_USER_NAME = "Admin User";
 const MOBILE_BREAKPOINT = 1024;
 const HIVE_LIMIT = 50;
@@ -50,10 +50,10 @@ const Sidebar = ({ activeTab, onTabChange }) => {
   useEffect(() => {
     const handleStorage = () => setUserName(readUserName());
     window.addEventListener("storage", handleStorage);
-    window.addEventListener("hexora-settings-updated", handleStorage);
+    window.addEventListener("beemora-settings-updated", handleStorage);
     return () => {
       window.removeEventListener("storage", handleStorage);
-      window.removeEventListener("hexora-settings-updated", handleStorage);
+      window.removeEventListener("beemora-settings-updated", handleStorage);
     };
   }, []);
 
@@ -191,14 +191,14 @@ const Sidebar = ({ activeTab, onTabChange }) => {
             <div className="w-10 h-10 flex items-center justify-center bg-gray-900 rounded-lg p-1">
               <img
                 src="/hexora-logo.svg"
-                alt="Hexora Logo"
+                alt="BeeMora Logo"
                 className="w-full h-full object-contain"
                 style={{
                   filter: "drop-shadow(0 0 8px rgba(79, 70, 229, 0.5))",
                 }}
               />
             </div>
-            <h1 className="text-xl font-bold text-violet-400">Hexora</h1>
+            <h1 className="text-xl font-bold text-violet-400">BeeMora</h1>
           </div>
         </div>
 

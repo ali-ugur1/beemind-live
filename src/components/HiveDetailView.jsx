@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef } from "react";
+﻿import { useState, useEffect, useMemo, useRef } from "react";
 import {
   ArrowLeft,
   CheckCircle,
@@ -39,10 +39,10 @@ import { useTheme } from "../contexts/ThemeContext";
 import { useToast } from "../contexts/ToastContext";
 import { api } from "../services/api";
 
-const NOTES_KEY = (id) => `hexora_notes_${id}`;
-const HIVE_PHOTO_KEY = (id) => `hexora_hive_photo_${id}`;
-const SENSOR_CACHE_KEY = (id) => `hexora_sensor_cache_${id}`;
-const CALENDAR_EVENTS_KEY = "hexora_calendar_events";
+const NOTES_KEY = (id) => `beemora_notes_${id}`;
+const HIVE_PHOTO_KEY = (id) => `beemora_hive_photo_${id}`;
+const SENSOR_CACHE_KEY = (id) => `beemora_sensor_cache_${id}`;
+const CALENDAR_EVENTS_KEY = "beemora_calendar_events";
 
 const chartColors = (isDark) => ({
   tooltip: {

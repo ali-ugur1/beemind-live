@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+﻿import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLanguage } from "../contexts/LanguageContext";
 import { useTheme } from "../contexts/ThemeContext";
@@ -447,10 +447,10 @@ const LandingPage = () => {
 
   const faqs = [
     {
-      q: isTr ? "Hexora nedir?" : "What is Hexora?",
+      q: isTr ? "BeeMora Nedir?" : "What is BeeMora?",
       a: isTr
-        ? "Hexora, TÜBİTAK 2204-A ödüllü bir araştırma projesi olarak 2025'te başlayan, IoT sensörler ve yapay zeka teknolojileri ile arı kovanlarını 7/24 uzaktan izleme ve yönetme platformudur. Kovan içi sıcaklık, nem, ses, titreşim, ağırlık ve basınç gibi kritik verileri gerçek zamanlı toplayarak arıcılara anlık bildirimler, AI destekli tahminler (oğul riski, hastalık tespiti) ve detaylı raporlar sunar. Amacımız Türkiye'deki yıllık %30 koloni kaybını teknoloji ile minimuma indirmektir."
-        : "Hexora is a platform that started in 2025 as a TÜBİTAK 2204-A award-winning research project, providing 24/7 remote hive monitoring and management with IoT sensors and AI technology. It collects critical real-time data such as internal temperature, humidity, sound, vibration, weight and pressure, offering beekeepers instant notifications, AI-powered predictions (swarm risk, disease detection) and detailed reports. Our goal is to minimize Turkey's annual 30% colony loss through technology.",
+        ? "BeeMora, TÜBİTAK 2204-A ödüllü bir araştırma projesi olarak 2025'te başlayan, IoT sensörler ve yapay zeka teknolojileri ile arı kovanlarını 7/24 uzaktan izleme ve yönetme platformudur. Kovan içi sıcaklık, nem, ses, titreşim, ağırlık ve basınç gibi kritik verileri gerçek zamanlı toplayarak arıcılara anlık bildirimler, AI destekli tahminler (oğul riski, hastalık tespiti) ve detaylı raporlar sunar. Amacımız Türkiye'deki yıllık %30 koloni kaybını teknoloji ile minimuma indirmektir."
+        : "BeeMora is a platform that started in 2025 as a TÜBİTAK 2204-A award-winning research project, providing 24/7 remote hive monitoring and management with IoT sensors and AI technology. It collects critical real-time data such as internal temperature, humidity, sound, vibration, weight and pressure, offering beekeepers instant notifications, AI-powered predictions (swarm risk, disease detection) and detailed reports. Our goal is to minimize Turkey's annual 30% colony loss through technology.",
     },
     {
       q: isTr
@@ -465,24 +465,24 @@ const LandingPage = () => {
         ? "Kurulum zor mu? Teknik bilgi gerekiyor mu?"
         : "Is installation difficult? Do I need technical knowledge?",
       a: isTr
-        ? "Kesinlikle hayır. Sensör adaptörlerimiz tam anlamıyla tak-çalıştır (plug & play) mantığıyla tasarlanmıştır. Kutudan çıkarın, kovanınızın iç duvarına manyetik klips ile takın, telefonunuzdaki Hexora uygulamasından QR kodu okutun — hepsi bu. Tüm süreç 5 dakikadan kısa sürer ve hiçbir kablo, lehim veya teknik bilgi gerektirmez. Ayrıca ilk kurulumda video rehberimiz ve canlı destek hattımız sizi adım adım yönlendirir. Wi-Fi kapsama alanı dışındaki arılıklar için LoRa gateway seçeneğimiz de mevcuttur (Pro ve Ultra modellerde dahil)."
-        : "Absolutely not. Our sensor adapters are designed with a true plug & play approach. Take it out of the box, attach it to your hive's inner wall with magnetic clips, scan the QR code from the Hexora app on your phone — that's it. The entire process takes less than 5 minutes and requires no cables, soldering or technical knowledge. Additionally, our video guide and live support line will walk you through the first setup step by step. For apiaries outside Wi-Fi coverage, we also offer a LoRa gateway option (included in Pro and Ultra models).",
+        ? "Kesinlikle hayır. Sensör adaptörlerimiz tam anlamıyla tak-çalıştır (plug & play) mantığıyla tasarlanmıştır. Kutudan çıkarın, kovanınızın iç duvarına manyetik klips ile takın, telefonunuzdaki BeeMora uygulamasından QR kodu okutun — hepsi bu. Tüm süreç 5 dakikadan kısa sürer ve hiçbir kablo, lehim veya teknik bilgi gerektirmez. Ayrıca ilk kurulumda video rehberimiz ve canlı destek hattımız sizi adım adım yönlendirir. Wi-Fi kapsama alanı dışındaki arılıklar için LoRa gateway seçeneğimiz de mevcuttur (Pro ve Ultra modellerde dahil)."
+        : "Absolutely not. Our sensor adapters are designed with a true plug & play approach. Take it out of the box, attach it to your hive's inner wall with magnetic clips, scan the QR code from the BeeMora app on your phone — that's it. The entire process takes less than 5 minutes and requires no cables, soldering or technical knowledge. Additionally, our video guide and live support line will walk you through the first setup step by step. For apiaries outside Wi-Fi coverage, we also offer a LoRa gateway option (included in Pro and Ultra models).",
     },
     {
       q: isTr
         ? "Kaç kovan destekleniyor? Büyük arılıklar için uygun mu?"
         : "How many hives are supported? Is it suitable for large apiaries?",
       a: isTr
-        ? "Ölçeklenebilir bulut altyapımız sayesinde tek bir hesaptan 1'den 500+ kovana kadar eş zamanlı izleme yapabilirsiniz. Hexora Lite adaptörü Wi-Fi üzerinden tek kovan izler; Hexora Pro'daki LoRa gateway ise 2 km yarıçapta 50+ kovanı tek bir ağ geçidine bağlar. Hexora Ultra'daki 4G/LTE modülü ise internet altyapısı olmayan dağ arılıklarında bile çalışır. Kurumsal müşterilerimiz için çoklu arılık yönetimi, alt kullanıcı yetkilendirme ve özel API erişimi de sunuyoruz. Kademeli abonelik modeli sayesinde (1-50 kovan: ₺50, 51-100: ₺45, 100+: ₺40/kovan/ay) bütçenizi tam kontrol altında tutarsınız."
-        : "Thanks to our scalable cloud infrastructure, you can monitor from 1 to 500+ hives simultaneously from a single account. The Hexora Lite adapter monitors a single hive via Wi-Fi; the LoRa gateway in Hexora Pro connects 50+ hives within a 2km radius to a single gateway. The 4G/LTE module in Hexora Ultra works even in mountain apiaries without internet infrastructure. For enterprise customers, we also offer multi-apiary management, sub-user authorization and custom API access. With our tiered subscription (1-50 hives: ₺50, 51-100: ₺45, 100+: ₺40/hive/mo), you keep your budget fully under control.",
+        ? "Ölçeklenebilir bulut altyapımız sayesinde tek bir hesaptan 1'den 500+ kovana kadar eş zamanlı izleme yapabilirsiniz. BeeMora Lite adaptörü Wi-Fi üzerinden tek kovan izler; BeeMora Pro'daki LoRa gateway ise 2 km yarıçapta 50+ kovanı tek bir ağ geçidine bağlar. BeeMora Ultra'daki 4G/LTE modülü ise internet altyapısı olmayan dağ arılıklarında bile çalışır. Kurumsal müşterilerimiz için çoklu arılık yönetimi, alt kullanıcı yetkilendirme ve özel API erişimi de sunuyoruz. Kademeli abonelik modeli sayesinde (1-50 kovan: ₺50, 51-100: ₺45, 100+: ₺40/kovan/ay) bütçenizi tam kontrol altında tutarsınız."
+        : "Thanks to our scalable cloud infrastructure, you can monitor from 1 to 500+ hives simultaneously from a single account. The BeeMora Lite adapter monitors a single hive via Wi-Fi; the LoRa gateway in BeeMora Pro connects 50+ hives within a 2km radius to a single gateway. The 4G/LTE module in BeeMora Ultra works even in mountain apiaries without internet infrastructure. For enterprise customers, we also offer multi-apiary management, sub-user authorization and custom API access. With our tiered subscription (1-50 hives: ₺50, 51-100: ₺45, 100+: ₺40/hive/mo), you keep your budget fully under control.",
     },
     {
       q: isTr
         ? "Mobil cihazlarda çalışıyor mu? İnternet olmadan kullanılabilir mi?"
         : "Does it work on mobile? Can it be used without internet?",
       a: isTr
-        ? "Evet, Hexora paneli tamamen responsive tasarlanmıştır — iPhone, Android, tablet veya bilgisayardan herhangi bir modern tarayıcı ile erişebilirsiniz. Push bildirimleri sayesinde kritik uyarılar telefonunuza anında gelir, uygulamayı açmanıza bile gerek kalmaz. İnternet bağlantısı olmayan bölgelerde Hexora Ultra'nın 4G/LTE modülü devreye girer ve sensör verilerini mobil şebeke üzerinden iletir. Ayrıca sensörler yerel olarak 72 saatlik veri depolayabilir — bağlantı kesilse bile veri kaybı yaşanmaz, bağlantı geldiğinde otomatik senkronize olur."
-        : "Yes, the Hexora panel is fully responsive — you can access it from iPhone, Android, tablet or computer with any modern browser. Thanks to push notifications, critical alerts come to your phone instantly without even opening the app. In areas without internet, Hexora Ultra's 4G/LTE module kicks in and transmits sensor data over mobile network. Additionally, sensors can store 72 hours of data locally — even if connection is lost, no data is lost and it auto-syncs when connection returns.",
+        ? "Evet, BeeMora paneli tamamen responsive tasarlanmıştır — iPhone, Android, tablet veya bilgisayardan herhangi bir modern tarayıcı ile erişebilirsiniz. Push bildirimleri sayesinde kritik uyarılar telefonunuza anında gelir, uygulamayı açmanıza bile gerek kalmaz. İnternet bağlantısı olmayan bölgelerde BeeMora Ultra'nın 4G/LTE modülü devreye girer ve sensör verilerini mobil şebeke üzerinden iletir. Ayrıca sensörler yerel olarak 72 saatlik veri depolayabilir — bağlantı kesilse bile veri kaybı yaşanmaz, bağlantı geldiğinde otomatik senkronize olur."
+        : "Yes, the BeeMora panel is fully responsive — you can access it from iPhone, Android, tablet or computer with any modern browser. Thanks to push notifications, critical alerts come to your phone instantly without even opening the app. In areas without internet, BeeMora Ultra's 4G/LTE module kicks in and transmits sensor data over mobile network. Additionally, sensors can store 72 hours of data locally — even if connection is lost, no data is lost and it auto-syncs when connection returns.",
     },
     {
       q: isTr
@@ -505,8 +505,8 @@ const LandingPage = () => {
         ? "Sensörlerin pil ömrü ne kadar? Şarj etmem gerekiyor mu?"
         : "How long is the sensor battery life? Do I need to charge it?",
       a: isTr
-        ? "Pil ömrü modele göre değişir: Hexora Lite 6 ay, Hexora Pro 12 ay sürekli çalışır. Hexora Ultra ise güneş paneli ile kendini şarj eder, bu yüzden pil değişimi gerektirmez. Lite ve Pro modellerinde pil seviyesi düştüğünde (<%20) otomatik bildirim alırsınız ve standart CR123A pil ile kolayca değiştirebilirsiniz. Pil değişimi 30 saniye sürer, herhangi bir alet gerektirmez. Sensörler düşük güç modunda çalışarak pil ömrünü maksimize eder — veri iletimi sırasında aktif olur, arada uyku moduna geçer."
-        : "Battery life varies by model: Hexora Lite runs for 6 months, Hexora Pro for 12 months continuously. Hexora Ultra charges itself with a solar panel, so it requires no battery replacement. With Lite and Pro models, you receive an automatic notification when battery drops below 20%, and you can easily replace it with a standard CR123A battery. Battery replacement takes 30 seconds and requires no tools. Sensors operate in low-power mode to maximize battery life — active during data transmission, sleep mode in between.",
+        ? "Pil ömrü modele göre değişir: BeeMora Lite 6 ay, BeeMora Pro 12 ay sürekli çalışır. BeeMora Ultra ise güneş paneli ile kendini şarj eder, bu yüzden pil değişimi gerektirmez. Lite ve Pro modellerinde pil seviyesi düştüğünde (<%20) otomatik bildirim alırsınız ve standart CR123A pil ile kolayca değiştirebilirsiniz. Pil değişimi 30 saniye sürer, herhangi bir alet gerektirmez. Sensörler düşük güç modunda çalışarak pil ömrünü maksimize eder — veri iletimi sırasında aktif olur, arada uyku moduna geçer."
+        : "Battery life varies by model: BeeMora Lite runs for 6 months, BeeMora Pro for 12 months continuously. BeeMora Ultra charges itself with a solar panel, so it requires no battery replacement. With Lite and Pro models, you receive an automatic notification when battery drops below 20%, and you can easily replace it with a standard CR123A battery. Battery replacement takes 30 seconds and requires no tools. Sensors operate in low-power mode to maximize battery life — active during data transmission, sleep mode in between.",
     },
   ];
 
@@ -534,7 +534,7 @@ const LandingPage = () => {
         "",
         msg,
       ].join("%0A");
-      window.location.href = `mailto:hexoraproject@gmail.com?subject=Demo%20Talebi%20%7C%20Hexora%20-%20${encodeURIComponent(name)}&body=${body}`;
+      window.location.href = `mailto:hexoraproject@gmail.com?subject=Demo%20Talebi%20%7C%20BeeMora%20-%20${encodeURIComponent(name)}&body=${body}`;
     },
     [isTr],
   );
@@ -555,7 +555,7 @@ const LandingPage = () => {
             type="button"
             onClick={handleScrollTop}
             className="flex items-center gap-3 group"
-            aria-label="Hexora — go to top"
+            aria-label="BeeMora — go to top"
           >
             <div className="w-10 h-10 bg-gradient-to-br from-amber-500/30 to-orange-500/20 border border-amber-500/40 rounded-xl flex items-center justify-center group-hover:scale-110 group-hover:border-amber-400/60 transition-all shadow-md shadow-amber-500/10">
               <span className="text-xl leading-none">🐝</span>
@@ -796,8 +796,8 @@ const LandingPage = () => {
 
             <p className="text-lg text-gray-300 max-w-xl mb-4 leading-relaxed">
               {isTr
-                ? "Türkiye'nin lider akıllı arıcılık platformu Hexora ile kovanlarınızı 7/24 uzaktan izleyin. Özel geliştirdiğimiz IoT sensörler kovan içi sıcaklık, nem, basınç, ses ve titreşimi anlık olarak ölçer."
-                : "Monitor your hives 24/7 remotely with Hexora, Turkey's leading smart beekeeping platform. Our proprietary IoT sensors measure in-hive temperature, humidity, pressure, sound and vibration in real-time."}
+                ? "Türkiye'nin lider akıllı arıcılık platformu BeeMora ile kovanlarınızı 7/24 uzaktan izleyin. Özel geliştirdiğimiz IoT sensörler kovan içi sıcaklık, nem, basınç, ses ve titreşimi anlık olarak ölçer."
+                : "Monitor your hives 24/7 remotely with BeeMora, Turkey's leading smart beekeeping platform. Our proprietary IoT sensors measure in-hive temperature, humidity, pressure, sound and vibration in real-time."}
             </p>
             <p className="text-base text-gray-500 max-w-xl mb-8 leading-relaxed">
               {isTr
@@ -1329,7 +1329,7 @@ const LandingPage = () => {
           <div id="solution">
             <div className="text-center mb-10">
               <p className="text-emerald-400 text-sm font-semibold uppercase tracking-wider mb-3">
-                {isTr ? "Hexora Çözümleri" : "Hexora Solutions"}
+                {isTr ? "BeeMora Çözümleri" : "BeeMora Solutions"}
               </p>
               <h3 className="text-3xl md:text-4xl font-bold text-gray-100 mb-4">
                 {isTr
@@ -2105,7 +2105,7 @@ const LandingPage = () => {
                         <span className="text-xs">🐝</span>
                       </div>
                       <span className="text-sm font-bold text-gray-100">
-                        Hexora
+                        BeeMora
                       </span>
                       <div className="ml-auto w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
                     </div>
@@ -2335,7 +2335,7 @@ const LandingPage = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
             {[
               {
-                name: "Hexora Lite",
+                name: "BeeMora Lite",
                 price: "₺2.500",
                 desc: isTr
                   ? "Hobi arıcılar için temel izleme"
@@ -2363,7 +2363,7 @@ const LandingPage = () => {
                 icon: "📡",
               },
               {
-                name: "Hexora Pro",
+                name: "BeeMora Pro",
                 price: "₺5.000",
                 desc: isTr
                   ? "Profesyonel arıcılar için tam donanım"
@@ -2393,7 +2393,7 @@ const LandingPage = () => {
                 icon: "🔬",
               },
               {
-                name: "Hexora Ultra",
+                name: "BeeMora Ultra",
                 price: "₺12.000",
                 desc: isTr
                   ? "Endüstriyel operasyonlar için gelişmiş"
@@ -2538,8 +2538,8 @@ const LandingPage = () => {
             </p>
             <h2 className="text-4xl font-bold mb-4">
               {isTr
-                ? "Hexora ile Neler Yapabilirsiniz?"
-                : "What Can You Do With Hexora?"}
+                ? "BeeMora ile Neler Yapabilirsiniz?"
+                : "What Can You Do With BeeMora?"}
             </h2>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
@@ -2618,7 +2618,7 @@ const LandingPage = () => {
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-12">
             <p className="text-amber-400 text-sm font-semibold uppercase tracking-wider mb-3">
-              {isTr ? "Hexora Farkı" : "The Hexora Difference"}
+              {isTr ? "BeeMora Farkı" : "The BeeMora Difference"}
             </p>
             <h2 className="text-4xl font-bold mb-4">
               {isTr ? "Neden Biz?" : "Why Us?"}
@@ -2724,7 +2724,7 @@ const LandingPage = () => {
               {isTr ? "Karşılaştırma" : "Comparison"}
             </p>
             <h2 className="text-4xl font-bold mb-4">
-              {isTr ? "Neden Hexora?" : "Why Hexora?"}
+              {isTr ? "Neden BeeMora?" : "Why BeeMora?"}
             </h2>
           </div>
           <div className="overflow-x-auto">
@@ -2735,7 +2735,7 @@ const LandingPage = () => {
                     {isTr ? "Özellik" : "Feature"}
                   </th>
                   <th className="py-4 px-4 text-center bg-amber-500/5 rounded-t-lg">
-                    <span className="text-amber-400 font-bold">🐝 Hexora</span>
+                    <span className="text-amber-400 font-bold">🐝 BeeMora</span>
                   </th>
                   <th className="py-4 px-4 text-center text-gray-500">
                     {isTr ? "Geleneksel" : "Traditional"}
@@ -2939,8 +2939,8 @@ const LandingPage = () => {
                 avatar: "🧑‍🌾",
                 stars: 5,
                 quote: isTr
-                  ? '"Kışın gece yarısı kovan sıcaklığı 28°C\'ye düştü, telefonum çaldı. Sabah gitseydim o koloniyi kaybetmiştik. Hexora gerçekten hayat kurtardı."'
-                  : '"In winter the hive temperature dropped to 28°C at midnight and my phone rang. If I had gone in the morning we would have lost that colony. Hexora literally saved the hive."',
+                  ? '"Kışın gece yarısı kovan sıcaklığı 28°C\'ye düştü, telefonum çaldı. Sabah gitseydim o koloniyi kaybetmiştik. BeeMora gerçekten hayat kurtardı."'
+                  : '"In winter the hive temperature dropped to 28°C at midnight and my phone rang. If I had gone in the morning we would have lost that colony. BeeMora Literally saved the hive."',
                 highlight: true,
               },
               {
@@ -3049,8 +3049,8 @@ const LandingPage = () => {
                   : "Award-Winning Research Project",
                 date: "2025",
                 desc: isTr
-                  ? "Hexora, TÜBİTAK 2204-A Lise Öğrencileri Araştırma Projeleri Yarışması'nda ödül kazandı."
-                  : "Hexora won an award at the TÜBİTAK 2204-A High School Students Research Projects Competition.",
+                  ? "BeeMora, TÜBİTAK 2204-A Lise Öğrencileri Araştırma Projeleri Yarışması'nda ödül kazandı."
+                  : "BeeMora won an award at the TÜBİTAK 2204-A High School Students Research Projects Competition.",
               },
               {
                 icon: "🚀",
@@ -3194,7 +3194,7 @@ const LandingPage = () => {
               </a>
 
               <a
-                href="https://wa.me/905523478015?text=Merhaba%2C%20Hexora%20hakk%C4%B1nda%20bilgi%20almak%20istiyorum."
+                href="https://wa.me/905523478015?text=Merhaba%2C%20BeeMora%20hakk%C4%B1nda%20bilgi%20almak%20istiyorum."
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-4 p-5 bg-gray-900/70 border border-gray-800 rounded-2xl hover:border-emerald-500/30 transition-all group"
@@ -3521,8 +3521,8 @@ const LandingPage = () => {
               </h3>
               <p className="text-gray-400 leading-relaxed mb-6">
                 {isTr
-                  ? "Hexora, Türkiye'nin arıcılık sektöründeki koloni kayıplarını azaltmak amacıyla 2025'te kurulan bir teknoloji girişimidir. Yoğun Ar-Ge sürecimizde geliştirdiğimiz özel IoT sensörler ve yapay zeka algoritmaları ile arıcılara çözüm sunmayı hedefliyoruz."
-                  : "Hexora is a technology venture founded in 2025 to reduce colony losses in Turkey's beekeeping sector. With our proprietary IoT sensors and AI algorithms developed through intensive R&D, we aim to provide solutions for beekeepers."}
+                  ? "BeeMora, Türkiye'nin arıcılık sektöründeki koloni kayıplarını azaltmak amacıyla 2025'te kurulan bir teknoloji girişimidir. Yoğun Ar-Ge sürecimizde geliştirdiğimiz özel IoT sensörler ve yapay zeka algoritmaları ile arıcılara çözüm sunmayı hedefliyoruz."
+                  : "BeeMora is a technology venture founded in 2025 to reduce colony losses in Turkey's beekeeping sector. With our proprietary IoT sensors and AI algorithms developed through intensive R&D, we aim to provide solutions for beekeepers."}
               </p>
               <p className="text-gray-400 leading-relaxed mb-8">
                 {isTr
@@ -3648,8 +3648,8 @@ const LandingPage = () => {
                   "from-amber-500/20 to-orange-500/20 border-amber-500/30",
                 roleColor: "text-amber-400",
                 bio: isTr
-                  ? "Yazılım mimarisi, IoT sistem tasarımı ve yapay zeka geliştirme alanlarında uzmanlaşmış. Hexora'ın tüm teknik altyapısını ve AI motorunu tasarlayıp geliştirdi."
-                  : "Specialized in software architecture, IoT system design and AI development. Designed and developed Hexora's entire technical infrastructure and AI engine.",
+                  ? "Yazılım mimarisi, IoT sistem tasarımı ve yapay zeka geliştirme alanlarında uzmanlaşmış. BeeMora'nın tüm teknik altyapısını ve AI motorunu tasarlayıp geliştirdi."
+                  : "Specialized in software architecture, IoT system design and AI development. Designed and developed BeeMora's entire technical infrastructure and AI engine.",
                 quote: isTr
                   ? '"Teknolojiyi arıcıların hizmetine sunarak koloni kayıplarını azaltmak, benim için sadece bir proje değil — bir misyon."'
                   : '"Putting technology at the service of beekeepers to reduce colony losses is not just a project for me — it\'s a mission."',
@@ -3664,8 +3664,8 @@ const LandingPage = () => {
                   ? "Donanım mühendisliği, saha operasyonları ve iş geliştirme alanlarında deneyimli. Sensör modüllerinin tasarımı, üretimi ve arıcılarla saha testlerini yönetiyor."
                   : "Experienced in hardware engineering, field operations and business development. Manages sensor module design, production and field testing with beekeepers.",
                 quote: isTr
-                  ? '"Sahada arıcılarla çalışmak bize gerçek ihtiyaçları gösterdi. Hexora, laboratuvardan değil — kovanın yanından doğdu."'
-                  : '"Working with beekeepers in the field showed us the real needs. Hexora was born not from a lab — but from beside the hive."',
+                  ? '"Sahada arıcılarla çalışmak bize gerçek ihtiyaçları gösterdi. BeeMora, laboratuvardan değil — kovanın yanından doğdu."'
+                  : '"Working with beekeepers in the field showed us the real needs. BeeMora was born not from a lab — but from beside the hive."',
               },
             ].map((f, i) => (
               <div
@@ -3823,7 +3823,7 @@ const LandingPage = () => {
           </div>
           <div className="border-t border-gray-800 pt-8 flex flex-col sm:flex-row items-center justify-between gap-3">
             <p className="text-xs text-gray-600">
-              &copy; 2025 Hexora Technologies.{" "}
+              &copy; 2026 Hexora - BeeMora.{" "}
               {isTr ? "Tüm hakları saklıdır." : "All rights reserved."}
             </p>
             <p className="text-xs text-gray-600">
@@ -3835,7 +3835,7 @@ const LandingPage = () => {
 
       {/* ═══════════ WHATSAPP STICKY BUTTON ═══════════ */}
       <a
-        href="https://wa.me/905523478015?text=Merhaba%2C%20Hexora%20hakkında%20bilgi%20almak%20istiyorum."
+        href="https://wa.me/905523478015?text=Merhaba%2C%20BeeMora%20hakkında%20bilgi%20almak%20istiyorum."
         target="_blank"
         rel="noopener noreferrer"
         className="fixed bottom-6 right-6 z-50 w-14 h-14 bg-emerald-500 hover:bg-emerald-600 rounded-full flex items-center justify-center shadow-xl shadow-emerald-500/30 hover:scale-110 transition-all"

@@ -1,4 +1,4 @@
-import {
+﻿import {
   Thermometer,
   Droplets,
   Volume2,
@@ -20,14 +20,14 @@ const AboutView = () => {
 
   const content = {
     tr: {
-      title: "Hexora Nedir?",
-      desc: "Hexora, arıcılık sektörüne yönelik geliştirilmiş akıllı kovan izleme sistemidir. IoT sensörleri ile kovan içi sıcaklık, nem, basınç, ağırlık, ses analizi ve titreşim gibi kritik verileri gerçek zamanlı olarak izler.",
+      title: "BeeMora Nedir?",
+      desc: "BeeMora, arıcılık sektörüne yönelik geliştirilmiş akıllı kovan izleme sistemidir. IoT sensörleri ile kovan içi sıcaklık, nem, basınç, ağırlık, ses analizi ve titreşim gibi kritik verileri gerçek zamanlı olarak izler.",
       howTitle: "Nasıl Çalışır?",
       howDesc:
         "Kovanlara yerleştirilen ESP32 tabanlı sensör modülleri, verileri düzenli aralıklarla bulut sunucuya gönderir. Web paneli ve mobil uygulama üzerinden bu verileri anlık olarak takip edebilir, geçmiş verilerle karşılaştırma yapabilirsiniz.",
-      whyTitle: "Neden Hexora?",
+      whyTitle: "Neden BeeMora?",
       whyDesc:
-        "Geleneksel arıcılık yöntemlerinde kovan kontrolü için fiziksel ziyaret gerekir. Hexora ile kovanlarınızı 7/24 uzaktan izleyebilir, anormal durumları anında tespit edebilir ve zamanında müdahale edebilirsiniz.",
+        "Geleneksel arıcılık yöntemlerinde kovan kontrolü için fiziksel ziyaret gerekir. BeeMora ile kovanlarınızı 7/24 uzaktan izleyebilir, anormal durumları anında tespit edebilir ve zamanında müdahale edebilirsiniz.",
       featuresTitle: "Özellikler",
       techTitle: "Teknik Altyapı",
       archTitle: "Sistem Mimarisi",
@@ -70,14 +70,14 @@ const AboutView = () => {
       },
     },
     en: {
-      title: "What is Hexora?",
-      desc: "Hexora is a smart hive monitoring system developed for the beekeeping industry. It monitors critical data such as hive temperature, humidity, pressure, weight, sound analysis and vibration in real-time using IoT sensors.",
+      title: "What is BeeMora?",
+      desc: "BeeMora is a smart hive monitoring system developed for the beekeeping industry. It monitors critical data such as hive temperature, humidity, pressure, weight, sound analysis and vibration in real-time using IoT sensors.",
       howTitle: "How Does It Work?",
       howDesc:
         "ESP32-based sensor modules placed in hives send data to the cloud server at regular intervals. You can track this data in real-time through the web panel and mobile app, and compare it with historical data.",
-      whyTitle: "Why Hexora?",
+      whyTitle: "Why BeeMora?",
       whyDesc:
-        "Traditional beekeeping methods require physical visits for hive inspection. With Hexora, you can remotely monitor your hives 24/7, instantly detect abnormal conditions, and intervene in time.",
+        "Traditional beekeeping methods require physical visits for hive inspection. With BeeMora, you can remotely monitor your hives 24/7, instantly detect abnormal conditions, and intervene in time.",
       featuresTitle: "Features",
       techTitle: "Technical Infrastructure",
       archTitle: "System Architecture",
@@ -175,7 +175,7 @@ const AboutView = () => {
         <div className="inline-flex items-center justify-center w-20 h-20 bg-amber-500/10 border-2 border-amber-500/30 rounded-2xl mb-4">
           <img
             src="/hexora-logo.svg"
-            alt="Hexora"
+            alt="BeeMora"
             className="w-12 h-12 object-contain"
             style={{ filter: "drop-shadow(0 0 8px rgba(245, 158, 11, 0.5))" }}
             onError={(e) => {
@@ -183,11 +183,11 @@ const AboutView = () => {
             }}
           />
         </div>
-        <h1 className="text-3xl font-bold text-gray-100 mb-2">Hexora</h1>
+        <h1 className="text-3xl font-bold text-gray-100 mb-2">BeeMora</h1>
         <p className="text-amber-400 font-medium">{t.subtitle}</p>
       </div>
 
-      {/* What is Hexora */}
+      {/* What is BeeMora */}
       <section className="bg-gray-900 border border-gray-800 rounded-xl p-6">
         <h2 className="text-xl font-bold text-gray-100 mb-3 flex items-center gap-2">
           <span role="img" aria-label="bee">
@@ -206,7 +206,7 @@ const AboutView = () => {
         <p className="text-gray-400 leading-relaxed">{t.howDesc}</p>
       </section>
 
-      {/* Why Hexora */}
+      {/* Why BeeMora */}
       <section className="bg-gradient-to-br from-amber-500/5 to-orange-500/5 border border-amber-500/20 rounded-xl p-6">
         <h2 className="text-xl font-bold text-gray-100 mb-3 flex items-center gap-2">
           <Shield className="w-5 h-5 text-amber-400" /> {t.whyTitle}
@@ -308,12 +308,12 @@ const AboutView = () => {
               🌐
             </span>{" "}
             <a
-              href="https://hexora.tech"
+              href="https://beemora.io"
               target="_blank"
               rel="noopener noreferrer"
               className="hover:text-amber-400 transition-colors"
             >
-              hexora.tech
+              beemora.io
             </a>
           </p>
         </div>

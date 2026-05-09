@@ -1,4 +1,4 @@
-export const tr = {
+﻿export const tr = {
   // ─── Sidebar ──────────────────────────────────────────────────────────────
   sidebar: {
     overview:            'Genel Bakış',
@@ -190,7 +190,7 @@ export const tr = {
 
   // ─── Onboarding ───────────────────────────────────────────────────────────
   onboarding: {
-    welcome:    "Hexora'e Hoş Geldiniz! 🐝",
+    welcome:    "BeeMora'ya Hoş Geldiniz! 🐝",
     step1Title: 'Genel Bakış',
     step1Desc:  "Dashboard'da tüm kovanlarınızın anlık durumunu görebilirsiniz.",
     step2Title: 'Kovan Listesi',

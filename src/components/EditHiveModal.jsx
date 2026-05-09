@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+﻿import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Save } from "lucide-react";
 import { useToast } from "../contexts/ToastContext";
@@ -20,7 +20,7 @@ const EditHiveModal = ({ hive, isOpen, onClose, onSave }) => {
       return;
     }
     try {
-      const raw = localStorage.getItem(`hexora_hive_${hive.id}`);
+      const raw = localStorage.getItem(`beemora_hive_${hive.id}`);
       const saved = raw ? JSON.parse(raw) : {};
       setFormData({
         location: saved.location || "",
@@ -67,7 +67,7 @@ const EditHiveModal = ({ hive, isOpen, onClose, onSave }) => {
 
     // Always persist locally so UI stays consistent even if server failed
     try {
-      localStorage.setItem(`hexora_hive_${hive.id}`, JSON.stringify(formData));
+      localStorage.setItem(`beemora_hive_${hive.id}`, JSON.stringify(formData));
     } catch {
       // Storage might be full or disabled — silently ignore
     }

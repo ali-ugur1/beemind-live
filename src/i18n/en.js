@@ -1,4 +1,4 @@
-export const en = {
+﻿export const en = {
   sidebar: {
     overview: "Overview",
     hiveList: "Hive List",
@@ -190,7 +190,7 @@ export const en = {
   },
 
   onboarding: {
-    welcome: "Welcome to Hexora! 🐝",
+    welcome: "Welcome to BeeMora! 🐝",
     step1Title: "Overview",
     step1Desc: "See the real-time status of all your hives on the dashboard.",
     step2Title: "Hive List",

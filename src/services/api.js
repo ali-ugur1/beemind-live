@@ -1,4 +1,4 @@
-const API_URL = import.meta.env.VITE_API_URL || "";
+﻿const API_URL = import.meta.env.VITE_API_URL || "";
 
 // ─── Yardımcı ───────────────────────────────────────────────────────────────
 
@@ -12,7 +12,7 @@ function _getLang() {
 
 function _getToken() {
   try {
-    return localStorage.getItem("hexora_jwt") || null;
+    return localStorage.getItem("beemora_jwt") || null;
   } catch {
     return null;
   }
@@ -20,9 +20,9 @@ function _getToken() {
 
 function _clearSession() {
   try {
-    localStorage.removeItem("hexora_jwt");
+    localStorage.removeItem("beemora_jwt");
     localStorage.removeItem("hexora_user");
-    window.dispatchEvent(new CustomEvent("hexora:auth-expired"));
+    window.dispatchEvent(new CustomEvent("beemora:auth-expired"));
   } catch {
     /* intentional */
   }

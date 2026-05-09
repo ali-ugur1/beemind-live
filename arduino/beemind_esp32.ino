@@ -1,4 +1,4 @@
-#include <DHT.h>
+﻿#include <DHT.h>
 #include <Wire.h>
 #include <Adafruit_BMP280.h>
 #include <WiFi.h>
@@ -209,7 +209,7 @@ void setup() {
   bootSayisi++;
   int wakeReason = esp_sleep_get_wakeup_cause();
 
-  Serial.println("\n=== BeeMind uyaniyor ===");
+  Serial.println("\n=== BeeMora uyaniyor ===");
   Serial.print("Boot #"); Serial.println(bootSayisi);
   Serial.print("Wake reason: "); Serial.println(wakeReason);
 

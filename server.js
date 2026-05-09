@@ -1,5 +1,5 @@
-/*
- * Hexora Backend — Express.js API Sunucusu
+﻿/*
+ * BeeMora Backend — Express.js API Sunucusu
  * ESP32'den gelen sensör verilerini alır, JSON dosyasına kaydeder
  *
  * Düzeltmeler:
@@ -48,7 +48,7 @@ const DATA_FILE = path.join(__dirname, "data", "sensor-data.json");
 const HIVES_FILE = path.join(__dirname, "data", "hives.json");
 const SUBS_FILE = path.join(__dirname, "data", "push-subscriptions.json");
 const USERS_FILE = path.join(__dirname, "data", "users.json");
-const JWT_SECRET = process.env.JWT_SECRET || "hexora-fallback-secret";
+const JWT_SECRET = process.env.JWT_SECRET || "beemora-fallback-secret";
 const ESP_API_KEY = process.env.ESP_API_KEY || "";
 const BCRYPT_ROUNDS = Math.min(
   Math.max(parseInt(process.env.BCRYPT_ROUNDS, 10) || 10, 8),
@@ -97,7 +97,7 @@ function safeReadJSON(filePath, fallback) {
  * @param {*} data
  */
 function safeWriteJSON(filePath, data) {
-  const tmp = path.join(os.tmpdir(), `hexora-${crypto.randomUUID()}.tmp`);
+  const tmp = path.join(os.tmpdir(), `beemora-${crypto.randomUUID()}.tmp`);
   try {
     fs.writeFileSync(tmp, JSON.stringify(data, null, 2), "utf-8");
     fs.renameSync(tmp, filePath);

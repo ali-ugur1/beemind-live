@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import {
   HelpCircle,
   ChevronDown,
@@ -29,8 +29,8 @@ const HelpView = () => {
       ? [
           {
             id: 1,
-            q: "Hexora nedir?",
-            a: "Hexora, AI destekli bir IoT arıcılık yönetim sistemidir. ESP32 tabanlı sensörler aracılığıyla kovanlarınızı uzaktan izleyebilir; sıcaklık, nem, ses, titreşim ve ağırlık verilerini takip edebilirsiniz.",
+            q: "BeeMora Nedir?",
+            a: "BeeMora, AI destekli bir IoT arıcılık yönetim sistemidir. ESP32 tabanlı sensörler aracılığıyla kovanlarınızı uzaktan izleyebilir; sıcaklık, nem, ses, titreşim ve ağırlık verilerini takip edebilirsiniz.",
           },
           {
             id: 2,
@@ -55,7 +55,7 @@ const HelpView = () => {
           {
             id: 6,
             q: "Bildirimler nasıl çalışır?",
-            a: "Hexora kritik durumlarda otomatik bildirim gönderir. Ayarlar sayfasından e-posta, SMS ve push bildirim tercihlerinizi yapılandırabilirsiniz.",
+            a: "BeeMora kritik durumlarda otomatik bildirim gönderir. Ayarlar sayfasından e-posta, SMS ve push bildirim tercihlerinizi yapılandırabilirsiniz.",
           },
           {
             id: 7,
@@ -71,8 +71,8 @@ const HelpView = () => {
       : [
           {
             id: 1,
-            q: "What is Hexora?",
-            a: "Hexora is an AI-powered IoT beekeeping management system. You can remotely monitor your hives through ESP32-based sensors, tracking temperature, humidity, sound, vibration and weight data.",
+            q: "What is BeeMora?",
+            a: "BeeMora is an AI-powered IoT beekeeping management system. You can remotely monitor your hives through ESP32-based sensors, tracking temperature, humidity, sound, vibration and weight data.",
           },
           {
             id: 2,
@@ -97,7 +97,7 @@ const HelpView = () => {
           {
             id: 6,
             q: "How do notifications work?",
-            a: "Hexora automatically sends notifications in critical situations. You can configure your email, SMS and push notification preferences from the Settings page.",
+            a: "BeeMora automatically sends notifications in critical situations. You can configure your email, SMS and push notification preferences from the Settings page.",
           },
           {
             id: 7,
@@ -194,8 +194,8 @@ const HelpView = () => {
         </div>
         <p className="text-gray-500">
           {lang === "tr"
-            ? "Hexora hakkında bilmeniz gereken her şey"
-            : "Everything you need to know about Hexora"}
+            ? "BeeMora hakkında bilmeniz gereken her şey"
+            : "Everything you need to know about BeeMora"}
         </p>
       </div>
 

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+﻿import React, { useEffect } from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
 import App from "./App.jsx";
@@ -51,7 +51,7 @@ function registerServiceWorker() {
   const onLoad = async () => {
     try {
       const reg = await navigator.serviceWorker.register("/sw.js");
-      console.log("[Hexora] SW registered, scope:", reg.scope);
+      console.log("[BeeMora] SW registered, scope:", reg.scope);
 
       const interval = setInterval(() => reg.update(), 60 * 60 * 1000);
 
@@ -64,7 +64,7 @@ function registerServiceWorker() {
         });
       });
     } catch (err) {
-      console.warn("[Hexora] SW registration failed:", err);
+      console.warn("[BeeMora] SW registration failed:", err);
     }
   };
 

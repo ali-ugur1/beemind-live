@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useCallback } from "react";
+﻿import { useState, useMemo, useEffect, useCallback } from "react";
 import {
   Calendar,
   ChevronLeft,
@@ -19,7 +19,7 @@ import { useLiveData } from "../contexts/LiveDataContext";
 import { useLanguage } from "../contexts/LanguageContext";
 import { useToast } from "../contexts/ToastContext";
 
-const EVENTS_KEY = "hexora_calendar_events";
+const EVENTS_KEY = "beemora_calendar_events";
 
 const EVENT_TYPES = {
   medication: {

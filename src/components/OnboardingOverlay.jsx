@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+﻿import { useState, useEffect, useRef, useCallback } from "react";
 import {
   X,
   ChevronRight,
@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import { useLanguage } from "../contexts/LanguageContext";
 
-const ONBOARDING_KEY = "hexora_onboarding_done";
+const ONBOARDING_KEY = "beemora_onboarding_done";
 
 export const shouldShowOnboarding = () => {
   try {

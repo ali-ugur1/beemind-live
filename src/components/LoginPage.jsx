@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+﻿import { useState, useEffect, useRef, useCallback } from "react";
 import { motion } from "framer-motion";
 import { useAuth } from "../contexts/AuthContext";
 import { useLanguage } from "../contexts/LanguageContext";
@@ -390,7 +390,7 @@ const LoginPage = () => {
   // Hatırlanan emaili yükle
   useEffect(() => {
     try {
-      const saved = localStorage.getItem("hexora_remember");
+      const saved = localStorage.getItem("beemora_remember");
       if (saved) {
         const parsed = JSON.parse(saved);
         if (parsed && typeof parsed.email === "string" && parsed.email) {
@@ -493,11 +493,11 @@ const LoginPage = () => {
           try {
             if (rememberMe) {
               localStorage.setItem(
-                "hexora_remember",
+                "beemora_remember",
                 JSON.stringify({ email: trimmedEmail }),
               );
             } else {
-              localStorage.removeItem("hexora_remember");
+              localStorage.removeItem("beemora_remember");
             }
           } catch {
             /* no-op */
@@ -1226,8 +1226,8 @@ const LoginPage = () => {
               <p className="text-gray-700 text-[10px] flex items-center justify-center gap-1">
                 <MapPin className="w-3 h-3" />
                 {isTr
-                  ? "Konya, Türkiye • © 2025 Hexora Technologies"
-                  : "Konya, Turkey • © 2025 Hexora Technologies"}
+                  ? "Konya, Türkiye • © 2026 Hexora - BeeMora"
+                  : "Konya, Turkey • © 2026 Hexora - BeeMora"}
               </p>
             </div>
           </div>

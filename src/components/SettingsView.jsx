@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import {
   User,
   Bell,
@@ -23,8 +23,8 @@ import { useLanguage } from "../contexts/LanguageContext";
 import { useAuth } from "../contexts/AuthContext";
 import { api } from "../services/api";
 
-const SETTINGS_KEY = "hexora_settings";
-const JWT_KEY = "hexora_jwt";
+const SETTINGS_KEY = "beemora_settings";
+const JWT_KEY = "beemora_jwt";
 
 // --- Küçük yardımcılar ---------------------------------------------------
 
@@ -101,7 +101,7 @@ const SettingsView = ({ pushNotifications }) => {
     setSaveLoading(true);
     try {
       localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
-      window.dispatchEvent(new Event("hexora-settings-updated"));
+      window.dispatchEvent(new Event("beemora-settings-updated"));
 
       try {
         await api.updateProfile({
@@ -186,7 +186,7 @@ const SettingsView = ({ pushNotifications }) => {
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `hexora-backup-${new Date().toISOString().slice(0, 10)}.json`;
+      a.download = `beemora-backup-${new Date().toISOString().slice(0, 10)}.json`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -741,9 +741,9 @@ const PushNotificationToggle = ({ pushNotifications }) => {
         icon: "/hexora-logo.svg",
       };
       if (reg && "showNotification" in reg) {
-        await reg.showNotification("Hexora ⬡", opts);
+        await reg.showNotification("BeeMora ⬡", opts);
       } else {
-        new Notification("Hexora ⬡", opts);
+        new Notification("BeeMora ⬡", opts);
       }
     } catch {
       // Bildirim gösterilemezse sessiz geç — abonelik zaten açıldı

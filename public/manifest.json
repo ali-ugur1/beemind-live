@@ -1,7 +1,7 @@
-{
+﻿{
   "id": "/",
-  "name": "Hexora - Akıllı Arıcılık Platformu",
-  "short_name": "Hexora",
+  "name": "BeeMora - Akıllı Arıcılık İzleme Sistemi",
+  "short_name": "BeeMora",
   "description": "AI destekli IoT kovan izleme ve yönetim sistemi. Kovanlarınızı 7/24 izleyin, sıcaklık, nem ve ağırlık verilerini anlık takip edin, koloni kayıplarını önleyin.",
   "start_url": "/?source=pwa",
   "display": "standalone",
@@ -107,7 +107,7 @@
       "sizes": "1920x1080",
       "type": "image/png",
       "form_factor": "wide",
-      "label": "Hexora masaüstü kontrol paneli"
+      "label": "BeeMora masaüstü kontrol paneli"
     },
     {
       "src": "/screenshots/analytics-desktop.png",
@@ -173,7 +173,7 @@
   ],
   "protocol_handlers": [
     {
-      "protocol": "web+hexora",
+      "protocol": "web+beemora",
       "url": "/open?data=%s"
     }
   ],
