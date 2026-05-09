@@ -562,7 +562,7 @@ const LandingPage = () => {
             </div>
             <div className="flex flex-col items-start">
               <span className="text-xl font-extrabold leading-none bg-gradient-to-r from-amber-400 to-orange-400 bg-clip-text text-transparent">
-                Hex<span className="text-white">ora</span>
+                Bee<span className="text-white">Mora</span>
               </span>
               <span className="text-[10px] text-gray-500 leading-none mt-0.5">
                 {isTr ? "Akıllı Arıcılık" : "Smart Beekeeping"}
@@ -3740,7 +3740,7 @@ const LandingPage = () => {
                 </div>
                 <div>
                   <span className="text-lg font-extrabold bg-gradient-to-r from-amber-400 to-orange-400 bg-clip-text text-transparent">
-                    Hex<span className="text-white">ora</span>
+                    Bee<span className="text-white">Mora</span>
                   </span>
                   <p className="text-[10px] text-gray-600 leading-none">
                     {isTr

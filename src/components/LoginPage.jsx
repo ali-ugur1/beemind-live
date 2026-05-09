@@ -615,9 +615,9 @@ const LoginPage = () => {
           </div>
           <div>
             <span className="text-base font-extrabold bg-gradient-to-r from-amber-400 to-orange-400 bg-clip-text text-transparent">
-              Hex
+              Bee
             </span>
-            <span className="text-base font-extrabold text-white">ora</span>
+            <span className="text-base font-extrabold text-white">Mora</span>
             <span className="ml-2 text-[9px] text-gray-600 border border-gray-800 px-1.5 py-0.5 rounded-full align-middle">
               Beta
             </span>
