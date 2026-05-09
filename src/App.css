@@ -22,14 +22,14 @@
 }
 
 /* ==================== LOGO STYLES ==================== */
-img[alt="Hexora Logo"],
+img[alt="BeeMora Logo"],
 img[alt="Gateway"] {
   mix-blend-mode: screen;
   filter: brightness(1.1) drop-shadow(0 0 8px rgba(245, 158, 11, 0.4));
   transition: filter 0.3s ease;
 }
 
-img[alt="Hexora Logo"]:hover {
+img[alt="BeeMora Logo"]:hover {
   filter: brightness(1.3) drop-shadow(0 0 12px rgba(245, 158, 11, 0.6));
 }
 
@@ -866,7 +866,7 @@ select:focus {
 }
 
 /* ---- Logo: undo dark-mode blend ---- */
-.light-theme img[alt="Hexora Logo"],
+.light-theme img[alt="BeeMora Logo"],
 .light-theme img[alt="Gateway"] {
   mix-blend-mode: normal !important;
   filter: none !important;

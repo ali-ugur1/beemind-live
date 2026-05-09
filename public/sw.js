@@ -160,7 +160,7 @@ self.addEventListener("push", (event) => {
     icon: "/beemora-logo.svg",
     badge: "/beemora-logo.svg",
     url: "/panel",
-    tag: "hexora-alert",
+    tag: "beemora-alert",
   };
 
   let data = defaultData;

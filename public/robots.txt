@@ -1,4 +1,4 @@
-# robots.txt for https://hexora.app
+# robots.txt for https://beemora.io
 # Last updated: 2026-04-24
 
 User-agent: *
@@ -98,5 +98,5 @@ User-agent: *
 Crawl-delay: 10
 
 # Sitemaps
-Sitemap: https://hexora.app/sitemap.xml
-Sitemap: https://hexora.app/sitemap-images.xml
+Sitemap: https://beemora.io/sitemap.xml
+Sitemap: https://beemora.io/sitemap-images.xml
