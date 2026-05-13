@@ -402,7 +402,15 @@ app.get("/api/health", (req, res) => {
 // ══════════════════════════════════════════════════════════════════════════
 
 // POST /api/auth/register
+// Public self-signup is disabled by default. Hesaplar manuel olarak oluşturulur.
+// Geliştirme veya seed için ALLOW_PUBLIC_REGISTRATION=true ile açılabilir.
 app.post("/api/auth/register", rateLimit(10), async (req, res) => {
+  if (process.env.ALLOW_PUBLIC_REGISTRATION !== "true") {
+    return res.status(403).json({
+      error:
+        "Hesap oluşturma kapalı. Erişim için lütfen ekiple iletişime geçin.",
+    });
+  }
   try {
     const { email, password, fullName } = req.body;
     if (!email || typeof email !== "string" || !email.includes("@")) {

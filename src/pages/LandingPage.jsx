@@ -1,8 +1,8 @@
 ﻿import { useState, useEffect, useRef, useCallback } from "react";
+import FloatingAIChat from "../components/FloatingAIChat";
 import { useNavigate } from "react-router-dom";
 import { useLanguage } from "../contexts/LanguageContext";
 import { useTheme } from "../contexts/ThemeContext";
-import FloatingAIChat from "../components/FloatingAIChat";
 import {
   Sun,
   Moon,
@@ -323,24 +323,24 @@ const LandingPage = () => {
 
   const crisisStats = [
     {
-      val: "8.1M",
+      val: "9.2M",
       label: isTr ? "Türkiye'deki Toplam Kovan" : "Total Hives in Turkey",
-      sub: isTr ? "Dünya 2.si" : "World's 2nd",
+      sub: isTr ? "Dünya 2.si (TÜİK)" : "World's 2nd (TÜİK)",
     },
     {
       val: "%30",
       label: isTr ? "Yıllık Koloni Kaybı" : "Annual Colony Loss",
-      sub: isTr ? "~2.4 milyon kovan" : "~2.4 million hives",
+      sub: isTr ? "~2.7 milyon kovan" : "~2.7 million hives",
     },
     {
-      val: "₺4.2B",
-      label: isTr ? "Yıllık Ekonomik Kayıp" : "Annual Economic Loss",
-      sub: isTr ? "Bal + tozlaşma" : "Honey + pollination",
+      val: "118K ton",
+      label: isTr ? "Yıllık Bal Üretimi" : "Annual Honey Production",
+      sub: isTr ? "Dünya 2. sırada" : "Ranked 2nd globally",
     },
     {
-      val: "%82",
-      label: isTr ? "Geleneksel Yöntem" : "Traditional Methods",
-      sub: isTr ? "Dijital izleme yok" : "No digital monitoring",
+      val: "<%5",
+      label: isTr ? "Dijital İzleme Oranı" : "Digital Monitoring Rate",
+      sub: isTr ? "Geleneksel yöntem hakim" : "Traditional methods dominant",
     },
   ];
 
@@ -466,8 +466,8 @@ const LandingPage = () => {
         ? "Kurulum zor mu? Teknik bilgi gerekiyor mu?"
         : "Is installation difficult? Do I need technical knowledge?",
       a: isTr
-        ? "Kesinlikle hayır. BeeMora platformu tamamen web tabanlıdır — telefonunuzdan veya bilgisayarınızdan herhangi bir modern tarayıcı ile hemen kullanmaya başlayabilirsiniz. Hesabınızı oluşturun, kovanlarınızı ekleyin ve platformun sunduğu tüm AI analiz, bildirim ve raporlama özelliklerinden yararlanın. Hiçbir teknik bilgi gerektirmez. Ayrıca ilk kurulumda video rehberimiz ve canlı destek hattımız sizi adım adım yönlendirir."
-        : "Absolutely not. BeeMora is a fully web-based platform — you can start using it immediately from your phone or computer with any modern browser. Create your account, add your hives and benefit from all AI analysis, notification and reporting features. No technical knowledge required. Additionally, our video guide and live support line will walk you through the first setup step by step.",
+        ? "Kesinlikle hayır. BeeMora platformu tamamen web tabanlıdır — telefonunuzdan veya bilgisayarınızdan herhangi bir modern tarayıcı ile kullanabilirsiniz. Şu anda erken erişim sürecinde olduğumuz için hesaplar ekibimiz tarafından manuel olarak açılmaktadır: iletişim formundan başvurun, sizinle birlikte arılığınıza uygun planı belirleyelim, hesabınızı kuralım ve giriş bilgilerinizi tarafınıza ileterek kovanlarınızı eklemenizde size yardımcı olalım. Hiçbir teknik bilgi gerektirmez."
+        : "Absolutely not. BeeMora is a fully web-based platform — you can use it from any modern browser on your phone or computer. During our early-access period, accounts are provisioned manually by our team: submit the contact form, we'll review your apiary together, set up your account, share your login details, and help you onboard your hives. No technical knowledge required.",
     },
     {
       q: isTr
@@ -524,7 +524,11 @@ const LandingPage = () => {
       const fd = new FormData(e.target);
       const name = fd.get("name") || "";
       const city = fd.get("city") || "";
-      const hives = fd.get("hives") || "";
+      // Kovan sayısını 1-5 arasına sıkıştır (boş gönderim için varsayılan 1)
+      const rawHives = parseInt(fd.get("hives"), 10);
+      const hives = Number.isFinite(rawHives)
+        ? Math.min(5, Math.max(1, rawHives))
+        : 1;
       const phone = fd.get("phone") || "";
       const msg = fd.get("message") || "";
       const body = [
@@ -1117,47 +1121,16 @@ const LandingPage = () => {
         className={`py-16 px-6 border-t border-gray-800/50 transition-all duration-700 ${anim("trust")}`}
       >
         <div className="max-w-5xl mx-auto">
-          <p className="text-center text-[11px] text-gray-500 uppercase tracking-[0.2em] mb-8">
-            {isTr ? "Güvenilir Ortaklarımız" : "Trusted By"}
-          </p>
-          <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-4 mb-12 opacity-50">
-            {[
-              { name: "Konya Teknik Üniversitesi", abbr: "KTÜN" },
-              {
-                name: isTr
-                  ? "Türkiye Arıcılar Birliği"
-                  : "Turkey Beekeepers Assoc.",
-                abbr: "TAB",
-              },
-              { name: isTr ? "Konya Teknopark" : "Konya Technopark", abbr: "KTP" },
-              {
-                name: isTr
-                  ? "Konya Arıcılık Kooperatifi"
-                  : "Konya Beekeeping Coop.",
-                abbr: "KAK",
-              },
-              {
-                name: isTr
-                  ? "Tarım ve Orman Bakanlığı"
-                  : "Ministry of Agriculture",
-                abbr: isTr ? "TOB" : "MoA",
-              },
-            ].map((p, i) => (
-              <div
-                key={i}
-                className="flex items-center gap-2 group"
-                title={p.name}
-              >
-                <div className="w-8 h-8 bg-gray-800 border border-gray-700 rounded-lg flex items-center justify-center">
-                  <span className="text-[8px] font-bold text-gray-400">
-                    {p.abbr.slice(0, 2)}
-                  </span>
-                </div>
-                <span className="text-xs font-medium text-gray-500 hidden sm:inline">
-                  {p.name}
-                </span>
-              </div>
-            ))}
+          {/* Partner placeholder — gerçek ortaklar eklendikçe güncellenecek */}
+          <div className="max-w-2xl mx-auto bg-gray-900/60 border border-dashed border-gray-700/60 rounded-2xl p-6 text-center mb-12">
+            <p className="text-[11px] text-gray-500 uppercase tracking-[0.2em] mb-3">
+              {isTr ? "Ortaklıklar" : "Partnerships"}
+            </p>
+            <p className="text-sm text-gray-400 leading-relaxed">
+              {isTr
+                ? "Stratejik ortaklık görüşmelerimiz devam ediyor. Resmi olarak duyurulan ortaklarımızı yakında bu alanda paylaşacağız."
+                : "Our strategic partnership discussions are ongoing. Officially announced partners will be shared here soon."}
+            </p>
           </div>
 
           {/* Goal card */}
@@ -1201,8 +1174,8 @@ const LandingPage = () => {
             </h2>
             <p className="text-gray-400 max-w-2xl mx-auto text-lg">
               {isTr
-                ? "Türkiye, 8.1 milyon kovanla dünya bal üretiminde 2. sırada. Ancak her yıl milyonlarca koloni kaybediliyor."
-                : "Turkey ranks 2nd in world honey production with 8.1 million hives. Yet millions of colonies are lost every year."}
+                ? "Türkiye, 9.2 milyon kovanla dünya bal üretiminde 2. sırada. Ancak her yıl milyonlarca koloni kaybediliyor."
+                : "Turkey ranks 2nd in world honey production with 9.2 million hives. Yet millions of colonies are lost every year."}
             </p>
           </div>
 
@@ -3122,8 +3095,10 @@ const LandingPage = () => {
                       name="hives"
                       type="number"
                       min="1"
+                      max="5"
+                      step="1"
                       className="w-full px-4 py-2.5 bg-gray-800/80 border border-gray-700 rounded-lg text-sm text-gray-200 placeholder-gray-600 focus:border-amber-500/50 focus:outline-none transition-colors"
-                      placeholder="20"
+                      placeholder="1-5"
                     />
                   </div>
                   <div>
@@ -3650,6 +3625,7 @@ const LandingPage = () => {
         </div>
       </footer>
 
+      {/* ═══════════ AI CHAT WIDGET ═══════════ */}
       <FloatingAIChat />
     </div>
   );

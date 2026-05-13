@@ -1,27 +1,30 @@
 {
   "permissions": {
     "allow": [
-      "Bash(dir:*)",
-      "Bash(powershell -Command \"Get-ChildItem ''C:\\\\Users\\\\Casper\\\\OneDrive\\\\Masaüstü\\\\beemind\\\\beemind-live'' -Force | Select-Object Name, PSIsContainer | Format-Table\")",
-      "Bash(powershell -Command:*)",
-      "Bash(del \"\\\\?\\\\%CD%\\\\nul\")",
-      "Bash(powershell \"Get-ChildItem ''C:\\\\Users\\\\Casper\\\\OneDrive\\\\Masaüstü\\\\beemind\\\\beemind-live'' -Force -Depth 0 | Format-Table Name, PSIsContainer\")",
-      "Bash(for file in StatsCards Skeleton Sidebar Header Footer OnboardingOverlay useKeyboardShortcuts)",
-      "Bash(do)",
-      "Bash(if [ -f \"/c/Users/Casper/OneDrive/Masaüstü/beemind/beemind-live/src/components/$file.jsx\" ])",
-      "Bash([ -f \"/c/Users/Casper/OneDrive/Masaüstü/beemind/beemind-live/src/components/$file.js\" ])",
-      "Bash([ -f \"/c/Users/Casper/OneDrive/Masaüstü/beemind/beemind-live/src/hooks/$file.js\" ])",
-      "Bash(then)",
-      "Bash(echo:*)",
-      "Bash(else)",
-      "Bash(fi)",
-      "Bash(done)",
       "Bash(ls:*)",
-      "Bash(xargs:*)",
+      "Bash(dir:*)",
+      "Bash(cat:*)",
       "Bash(grep:*)",
+      "Bash(xargs:*)",
+      "Bash(echo:*)",
+      "Bash(find:*)",
+      "Bash(awk:*)",
+      "Bash(powershell -Command:*)",
       "Bash(npm install:*)",
       "Bash(npm run build:*)",
-      "Bash(git add *)"
+      "Bash(git add *)",
+      "Bash(npm list:*)",
+      "Bash(bash /tmp/*.sh)",
+      "Read(/tmp/**)",
+      "Read(/c/Users/Casper/OneDrive/Masaüstü/beemind/beemind-live/**)",
+      "WebFetch(domain:21st.dev)",
+      "Bash(gh pr *)",
+      "Bash(where gh *)",
+      "PowerShell(Get-Command gh -ErrorAction SilentlyContinue)",
+      "PowerShell($token = [System.Environment]::GetEnvironmentVariable\\(\"GITHUB_TOKEN\", \"User\"\\); if \\($token\\) { Write-Output \"Token found\" } else { Write-Output \"No token\" })",
+      "PowerShell($helper = git config --global credential.helper; Write-Output \"Helper: $helper\"; $managerOutput = git credential-manager get 2>&1 | Select-Object -First 5; Write-Output $managerOutput)",
+      "PowerShell($gitCred = git config --global credential.helper; Write-Output \"Helper: $gitCred\")",
+      "PowerShell(git config --list)"
     ]
   }
 }

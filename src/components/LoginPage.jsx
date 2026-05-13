@@ -24,33 +24,6 @@ import {
 } from "lucide-react";
 
 /* ═══════════════════════════════════════════════
-   PASSWORD STRENGTH
-   ═══════════════════════════════════════════════ */
-function getPasswordStrength(pwd) {
-  if (!pwd) return { score: 0, label: "", labelEn: "", color: "" };
-  let score = 0;
-  if (pwd.length >= 6) score++;
-  if (pwd.length >= 10) score++;
-  if (/[A-Z]/.test(pwd)) score++;
-  if (/[0-9]/.test(pwd)) score++;
-  if (/[^A-Za-z0-9]/.test(pwd)) score++;
-  if (score <= 1)
-    return {
-      score,
-      label: "Çok Zayıf",
-      labelEn: "Very Weak",
-      color: "bg-red-500",
-    };
-  if (score === 2)
-    return { score, label: "Zayıf", labelEn: "Weak", color: "bg-orange-500" };
-  if (score === 3)
-    return { score, label: "Orta", labelEn: "Fair", color: "bg-amber-400" };
-  if (score === 4)
-    return { score, label: "İyi", labelEn: "Good", color: "bg-emerald-400" };
-  return { score, label: "Güçlü", labelEn: "Strong", color: "bg-emerald-500" };
-}
-
-/* ═══════════════════════════════════════════════
    COUNTDOWN HOOK (lockout timer)
    - stale closure riski yok, interval her zaman temizleniyor
    ═══════════════════════════════════════════════ */
@@ -357,17 +330,14 @@ const Testimonials = ({ isTr }) => {
    MAIN LOGIN PAGE
    ═══════════════════════════════════════════════ */
 const LoginPage = () => {
-  const { login, register } = useAuth();
+  const { login } = useAuth();
   const { lang, changeLanguage } = useLanguage();
   const { theme, toggleTheme } = useTheme();
 
-  const [mode, setMode] = useState("login");
+  // Yalnızca giriş modu — kayıt ol kapalı, hesaplar manuel olarak veriliyor.
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [fullName, setFullName] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirm, setShowConfirm] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -379,9 +349,7 @@ const LoginPage = () => {
   const { remaining, start: startCountdown } = useCountdown();
 
   const isTr = lang === "tr";
-  const strength = getPasswordStrength(password);
   const isLocked = remaining > 0;
-  const passwordsMatch = confirmPassword === "" || password === confirmPassword;
   const IS_DEV =
     typeof import.meta !== "undefined" &&
     import.meta.env &&
@@ -402,13 +370,6 @@ const LoginPage = () => {
       /* localStorage erişilemez (SSR/private mode) – sessizce geç */
     }
   }, []);
-
-  const switchMode = (m) => {
-    setMode(m);
-    setError("");
-    setSuccess("");
-    setForgotSent(false);
-  };
 
   // Hata mesajını normalleştir (string olmayan hataları da güvenli göster)
   const normalizeError = (err, fallback) => {
@@ -446,62 +407,32 @@ const LoginPage = () => {
       setError(isTr ? "Şifre gerekli" : "Password is required");
       return;
     }
-    if (mode === "register") {
-      if (password.length < 6) {
-        setError(
-          isTr
-            ? "Şifre en az 6 karakter olmalı"
-            : "Password must be at least 6 characters",
-        );
-        return;
-      }
-      if (password !== confirmPassword) {
-        setError(isTr ? "Şifreler eşleşmiyor" : "Passwords do not match");
-        return;
-      }
-    }
 
     setIsLoading(true);
     try {
-      if (mode === "register") {
-        const result = await register(
-          trimmedEmail,
-          password,
-          fullName.trim() || undefined,
-        );
-        if (!result || !result.success) {
-          setError(
-            normalizeError(
-              result && result.error,
-              isTr ? "Kayıt başarısız" : "Registration failed",
-            ),
-          );
-        }
+      const result = await login(trimmedEmail, password);
+      if (!result || !result.success) {
+        const next = attempts + 1;
+        setAttempts(next);
+        const fallback = isTr
+          ? `Email veya şifre hatalı (${next}/5 deneme)`
+          : `Invalid email or password (${next}/5 attempts)`;
+        setError(normalizeError(result && result.error, fallback));
+        if (next >= 3) setShowDemo(true);
+        if (next >= 5) startCountdown(30);
       } else {
-        const result = await login(trimmedEmail, password);
-        if (!result || !result.success) {
-          const next = attempts + 1;
-          setAttempts(next);
-          const fallback = isTr
-            ? `Email veya şifre hatalı (${next}/5 deneme)`
-            : `Invalid email or password (${next}/5 attempts)`;
-          setError(normalizeError(result && result.error, fallback));
-          if (next >= 3) setShowDemo(true);
-          if (next >= 5) startCountdown(30);
-        } else {
-          // Başarılı giriş → remember-me tercihini uygula
-          try {
-            if (rememberMe) {
-              localStorage.setItem(
-                "beemora_remember",
-                JSON.stringify({ email: trimmedEmail }),
-              );
-            } else {
-              localStorage.removeItem("beemora_remember");
-            }
-          } catch {
-            /* no-op */
+        // Başarılı giriş → remember-me tercihini uygula
+        try {
+          if (rememberMe) {
+            localStorage.setItem(
+              "beemora_remember",
+              JSON.stringify({ email: trimmedEmail }),
+            );
+          } else {
+            localStorage.removeItem("beemora_remember");
           }
+        } catch {
+          /* no-op */
         }
       }
     } catch (err) {
@@ -535,11 +466,8 @@ const LoginPage = () => {
         : "border-gray-700/50 focus:border-amber-500/60 focus:ring-amber-500/20 hover:border-gray-600"
     }`;
 
-  // Submit disabled koşulu — register'da şifreler eşleşmiyorsa veya confirm boşsa tıklanamaz
-  const submitDisabled =
-    isLoading ||
-    isLocked ||
-    (mode === "register" && (confirmPassword === "" || !passwordsMatch));
+  // Submit disabled koşulu
+  const submitDisabled = isLoading || isLocked;
 
   return (
     <div className="min-h-screen bg-gray-950 flex flex-col relative overflow-hidden">
@@ -788,52 +716,16 @@ const LoginPage = () => {
 
             {/* Form card */}
             <div className="bg-gray-900/80 border border-gray-800/80 rounded-2xl p-6 sm:p-7 backdrop-blur-md shadow-2xl shadow-black/30">
-              {/* Tab switcher */}
-              <div
-                className="flex bg-gray-800/70 rounded-xl p-1 mb-6 gap-1"
-                role="tablist"
-              >
-                {["login", "register"].map((m) => (
-                  <button
-                    key={m}
-                    type="button"
-                    role="tab"
-                    aria-selected={mode === m}
-                    onClick={() => switchMode(m)}
-                    className={`flex-1 py-2.5 text-sm font-semibold rounded-lg transition-all duration-200 ${
-                      mode === m
-                        ? "bg-gradient-to-r from-amber-500 to-orange-500 text-black shadow-md shadow-amber-500/20"
-                        : "text-gray-500 hover:text-gray-300"
-                    }`}
-                  >
-                    {m === "login"
-                      ? isTr
-                        ? "Giriş Yap"
-                        : "Sign In"
-                      : isTr
-                        ? "Kayıt Ol"
-                        : "Sign Up"}
-                  </button>
-                ))}
-              </div>
-
               <h3 className="text-lg font-bold text-gray-100 mb-0.5 text-center">
-                {mode === "register"
-                  ? isTr
-                    ? "Hesap Oluştur"
-                    : "Create Account"
-                  : isTr
-                    ? "Kontrol Paneline Giriş"
-                    : "Sign In to Dashboard"}
+                {isTr ? "Kontrol Paneline Giriş" : "Sign In to Dashboard"}
               </h3>
               <p className="text-xs text-gray-500 text-center mb-5">
-                {mode === "register"
-                  ? isTr
-                    ? "Kovanlarınızı izlemeye hemen başlayın"
-                    : "Start monitoring your hives right away"
-                  : isTr
-                    ? "Hesabınıza giriş yapın"
-                    : "Access your account"}
+                {isTr ? "Hesabınıza giriş yapın" : "Access your account"}
+              </p>
+              <p className="text-[11px] text-gray-600 text-center mb-5 px-2">
+                {isTr
+                  ? "Hesap oluşturma kapalı. Erişim için lütfen ekibimizle iletişime geçin."
+                  : "Self sign-up is disabled. Please contact our team for access."}
               </p>
 
               {/* Error */}
@@ -879,43 +771,6 @@ const LoginPage = () => {
               )}
 
               <form onSubmit={handleSubmit} className="space-y-4" noValidate>
-                {/* Full Name (register only) */}
-                {mode === "register" && (
-                  <div>
-                    <label
-                      htmlFor="fullName"
-                      className="block text-xs font-semibold text-gray-400 mb-1.5"
-                    >
-                      {isTr ? "Ad Soyad" : "Full Name"}{" "}
-                      <span className="text-gray-600">
-                        {isTr ? "(isteğe bağlı)" : "(optional)"}
-                      </span>
-                    </label>
-                    <div className="relative">
-                      <span
-                        className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm"
-                        aria-hidden="true"
-                      >
-                        👤
-                      </span>
-                      <input
-                        id="fullName"
-                        type="text"
-                        value={fullName}
-                        onChange={(e) => {
-                          setFullName(e.target.value);
-                          setError("");
-                        }}
-                        placeholder={
-                          isTr ? "Adınız Soyadınız" : "Your Full Name"
-                        }
-                        className={inputClass()}
-                        autoComplete="name"
-                      />
-                    </div>
-                  </div>
-                )}
-
                 {/* Email */}
                 <div>
                   <label
@@ -973,11 +828,7 @@ const LoginPage = () => {
                         isTr ? "Şifrenizi girin" : "Enter your password"
                       }
                       className={`${inputClass()} pr-11`}
-                      autoComplete={
-                        mode === "register"
-                          ? "new-password"
-                          : "current-password"
-                      }
+                      autoComplete="current-password"
                       required
                     />
                     <button
@@ -1002,129 +853,41 @@ const LoginPage = () => {
                     </button>
                   </div>
 
-                  {/* Password strength (register only) */}
-                  {mode === "register" && password && (
-                    <div className="mt-2">
-                      <div className="flex gap-1 mb-1">
-                        {[1, 2, 3, 4, 5].map((n) => (
-                          <div
-                            key={n}
-                            className={`flex-1 h-1 rounded-full transition-all duration-300 ${n <= strength.score ? strength.color : "bg-gray-800"}`}
-                          />
-                        ))}
-                      </div>
-                      <p
-                        className={`text-[10px] ${strength.score >= 4 ? "text-emerald-400" : strength.score >= 3 ? "text-amber-400" : "text-red-400"}`}
-                      >
-                        {isTr ? strength.label : strength.labelEn}
-                      </p>
-                    </div>
-                  )}
                 </div>
 
-                {/* Confirm Password (register only) */}
-                {mode === "register" && (
-                  <div>
-                    <label
-                      htmlFor="confirmPassword"
-                      className="block text-xs font-semibold text-gray-400 mb-1.5"
+                {/* Remember me + Forgot password */}
+                <div className="flex items-center justify-between gap-2">
+                  <label className="flex items-center gap-2 cursor-pointer group">
+                    <input
+                      type="checkbox"
+                      checked={rememberMe}
+                      onChange={(e) => setRememberMe(e.target.checked)}
+                      className="w-4 h-4 rounded border-gray-600 bg-gray-800 text-amber-500 cursor-pointer accent-amber-500"
+                    />
+                    <span className="text-xs text-gray-500 group-hover:text-gray-400 transition-colors">
+                      {isTr ? "Beni hatırla" : "Remember me"}
+                    </span>
+                  </label>
+
+                  {!forgotSent ? (
+                    <button
+                      type="button"
+                      onClick={handleForgotPassword}
+                      className="text-xs text-amber-500/70 hover:text-amber-400 transition-colors"
                     >
-                      {isTr ? "Şifre Tekrar" : "Confirm Password"}
-                    </label>
-                    <div className="relative">
-                      <Lock
-                        className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500"
-                        aria-hidden="true"
-                      />
-                      <input
-                        id="confirmPassword"
-                        type={showConfirm ? "text" : "password"}
-                        value={confirmPassword}
-                        onChange={(e) => {
-                          setConfirmPassword(e.target.value);
-                          setError("");
-                        }}
-                        placeholder={
-                          isTr
-                            ? "Şifrenizi tekrar girin"
-                            : "Confirm your password"
-                        }
-                        className={`${inputClass(!passwordsMatch && confirmPassword !== "")} pr-11`}
-                        autoComplete="new-password"
-                        required
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowConfirm((v) => !v)}
-                        aria-label={
-                          showConfirm
-                            ? isTr
-                              ? "Şifreyi gizle"
-                              : "Hide password"
-                            : isTr
-                              ? "Şifreyi göster"
-                              : "Show password"
-                        }
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 transition-colors"
-                      >
-                        {showConfirm ? (
-                          <EyeOff className="w-4 h-4" />
-                        ) : (
-                          <Eye className="w-4 h-4" />
-                        )}
-                      </button>
-                    </div>
-                    {!passwordsMatch && confirmPassword !== "" && (
-                      <p className="text-[10px] text-red-400 mt-1">
+                      {isTr ? "Şifremi unuttum" : "Forgot password?"}
+                    </button>
+                  ) : (
+                    <span className="text-xs text-emerald-400 flex items-center gap-1 text-right">
+                      <CheckCircle className="w-3 h-3 flex-shrink-0" />
+                      <span className="truncate">
                         {isTr
-                          ? "Şifreler eşleşmiyor"
-                          : "Passwords do not match"}
-                      </p>
-                    )}
-                    {passwordsMatch && confirmPassword !== "" && (
-                      <p className="text-[10px] text-emerald-400 mt-1 flex items-center gap-1">
-                        <CheckCircle className="w-3 h-3" />
-                        {isTr ? "Şifreler eşleşiyor" : "Passwords match"}
-                      </p>
-                    )}
-                  </div>
-                )}
-
-                {/* Remember me + Forgot password (login only) */}
-                {mode === "login" && (
-                  <div className="flex items-center justify-between gap-2">
-                    <label className="flex items-center gap-2 cursor-pointer group">
-                      <input
-                        type="checkbox"
-                        checked={rememberMe}
-                        onChange={(e) => setRememberMe(e.target.checked)}
-                        className="w-4 h-4 rounded border-gray-600 bg-gray-800 text-amber-500 cursor-pointer accent-amber-500"
-                      />
-                      <span className="text-xs text-gray-500 group-hover:text-gray-400 transition-colors">
-                        {isTr ? "Beni hatırla" : "Remember me"}
+                          ? "beemoraproject@gmail.com ile iletişime geçin"
+                          : "Contact beemoraproject@gmail.com"}
                       </span>
-                    </label>
-
-                    {!forgotSent ? (
-                      <button
-                        type="button"
-                        onClick={handleForgotPassword}
-                        className="text-xs text-amber-500/70 hover:text-amber-400 transition-colors"
-                      >
-                        {isTr ? "Şifremi unuttum" : "Forgot password?"}
-                      </button>
-                    ) : (
-                      <span className="text-xs text-emerald-400 flex items-center gap-1 text-right">
-                        <CheckCircle className="w-3 h-3 flex-shrink-0" />
-                        <span className="truncate">
-                          {isTr
-                            ? "beemoraproject@gmail.com ile iletişime geçin"
-                            : "Contact beemoraproject@gmail.com"}
-                        </span>
-                      </span>
-                    )}
-                  </div>
-                )}
+                    </span>
+                  )}
+                </div>
 
                 {/* Submit */}
                 <motion.button
@@ -1138,13 +901,7 @@ const LoginPage = () => {
                     <>
                       <div className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin" />
                       <span>
-                        {mode === "register"
-                          ? isTr
-                            ? "Hesap oluşturuluyor..."
-                            : "Creating account..."
-                          : isTr
-                            ? "Giriş yapılıyor..."
-                            : "Signing in..."}
+                        {isTr ? "Giriş yapılıyor..." : "Signing in..."}
                       </span>
                     </>
                   ) : isLocked ? (
@@ -1153,15 +910,7 @@ const LoginPage = () => {
                     </span>
                   ) : (
                     <>
-                      <span>
-                        {mode === "register"
-                          ? isTr
-                            ? "Hesap Oluştur"
-                            : "Create Account"
-                          : isTr
-                            ? "Giriş Yap"
-                            : "Sign In"}
-                      </span>
+                      <span>{isTr ? "Giriş Yap" : "Sign In"}</span>
                       <ArrowRight className="w-4 h-4" />
                     </>
                   )}
@@ -1169,7 +918,7 @@ const LoginPage = () => {
               </form>
 
               {/* Demo hint (only in dev mode, after 3 failed login attempts) */}
-              {IS_DEV && mode === "login" && showDemo && !isLocked && (
+              {IS_DEV && showDemo && !isLocked && (
                 <div className="mt-4 p-3 bg-amber-500/8 border border-amber-500/20 rounded-xl animate-fade-in">
                   <p className="text-[11px] text-amber-400/80 mb-2 font-semibold flex items-center gap-1.5">
                     <Info className="w-3.5 h-3.5" />
