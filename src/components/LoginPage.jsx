@@ -453,7 +453,7 @@ const LoginPage = () => {
   };
 
   const fillDemo = () => {
-    setEmail("admin@beemora.io");
+    setEmail("admin@gmail.com");
     setPassword("admin123");
     setError("");
     setShowDemo(false);
@@ -917,40 +917,6 @@ const LoginPage = () => {
                 </motion.button>
               </form>
 
-              {/* Demo hint (only in dev mode, after 3 failed login attempts) */}
-              {IS_DEV && showDemo && !isLocked && (
-                <div className="mt-4 p-3 bg-amber-500/8 border border-amber-500/20 rounded-xl animate-fade-in">
-                  <p className="text-[11px] text-amber-400/80 mb-2 font-semibold flex items-center gap-1.5">
-                    <Info className="w-3.5 h-3.5" />
-                    {isTr
-                      ? "Geliştirici Modu — Demo hesabı:"
-                      : "Dev Mode — Demo account:"}
-                  </p>
-                  <div className="flex items-center justify-between gap-2">
-                    <div className="text-[11px] text-gray-400 space-x-2 min-w-0">
-                      <span className="text-gray-500">
-                        {isTr ? "Kullanıcı:" : "User:"}
-                      </span>
-                      <code className="text-amber-300 bg-gray-800 px-1.5 py-0.5 rounded text-[10px]">
-                        admin@beemora.io
-                      </code>
-                      <span className="text-gray-500">
-                        {isTr ? "Şifre:" : "Pass:"}
-                      </span>
-                      <code className="text-amber-300 bg-gray-800 px-1.5 py-0.5 rounded text-[10px]">
-                        admin123
-                      </code>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={fillDemo}
-                      className="text-[11px] px-2.5 py-1 bg-amber-500/20 text-amber-400 rounded-lg hover:bg-amber-500/30 transition-colors font-semibold flex-shrink-0"
-                    >
-                      {isTr ? "Doldur" : "Fill"}
-                    </button>
-                  </div>
-                </div>
-              )}
             </div>
 
             {/* Trust badges */}
