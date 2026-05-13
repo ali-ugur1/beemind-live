@@ -43,6 +43,12 @@ export function AuthProvider({ children }) {
       return;
     }
 
+    // Yerel admin token'ı backend'e gönderilmez
+    if (token === "local-admin-token") {
+      setLoading(false);
+      return () => { cancelled = true; };
+    }
+
     // Verify token in background
     fetch(`${API_BASE}/api/auth/me`, {
       headers: { Authorization: `Bearer ${token}` },
@@ -89,6 +95,35 @@ export function AuthProvider({ children }) {
   }, []);
 
   const login = useCallback(async (email, password) => {
+    // ── Yerel admin hesabı (backend gerekmez) ─────────────────────────────
+    const ADMIN_EMAIL = "admin@gmail.com";
+    const ADMIN_PASS  = "admin123";
+
+    if (
+      email.trim().toLowerCase() === ADMIN_EMAIL &&
+      password === ADMIN_PASS
+    ) {
+      const adminUser = {
+        id: "admin-local",
+        email: ADMIN_EMAIL,
+        fullName: "Admin",
+        role: "admin",
+      };
+      const fakeToken = "local-admin-token";
+      localStorage.setItem(TOKEN_KEY, fakeToken);
+      localStorage.setItem(USER_KEY, JSON.stringify(adminUser));
+      setUser(adminUser);
+      setIsAuthenticated(true);
+
+      const hasLoggedBefore = localStorage.getItem(FIRST_LOGIN_KEY);
+      if (!hasLoggedBefore) {
+        setIsFirstLogin(true);
+        localStorage.setItem(FIRST_LOGIN_KEY, "1");
+      }
+      return { success: true };
+    }
+    // ─────────────────────────────────────────────────────────────────────
+
     try {
       const res = await fetch(`${API_BASE}/api/auth/login`, {
         method: "POST",

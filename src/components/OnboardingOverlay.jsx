@@ -159,7 +159,7 @@ const OnboardingOverlay = ({ onComplete }) => {
               <p className="text-sm font-semibold text-gray-100 leading-none mb-0.5">Maya</p>
               <p className="text-[10px] text-emerald-400 flex items-center gap-1">
                 <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full inline-block animate-pulse" />
-                BeeMora Arıcılık Asistanı
+                BeeMora AI Asistanı
               </p>
             </div>
           </div>
