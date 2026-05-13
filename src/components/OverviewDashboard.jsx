@@ -22,6 +22,7 @@ import { useLanguage } from "../contexts/LanguageContext";
 import { useLiveData } from "../contexts/LiveDataContext";
 import SystemHealthWidget from "./SystemHealthWidget";
 import ActivityFeed from "./ActivityFeed";
+import SeasonalTips from "./SeasonalTips";
 
 const OverviewDashboard = ({ stats, hives, onViewDetail, onNavigate }) => {
   const toast = useToast();
@@ -188,6 +189,9 @@ const OverviewDashboard = ({ stats, hives, onViewDetail, onNavigate }) => {
 
   return (
     <div className="space-y-6">
+      {/* Maya Sezonsal İpuçları */}
+      <SeasonalTips />
+
       {/* Üst Kısım: Gateway + Hava Durumu */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Gateway Card */}

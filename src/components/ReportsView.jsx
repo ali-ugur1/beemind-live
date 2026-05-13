@@ -350,7 +350,7 @@ const ReportsView = ({ hives }) => {
           </button>
           <button
             onClick={() => exportJSON(hives)}
-            className="flex items-center gap-2 px-3 py-2 bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-lg transition-colors text-sm"
+            className="flex items-center gap-2 px-3 py-2 bg-gray-700 hover:bg-gray-600 text-gray-100 font-medium rounded-lg transition-colors text-sm"
           >
             <FileJson className="w-4 h-4" />
             JSON

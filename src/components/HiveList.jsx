@@ -7,6 +7,14 @@ import ConfirmDialog from "./ConfirmDialog";
 import { useToast } from "../contexts/ToastContext";
 import { useLiveData } from "../contexts/LiveDataContext";
 import { useLanguage } from "../contexts/LanguageContext";
+import { useEasyMode } from "../contexts/EasyModeContext";
+import {
+  hiveHealthScore,
+  healthScoreColor,
+  healthScoreBg,
+  healthScoreLabel,
+  healthScoreEmoji,
+} from "../utils/hiveHealthScore";
 
 const LOW_BATTERY_THRESHOLD = 20;
 const MAX_STAGGER_DELAY = 0.4; // büyük listelerde son kart 400ms'den geç gelmesin
@@ -27,6 +35,7 @@ const HiveList = ({
   const toast = useToast();
   const { deleteHive } = useLiveData();
   const { lang } = useLanguage();
+  const { isEasyMode } = useEasyMode();
 
   const isTR = lang === "tr";
   const allSelected = hives.length > 0 && selectedHives.length === hives.length;
@@ -71,7 +80,7 @@ const HiveList = ({
     <>
       {/* Desktop Table */}
       <div className="hidden md:block bg-gray-900 border border-gray-800 rounded-lg overflow-hidden">
-        {/* Header: 1 + 1 + 2 + 4 + 1 + 3 = 12 */}
+        {/* Header: 1 + 1 + 2 + 3 + 1 + 1 + 3 = 12 */}
         <div className="grid grid-cols-12 gap-4 px-6 py-4 bg-gray-800 border-b border-gray-700 text-xs font-semibold text-gray-400 uppercase tracking-wider">
           <div className="col-span-1 flex items-center">
             <input
@@ -84,9 +93,10 @@ const HiveList = ({
           </div>
           <div className="col-span-1">{isTR ? "Durum" : "Status"}</div>
           <div className="col-span-2">ID</div>
-          <div className="col-span-4">
+          <div className="col-span-3">
             {isTR ? "Sorun / Durum" : "Issue / Status"}
           </div>
+          <div className="col-span-1">{isTR ? "Skor" : "Score"}</div>
           <div className="col-span-1">{isTR ? "Pil" : "Battery"}</div>
           <div className="col-span-3 text-right">
             {isTR ? "Aksiyon" : "Action"}
@@ -107,6 +117,7 @@ const HiveList = ({
                 onAI={onAIAnalysis}
                 onEdit={onEditHive}
                 isTR={isTR}
+                isEasyMode={isEasyMode}
               />
             ))}
           </AnimatePresence>
@@ -141,6 +152,7 @@ const HiveList = ({
               onAI={onAIAnalysis}
               onEdit={onEditHive}
               isTR={isTR}
+              isEasyMode={isEasyMode}
             />
           ))}
         </AnimatePresence>
@@ -176,6 +188,7 @@ const HiveRow = React.memo(
     onAI,
     onEdit,
     isTR,
+    isEasyMode,
   }) => {
     const colors = getStatusColor(hive.status);
     const isCritical = hive.status === "critical";
@@ -183,6 +196,8 @@ const HiveRow = React.memo(
     const isStable = hive.status === "stable";
     const lowBattery = hive.battery < LOW_BATTERY_THRESHOLD;
     const statusLabel = getStatusText(hive.status, isTR ? "tr" : "en");
+    const score = hiveHealthScore(hive);
+    const lang = isTR ? "tr" : "en";
 
     const delay = Math.min(index * 0.03, MAX_STAGGER_DELAY);
 
@@ -242,12 +257,19 @@ const HiveRow = React.memo(
           </div>
         </div>
 
-        <div className="col-span-4 flex items-center min-w-0">
-          {isStable ? (
+        <div className="col-span-3 flex items-center min-w-0">
+          {isEasyMode ? (
             <div className="flex items-center gap-2">
-              <span aria-hidden="true" className="text-lg">
-                ✅
+              <span aria-hidden="true" className="text-2xl">
+                {isCritical ? "🔴" : isWarning ? "🟡" : "🟢"}
               </span>
+              <span className={`font-semibold text-base ${colors.text}`}>
+                {statusLabel}
+              </span>
+            </div>
+          ) : isStable ? (
+            <div className="flex items-center gap-2">
+              <span aria-hidden="true" className="text-lg">✅</span>
               <span className="text-emerald-500 font-medium">
                 {isTR ? "Stabil" : "Stable"}
               </span>
@@ -262,6 +284,15 @@ const HiveRow = React.memo(
               </span>
             </div>
           )}
+        </div>
+
+        <div className="col-span-1 flex items-center">
+          <span
+            title={healthScoreLabel(score, lang)}
+            className={`text-sm font-bold ${healthScoreColor(score)}`}
+          >
+            {isEasyMode ? healthScoreEmoji(score) : score}
+          </span>
         </div>
 
         <div className="col-span-1 flex items-center">
@@ -337,6 +368,7 @@ const MobileHiveCard = React.memo(
     onAI,
     onEdit,
     isTR,
+    isEasyMode,
   }) => {
     const colors = getStatusColor(hive.status);
     const isCritical = hive.status === "critical";
@@ -344,6 +376,8 @@ const MobileHiveCard = React.memo(
     const isStable = hive.status === "stable";
     const lowBattery = hive.battery < LOW_BATTERY_THRESHOLD;
     const statusLabel = getStatusText(hive.status, isTR ? "tr" : "en");
+    const score = hiveHealthScore(hive);
+    const lang = isTR ? "tr" : "en";
 
     const delay = Math.min(index * 0.04, MAX_STAGGER_DELAY);
 
@@ -408,7 +442,14 @@ const MobileHiveCard = React.memo(
 
         {/* Alert */}
         <div className="mb-3">
-          {isStable ? (
+          {isEasyMode ? (
+            <p className={`font-semibold text-lg ${colors.text}`}>
+              <span aria-hidden="true">
+                {isCritical ? "🔴" : isWarning ? "🟡" : "🟢"}
+              </span>{" "}
+              {statusLabel}
+            </p>
+          ) : isStable ? (
             <p className="text-sm text-emerald-400">
               <span aria-hidden="true">✅</span>{" "}
               {isTR ? "Stabil durumda" : "Stable"}
@@ -430,9 +471,9 @@ const MobileHiveCard = React.memo(
             value={`${hive.weight ?? 0}kg`}
           />
           <Stat
-            label={isTR ? "Pil" : "Bat"}
-            value={`${hive.battery}%`}
-            valueClass={lowBattery ? "text-red-400" : "text-gray-200"}
+            label={isTR ? "Skor" : "Score"}
+            value={isEasyMode ? healthScoreEmoji(score) : String(score)}
+            valueClass={healthScoreColor(score)}
           />
         </div>
 

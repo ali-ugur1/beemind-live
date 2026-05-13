@@ -252,7 +252,7 @@ const ConfirmDialog = ({
       }
     } catch (err) {
       // Hata durumunda dialog açık kalsın; hatayı yutma
-      console.error("ConfirmDialog onConfirm error:", err);
+      console.error("ConnectionStatus confirm error:", err);
     }
   }, []);
 

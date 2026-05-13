@@ -202,10 +202,10 @@ const AIAnalysisPanel = ({ isOpen, onClose, hive }) => {
     >
       <div className="bg-gray-900 border border-gray-700 rounded-lg max-w-3xl w-full max-h-[90vh] overflow-hidden shadow-2xl animate-scale-in">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-800 bg-gradient-to-r from-purple-500/10 to-pink-500/10">
+        <div className="flex items-center justify-between p-6 border-b border-gray-800 bg-gradient-to-r from-amber-500/10 to-orange-500/10">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-purple-500/20 rounded-full flex items-center justify-center">
-              <Sparkles className="w-6 h-6 text-purple-400" />
+            <div className="w-10 h-10 bg-amber-500/20 rounded-full flex items-center justify-center">
+              <Sparkles className="w-6 h-6 text-amber-400" />
             </div>
             <div>
               <h3
@@ -223,7 +223,7 @@ const AIAnalysisPanel = ({ isOpen, onClose, hive }) => {
             ref={closeBtnRef}
             onClick={onClose}
             aria-label={t.close}
-            className="p-2 hover:bg-gray-800 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500"
+            className="p-2 hover:bg-gray-800 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-amber-500"
           >
             <X className="w-5 h-5 text-gray-400" />
           </button>

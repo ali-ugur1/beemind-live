@@ -27,7 +27,7 @@ function NotFound() {
         <div className="flex items-center justify-center gap-4">
           <button
             onClick={() => navigate("/")}
-            className="px-6 py-3 bg-violet-600 hover:bg-violet-700 text-white font-semibold rounded-lg transition-colors"
+            className="px-6 py-3 bg-amber-500 hover:bg-amber-600 text-black font-semibold rounded-lg transition-colors"
           >
             Ana Sayfa
           </button>

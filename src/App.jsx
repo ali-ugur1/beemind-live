@@ -12,6 +12,7 @@ import { useToast } from "./contexts/ToastContext";
 import { LiveDataProvider, useLiveData } from "./contexts/LiveDataContext";
 import { useLanguage } from "./contexts/LanguageContext";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
+import { EasyModeProvider, useEasyMode } from "./contexts/EasyModeContext";
 import Sidebar from "./components/Sidebar";
 import Header from "./components/Header";
 import StatsCards from "./components/StatsCards";
@@ -27,6 +28,8 @@ import OnboardingOverlay, {
   shouldShowOnboarding,
 } from "./components/OnboardingOverlay";
 import EditHiveModal from "./components/EditHiveModal";
+import ShortcutHelpModal from "./components/ShortcutHelpModal";
+import CSVImportModal from "./components/CSVImportModal";
 import Footer from "./components/Footer";
 import LoginPage from "./components/LoginPage";
 import useKeyboardShortcuts from "./hooks/useKeyboardShortcuts";
@@ -55,6 +58,7 @@ const NotificationHistoryView = lazy(
 );
 const HelpView = lazy(() => import("./components/HelpView"));
 const AboutView = lazy(() => import("./components/AboutView"));
+const AIAssistantView = lazy(() => import("./components/AIAssistantView"));
 
 // ---------------------------------------------------------------------------
 // Geçerli sekmeler sabiti — tek kaynak
@@ -71,6 +75,7 @@ const ALL_TABS = [
   "profile",
   "help",
   "about",
+  "assistant",
 ];
 
 // ---------------------------------------------------------------------------
@@ -96,12 +101,14 @@ function AppContent() {
     hives,
     loading,
     notifications: liveNotifications,
+    addHive,
     updateHive,
     isDataStale,
     apiConnected,
   } = useLiveData();
   const { t, lang } = useLanguage();
   const { isFirstLogin, clearFirstLogin } = useAuth();
+  const { isEasyMode } = useEasyMode();
 
   // --- state ---
   const [activeTab, setActiveTab] = useState("dashboard");
@@ -117,6 +124,8 @@ function AppContent() {
   const [selectedHives, setSelectedHives] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [showAddHive, setShowAddHive] = useState(false);
+  const [showShortcuts, setShowShortcuts] = useState(false);
+  const [showCSVImport, setShowCSVImport] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(
     () => isFirstLogin || shouldShowOnboarding(),
   );
@@ -168,6 +177,7 @@ function AppContent() {
       calendar: lang === "tr" ? "Takvim" : "Calendar",
       reports: lang === "tr" ? "Raporlar" : "Reports",
       notificationHistory: lang === "tr" ? "Bildirimler" : "Notifications",
+      assistant: "Maya",
       settings: lang === "tr" ? "Ayarlar" : "Settings",
       profile: lang === "tr" ? "Profil" : "Profile",
       help: lang === "tr" ? "Yardım" : "Help",
@@ -300,6 +310,39 @@ function AppContent() {
 
   useKeyboardShortcuts(handleTabChange);
   const pushNotifications = usePushNotifications(hives);
+
+  // `?` tuşu — kısayol yardım modalı
+  useEffect(() => {
+    const handler = (e) => {
+      if (e.key !== "?") return;
+      const tag = document.activeElement?.tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA" || document.activeElement?.isContentEditable) return;
+      if (document.querySelector('[role="dialog"][aria-modal="true"]')) return;
+      setShowShortcuts((v) => !v);
+    };
+    document.addEventListener("keydown", handler);
+    return () => document.removeEventListener("keydown", handler);
+  }, []);
+
+  // CSV import callback — adds new hives, updates existing ones
+  const handleCSVImport = useCallback(
+    (rows) => {
+      const existingIds = new Set(hives.map((h) => h.id));
+      rows.forEach((row) => {
+        if (existingIds.has(row.id)) {
+          updateHive(row.id, row);
+        } else {
+          addHive(row);
+        }
+      });
+      toast.success(
+        lang === "tr"
+          ? `${rows.length} kovan içe aktarıldı`
+          : `${rows.length} hives imported`,
+      );
+    },
+    [hives, addHive, updateHive, lang, toast],
+  );
 
   // ---------------------------------------------------------------------------
   // Çoklu seçim
@@ -527,11 +570,22 @@ function AppContent() {
   // Ana render
   // ---------------------------------------------------------------------------
   return (
-    <div className="flex min-h-screen bg-gray-950 text-gray-100">
+    <div className={`flex min-h-screen bg-gray-950 text-gray-100${isEasyMode ? " easy-mode" : ""}`}>
       {isLoading && <LoadingSpinner fullScreen />}
 
       {showOnboarding && (
         <OnboardingOverlay onComplete={() => setShowOnboarding(false)} />
+      )}
+
+      {showShortcuts && (
+        <ShortcutHelpModal onClose={() => setShowShortcuts(false)} />
+      )}
+
+      {showCSVImport && (
+        <CSVImportModal
+          onClose={() => setShowCSVImport(false)}
+          onImport={handleCSVImport}
+        />
       )}
 
       <Sidebar activeTab={activeTab} onTabChange={handleTabChange} />
@@ -600,14 +654,25 @@ function AppContent() {
                               setAdvancedFilters={setAdvancedFilters}
                             />
                           </div>
-                          <motion.button
-                            whileHover={{ scale: 1.03 }}
-                            whileTap={{ scale: 0.97 }}
-                            onClick={() => setShowAddHive(true)}
-                            className="flex items-center gap-2 px-5 py-3 bg-amber-500 hover:bg-amber-600 text-black font-semibold rounded-lg transition-colors whitespace-nowrap"
-                          >
-                            + {t.addHive.title}
-                          </motion.button>
+                          <div className="flex items-center gap-2">
+                            <motion.button
+                              whileHover={{ scale: 1.03 }}
+                              whileTap={{ scale: 0.97 }}
+                              onClick={() => setShowCSVImport(true)}
+                              title={lang === "tr" ? "CSV ile içe aktar" : "Import from CSV"}
+                              className="flex items-center gap-2 px-4 py-3 bg-gray-800 hover:bg-gray-700 text-gray-300 font-medium rounded-lg transition-colors whitespace-nowrap border border-gray-700"
+                            >
+                              ↑ CSV
+                            </motion.button>
+                            <motion.button
+                              whileHover={{ scale: 1.03 }}
+                              whileTap={{ scale: 0.97 }}
+                              onClick={() => setShowAddHive(true)}
+                              className="flex items-center gap-2 px-5 py-3 bg-amber-500 hover:bg-amber-600 text-black font-semibold rounded-lg transition-colors whitespace-nowrap"
+                            >
+                              + {t.addHive.title}
+                            </motion.button>
+                          </div>
                         </div>
                       </section>
 
@@ -720,6 +785,14 @@ function AppContent() {
                     </ErrorBoundary>
                   )}
 
+                  {activeTab === "assistant" && (
+                    <ErrorBoundary>
+                      <Suspense fallback={<LoadingSpinner size="lg" />}>
+                        <AIAssistantView />
+                      </Suspense>
+                    </ErrorBoundary>
+                  )}
+
                   {/* Bilinmeyen sekme fallback */}
                   {!ALL_TABS.includes(activeTab) && (
                     <div className="flex flex-col items-center justify-center py-20">
@@ -798,7 +871,9 @@ function AuthGate() {
 function App() {
   return (
     <AuthProvider>
-      <AuthGate />
+      <EasyModeProvider>
+        <AuthGate />
+      </EasyModeProvider>
     </AuthProvider>
   );
 }

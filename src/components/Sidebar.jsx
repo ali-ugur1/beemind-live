@@ -13,6 +13,7 @@
   Bell,
   HelpCircle,
   Info,
+  Bot,
 } from "lucide-react";
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { useLiveData } from "../contexts/LiveDataContext";
@@ -103,6 +104,7 @@ const Sidebar = ({ activeTab, onTabChange }) => {
         label: t.sidebar.notificationHistory,
         icon: Bell,
       },
+      { id: "assistant", label: t.sidebar.assistant, icon: Bot },
     ],
     [t],
   );

@@ -13,6 +13,7 @@
     about: "About",
     package: "Package",
     hiveCount: "Hives",
+    assistant: "Maya",
   },
 
   header: {
@@ -34,6 +35,7 @@
     profile: "Overview > Profile",
     help: "Overview > Help",
     about: "Overview > About",
+    assistant: "Overview > Maya",
   },
 
   stats: {
@@ -190,18 +192,20 @@
   },
 
   onboarding: {
-    welcome: "Welcome to BeeMora! 🐝",
+    welcome: "Hi, I'm Maya! 🐝",
+    welcomeSub: "I'm BeeMora's beekeeping assistant. Let's explore the panel together — I'll be with you every step of the way.",
     step1Title: "Overview",
-    step1Desc: "See the real-time status of all your hives on the dashboard.",
+    step1Desc: "This is your command center. See real-time temperature, humidity, weight and alert status for all your hives in one place.",
     step2Title: "Hive List",
-    step2Desc: "Filter, sort, and view details of your hives.",
+    step2Desc: "Filter, sort and dive into hive details. Critical hives turn red — and I'll send you an instant alert right away.",
     step3Title: "Map",
-    step3Desc: "View your hive locations on an interactive map.",
+    step3Desc: "View your apiary locations on the map. If you do migratory beekeeping, this screen is a lifesaver.",
     step4Title: "Reports",
-    step4Desc: "Export reports in PDF, CSV, Excel, and JSON formats.",
+    step4Desc: "Seasonal analysis, honey yield estimates, PDF/CSV/Excel export. Get your data in whatever format you need.",
     step5Title: "Keyboard Shortcuts",
-    step5Desc:
-      "Use D=Dashboard, L=List, H=Map, R=Reports, K=Compare for quick navigation.",
+    step5Desc: "For speed: D=Dashboard, L=List, H=Map, R=Reports, K=Compare. And I'll always be waiting in the sidebar.",
+    step6Title: "Got a question? Just ask!",
+    step6Desc: 'Open "Maya" from the sidebar or tap the button at the bottom right. Varroa treatment, honey harvest, hive temperature… ask me anything.',
     next: "Next",
     prev: "Back",
     finish: "Let's Go!",

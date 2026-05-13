@@ -11,6 +11,7 @@ import {
   BarChart3,
   StickyNote,
   Plus,
+  Minus,
   Trash2,
   Send,
   Image,
@@ -21,6 +22,12 @@ import {
   Activity,
   BatteryFull,
   Camera,
+  ClipboardList,
+  Package,
+  SlidersHorizontal,
+  Save,
+  Share2,
+  Heart,
 } from "lucide-react";
 import {
   LineChart,
@@ -38,11 +45,29 @@ import { useLanguage } from "../contexts/LanguageContext";
 import { useTheme } from "../contexts/ThemeContext";
 import { useToast } from "../contexts/ToastContext";
 import { api } from "../services/api";
+import {
+  hiveHealthScore,
+  healthScoreColor,
+  healthScoreBg,
+  healthScoreLabel,
+  healthScoreEmoji,
+} from "../utils/hiveHealthScore";
 
 const NOTES_KEY = (id) => `beemora_notes_${id}`;
 const HIVE_PHOTO_KEY = (id) => `beemora_hive_photo_${id}`;
 const SENSOR_CACHE_KEY = (id) => `beemora_sensor_cache_${id}`;
 const CALENDAR_EVENTS_KEY = "beemora_calendar_events";
+const INSPECTIONS_KEY = (id) => `beemora_inspections_${id}`;
+const HARVEST_KEY = (id) => `beemora_harvest_${id}`;
+const THRESHOLDS_KEY = (id) => `beemora_thresholds_${id}`;
+
+const DEFAULT_THRESHOLDS = { tempMin: 32, tempMax: 38, humMin: 40, humMax: 80, batteryMin: 20 };
+
+const TREATMENT_TYPES_TR = ["Yok", "Oksalik asit", "Amitraz", "Formic asit", "Apivar", "Diğer"];
+const TREATMENT_TYPES_EN = ["None", "Oxalic acid", "Amitraz", "Formic acid", "Apivar", "Other"];
+
+const HARVEST_QUALITY_TR = ["Çok iyi", "İyi", "Ortalama", "Düşük"];
+const HARVEST_QUALITY_EN = ["Excellent", "Good", "Average", "Poor"];
 
 const chartColors = (isDark) => ({
   tooltip: {
@@ -142,6 +167,32 @@ const HiveDetailView = ({ hive, onBack }) => {
   const profilePhotoRef = useRef(null);
   const [hivePhoto, setHivePhoto] = useState(null);
   const [photoUploading, setPhotoUploading] = useState(false);
+
+  // Inspection log state
+  const [inspections, setInspections] = useState([]);
+  const [showInspectionForm, setShowInspectionForm] = useState(false);
+  const [inspectionForm, setInspectionForm] = useState(() => ({
+    date: new Date().toISOString().split("T")[0],
+    queenSeen: false,
+    frames: "",
+    varroaCount: "",
+    treatmentType: lang === "tr" ? TREATMENT_TYPES_TR[0] : TREATMENT_TYPES_EN[0],
+    notes: "",
+  }));
+
+  // Harvest tracker state
+  const [harvests, setHarvests] = useState([]);
+  const [showHarvestForm, setShowHarvestForm] = useState(false);
+  const [harvestForm, setHarvestForm] = useState(() => ({
+    date: new Date().toISOString().split("T")[0],
+    amountKg: "",
+    quality: lang === "tr" ? HARVEST_QUALITY_TR[0] : HARVEST_QUALITY_EN[0],
+    notes: "",
+  }));
+
+  // Custom thresholds state
+  const [thresholds, setThresholds] = useState(DEFAULT_THRESHOLDS);
+  const [thresholdsSaved, setThresholdsSaved] = useState(false);
 
   // Stable string id (hive.id sayi olabilir)
   const hiveIdStr = String(hive.id);
@@ -347,6 +398,30 @@ const HiveDetailView = ({ hive, onBack }) => {
     }
   }, [hive.id, hiveIdStr]);
 
+  // Muayene günlüğünü yükle
+  useEffect(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem(INSPECTIONS_KEY(hive.id)) || "[]");
+      setInspections(Array.isArray(saved) ? saved : []);
+    } catch { setInspections([]); }
+  }, [hive.id]);
+
+  // Hasat verilerini yükle
+  useEffect(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem(HARVEST_KEY(hive.id)) || "[]");
+      setHarvests(Array.isArray(saved) ? saved : []);
+    } catch { setHarvests([]); }
+  }, [hive.id]);
+
+  // Özel eşikleri yükle
+  useEffect(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem(THRESHOLDS_KEY(hive.id)) || "null");
+      if (saved) setThresholds({ ...DEFAULT_THRESHOLDS, ...saved });
+    } catch {}
+  }, [hive.id]);
+
   // Saat
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
@@ -446,6 +521,58 @@ const HiveDetailView = ({ hive, onBack }) => {
     setHiveEvents((prev) => prev.filter((e) => e.id !== eventId));
   };
 
+  // Muayene günlüğü helpers
+  const addInspection = () => {
+    const entry = { id: Date.now(), ...inspectionForm };
+    const updated = [entry, ...inspections];
+    setInspections(updated);
+    try { localStorage.setItem(INSPECTIONS_KEY(hive.id), JSON.stringify(updated)); } catch {}
+    setShowInspectionForm(false);
+    setInspectionForm({
+      date: new Date().toISOString().split("T")[0],
+      queenSeen: false, frames: "", varroaCount: "",
+      treatmentType: lang === "tr" ? TREATMENT_TYPES_TR[0] : TREATMENT_TYPES_EN[0],
+      notes: "",
+    });
+  };
+
+  const deleteInspection = (id) => {
+    const updated = inspections.filter((i) => i.id !== id);
+    setInspections(updated);
+    try { localStorage.setItem(INSPECTIONS_KEY(hive.id), JSON.stringify(updated)); } catch {}
+  };
+
+  // Hasat helpers
+  const addHarvest = () => {
+    if (!harvestForm.amountKg) return;
+    const entry = { id: Date.now(), ...harvestForm };
+    const updated = [entry, ...harvests];
+    setHarvests(updated);
+    try { localStorage.setItem(HARVEST_KEY(hive.id), JSON.stringify(updated)); } catch {}
+    setShowHarvestForm(false);
+    setHarvestForm({
+      date: new Date().toISOString().split("T")[0],
+      amountKg: "",
+      quality: lang === "tr" ? HARVEST_QUALITY_TR[0] : HARVEST_QUALITY_EN[0],
+      notes: "",
+    });
+  };
+
+  const deleteHarvest = (id) => {
+    const updated = harvests.filter((h) => h.id !== id);
+    setHarvests(updated);
+    try { localStorage.setItem(HARVEST_KEY(hive.id), JSON.stringify(updated)); } catch {}
+  };
+
+  const totalHarvestKg = harvests.reduce((sum, h) => sum + (parseFloat(h.amountKg) || 0), 0);
+
+  // Eşik helpers
+  const saveThresholds = () => {
+    try { localStorage.setItem(THRESHOLDS_KEY(hive.id), JSON.stringify(thresholds)); } catch {}
+    setThresholdsSaved(true);
+    setTimeout(() => setThresholdsSaved(false), 2000);
+  };
+
   const formatDateTime = (date) =>
     new Intl.DateTimeFormat(lang === "tr" ? "tr-TR" : "en-US", {
       day: "2-digit",
@@ -493,6 +620,22 @@ const HiveDetailView = ({ hive, onBack }) => {
 
   const colors = getStatusColor(hive.status);
   const statusText = getStatusText(hive.status, lang);
+  const healthScore = hiveHealthScore(hive);
+
+  const shareViaWhatsApp = () => {
+    const statusEmoji = hive.status === "critical" ? "🔴" : hive.status === "warning" ? "🟡" : "🟢";
+    const name = hive.name || `#${hive.id}`;
+    const lines = [
+      `🐝 *BeeMora* — ${name}`,
+      `${statusEmoji} ${lang === "tr" ? "Durum" : "Status"}: ${statusText}`,
+      `🌡️ ${lang === "tr" ? "Sıcaklık" : "Temp"}: ${hive.temp ?? "—"}°C`,
+      `💧 ${lang === "tr" ? "Nem" : "Humidity"}: ${hive.humidity ?? "—"}%`,
+      `🔋 ${lang === "tr" ? "Pil" : "Battery"}: ${hive.battery ?? "—"}%`,
+      `❤️ ${lang === "tr" ? "Sağlık Skoru" : "Health Score"}: ${healthScore}/10 — ${healthScoreLabel(healthScore, lang)}`,
+    ];
+    const text = encodeURIComponent(lines.join("\n"));
+    window.open(`https://wa.me/?text=${text}`, "_blank", "noopener,noreferrer");
+  };
 
   const aiSuggestions = [
     {
@@ -539,6 +682,21 @@ const HiveDetailView = ({ hive, onBack }) => {
       id: "events",
       label: `${lang === "tr" ? "Etkinlikler" : "Events"} (${hiveEvents.length})`,
       icon: Calendar,
+    },
+    {
+      id: "inspection",
+      label: `${lang === "tr" ? "Muayene" : "Inspections"} (${inspections.length})`,
+      icon: ClipboardList,
+    },
+    {
+      id: "harvest",
+      label: `${lang === "tr" ? "Hasat" : "Harvest"} (${harvests.length})`,
+      icon: Package,
+    },
+    {
+      id: "thresholds",
+      label: lang === "tr" ? "Eşikler" : "Thresholds",
+      icon: SlidersHorizontal,
     },
   ];
 
@@ -659,14 +817,24 @@ const HiveDetailView = ({ hive, onBack }) => {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between mb-2">
-        <button
-          onClick={onBack}
-          className="flex items-center gap-2 px-4 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg transition-colors"
-          aria-label={tx.back}
-        >
-          <ArrowLeft className="w-5 h-5" />
-          {tx.back}
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={onBack}
+            className="flex items-center gap-2 px-4 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg transition-colors"
+            aria-label={tx.back}
+          >
+            <ArrowLeft className="w-5 h-5" />
+            {tx.back}
+          </button>
+          <button
+            onClick={shareViaWhatsApp}
+            className="flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-colors text-sm font-medium"
+            title={lang === "tr" ? "WhatsApp ile paylaş" : "Share via WhatsApp"}
+          >
+            <Share2 className="w-4 h-4" />
+            WhatsApp
+          </button>
+        </div>
         <div className="flex items-center gap-4">
           {/* Kovan Profil Fotoğrafı */}
           <div className="relative group">
@@ -745,6 +913,24 @@ const HiveDetailView = ({ hive, onBack }) => {
       {/* General Tab */}
       {activeTab === "general" && (
         <>
+          {/* Health Score Card */}
+          <div className={`flex items-center gap-4 p-4 rounded-xl border ${healthScoreBg(healthScore)}`}>
+            <div className="text-4xl" aria-hidden="true">{healthScoreEmoji(healthScore)}</div>
+            <div className="flex-1">
+              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-0.5">
+                {lang === "tr" ? "Sağlık Skoru" : "Health Score"}
+              </p>
+              <div className="flex items-baseline gap-2">
+                <span className={`text-3xl font-bold ${healthScoreColor(healthScore)}`}>{healthScore}</span>
+                <span className="text-gray-500 text-sm">/ 10</span>
+                <span className={`text-sm font-semibold ${healthScoreColor(healthScore)}`}>
+                  — {healthScoreLabel(healthScore, lang)}
+                </span>
+              </div>
+            </div>
+            <Heart className={`w-6 h-6 ${healthScoreColor(healthScore)}`} aria-hidden="true" />
+          </div>
+
           {/* Status Card */}
           <div
             className={`bg-gray-900 border-2 ${colors.border} rounded-lg p-6 shadow-lg ${
@@ -1489,6 +1675,345 @@ const HiveDetailView = ({ hive, onBack }) => {
               })}
             </div>
           )}
+        </div>
+      )}
+
+      {/* ── Inspection Log Tab ─────────────────────────────────────────── */}
+      {activeTab === "inspection" && (
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h3 className="text-base font-semibold text-gray-200">
+              {lang === "tr" ? "Muayene Günlüğü" : "Inspection Log"}
+            </h3>
+            <button
+              onClick={() => setShowInspectionForm((v) => !v)}
+              className="flex items-center gap-2 px-4 py-2 bg-amber-500 hover:bg-amber-600 text-black font-semibold rounded-lg text-sm transition-colors"
+            >
+              <Plus className="w-4 h-4" />
+              {lang === "tr" ? "Muayene Ekle" : "Add Inspection"}
+            </button>
+          </div>
+
+          {showInspectionForm && (
+            <div className="bg-gray-900 border border-gray-700 rounded-xl p-5 space-y-5">
+              {/* Date */}
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-1.5">
+                  📅 {lang === "tr" ? "Tarih" : "Date"}
+                </label>
+                <input type="date" value={inspectionForm.date}
+                  onChange={(e) => setInspectionForm((p) => ({ ...p, date: e.target.value }))}
+                  className="w-full px-3 py-2.5 bg-gray-800 border border-gray-700 rounded-lg text-gray-100 text-sm focus:outline-none focus:border-amber-500" />
+              </div>
+
+              {/* Queen seen — big visual toggle */}
+              <div>
+                <p className="text-sm font-medium text-gray-300 mb-2">
+                  👑 {lang === "tr" ? "Kraliçe görüldü mü?" : "Was the queen spotted?"}
+                </p>
+                <div className="flex gap-3">
+                  <button type="button"
+                    onClick={() => setInspectionForm((p) => ({ ...p, queenSeen: true }))}
+                    className={`flex-1 py-4 rounded-xl text-2xl font-bold border-2 transition-all ${inspectionForm.queenSeen ? "bg-emerald-500/20 border-emerald-500 text-emerald-300" : "bg-gray-800 border-gray-700 text-gray-500 hover:border-gray-500"}`}
+                  >
+                    ✅ {lang === "tr" ? "Evet" : "Yes"}
+                  </button>
+                  <button type="button"
+                    onClick={() => setInspectionForm((p) => ({ ...p, queenSeen: false }))}
+                    className={`flex-1 py-4 rounded-xl text-2xl font-bold border-2 transition-all ${!inspectionForm.queenSeen ? "bg-red-500/20 border-red-500 text-red-300" : "bg-gray-800 border-gray-700 text-gray-500 hover:border-gray-500"}`}
+                  >
+                    ❌ {lang === "tr" ? "Hayır" : "No"}
+                  </button>
+                </div>
+              </div>
+
+              {/* Frame count — slider */}
+              <div>
+                <div className="flex items-center justify-between mb-1.5">
+                  <p className="text-sm font-medium text-gray-300">
+                    🗂️ {lang === "tr" ? "Çerçeve Sayısı" : "Frame Count"}
+                  </p>
+                  <span className="text-xl font-bold text-amber-400 tabular-nums">
+                    {inspectionForm.frames || 0}
+                  </span>
+                </div>
+                <input type="range" min="0" max="20"
+                  value={inspectionForm.frames || 0}
+                  onChange={(e) => setInspectionForm((p) => ({ ...p, frames: e.target.value }))}
+                  className="w-full accent-amber-500" />
+                <div className="flex justify-between text-xs text-gray-600 mt-1">
+                  <span>0</span><span>10</span><span>20</span>
+                </div>
+              </div>
+
+              {/* Varroa count — number stepper */}
+              <div>
+                <p className="text-sm font-medium text-gray-300 mb-2">
+                  🦠 {lang === "tr" ? "Varroa Sayısı (100 arıda)" : "Varroa Count (per 100 bees)"}
+                </p>
+                <div className="flex items-center gap-3">
+                  <button type="button"
+                    onClick={() => setInspectionForm((p) => ({ ...p, varroaCount: String(Math.max(0, (parseInt(p.varroaCount) || 0) - 1)) }))}
+                    className="w-12 h-12 bg-gray-800 hover:bg-gray-700 border border-gray-700 rounded-xl text-xl font-bold text-gray-300 flex items-center justify-center transition-colors"
+                  >
+                    <Minus className="w-5 h-5" />
+                  </button>
+                  <div className={`flex-1 text-center text-3xl font-bold tabular-nums rounded-xl py-3 ${
+                    (parseInt(inspectionForm.varroaCount) || 0) >= 3 ? "text-red-400 bg-red-500/10" :
+                    (parseInt(inspectionForm.varroaCount) || 0) >= 1 ? "text-amber-400 bg-amber-500/10" :
+                    "text-emerald-400 bg-emerald-500/10"
+                  }`}>
+                    {inspectionForm.varroaCount || 0}
+                  </div>
+                  <button type="button"
+                    onClick={() => setInspectionForm((p) => ({ ...p, varroaCount: String((parseInt(p.varroaCount) || 0) + 1) }))}
+                    className="w-12 h-12 bg-gray-800 hover:bg-gray-700 border border-gray-700 rounded-xl text-xl font-bold text-gray-300 flex items-center justify-center transition-colors"
+                  >
+                    <Plus className="w-5 h-5" />
+                  </button>
+                </div>
+                <p className="text-xs text-gray-500 mt-1 text-center">
+                  {(parseInt(inspectionForm.varroaCount) || 0) >= 3
+                    ? (lang === "tr" ? "⚠️ Yüksek — tedavi gerekebilir" : "⚠️ High — treatment may be needed")
+                    : (parseInt(inspectionForm.varroaCount) || 0) >= 1
+                    ? (lang === "tr" ? "🟡 Orta düzey" : "🟡 Moderate")
+                    : (lang === "tr" ? "✅ Normal" : "✅ Normal")}
+                </p>
+              </div>
+
+              {/* Treatment — card selection */}
+              <div>
+                <p className="text-sm font-medium text-gray-300 mb-2">
+                  💊 {lang === "tr" ? "Tedavi" : "Treatment"}
+                </p>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                  {(lang === "tr" ? TREATMENT_TYPES_TR : TREATMENT_TYPES_EN).map((type) => (
+                    <button key={type} type="button"
+                      onClick={() => setInspectionForm((p) => ({ ...p, treatmentType: type }))}
+                      className={`px-3 py-2.5 rounded-lg text-sm font-medium border transition-all text-center ${
+                        inspectionForm.treatmentType === type
+                          ? "bg-amber-500/20 border-amber-500 text-amber-300"
+                          : "bg-gray-800 border-gray-700 text-gray-400 hover:border-gray-500"
+                      }`}
+                    >
+                      {type}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Notes */}
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-1.5">
+                  📝 {lang === "tr" ? "Notlar (isteğe bağlı)" : "Notes (optional)"}
+                </label>
+                <textarea rows={2} value={inspectionForm.notes}
+                  onChange={(e) => setInspectionForm((p) => ({ ...p, notes: e.target.value }))}
+                  placeholder={lang === "tr" ? "Gözlemlerinizi yazın..." : "Write your observations..."}
+                  className="w-full px-3 py-2.5 bg-gray-800 border border-gray-700 rounded-lg text-gray-100 text-sm placeholder-gray-500 focus:outline-none focus:border-amber-500 resize-none" />
+              </div>
+
+              <div className="flex gap-3 justify-end">
+                <button onClick={() => setShowInspectionForm(false)}
+                  className="px-4 py-2.5 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg text-sm">{t.common.cancel}</button>
+                <button onClick={addInspection}
+                  className="px-6 py-2.5 bg-amber-500 hover:bg-amber-600 text-black font-semibold rounded-lg text-sm">{t.common.save}</button>
+              </div>
+            </div>
+          )}
+
+          {inspections.length === 0 ? (
+            <div className="bg-gray-900 border border-gray-800 rounded-xl p-12 text-center">
+              <ClipboardList className="w-12 h-12 text-gray-700 mx-auto mb-3" />
+              <p className="text-gray-500">{lang === "tr" ? "Henüz muayene kaydı yok" : "No inspection records yet"}</p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {inspections.map((ins) => {
+                const varroa = parseFloat(ins.varroaCount);
+                const varroaColor = isNaN(varroa) ? "text-gray-500" : varroa >= 3 ? "text-red-400" : varroa >= 1 ? "text-amber-400" : "text-emerald-400";
+                return (
+                  <div key={ins.id} className="bg-gray-900 border border-gray-800 rounded-xl p-4 group hover:border-gray-700 transition-colors">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-3 flex-wrap mb-2">
+                          <span className="text-sm font-medium text-gray-200">{ins.date}</span>
+                          {ins.queenSeen && (
+                            <span className="text-[10px] px-2 py-0.5 bg-amber-500/20 text-amber-300 rounded-full">{lang === "tr" ? "👑 Kraliçe görüldü" : "👑 Queen spotted"}</span>
+                          )}
+                          {ins.treatmentType && ins.treatmentType !== TREATMENT_TYPES_TR[0] && ins.treatmentType !== TREATMENT_TYPES_EN[0] && (
+                            <span className="text-[10px] px-2 py-0.5 bg-red-500/20 text-red-300 rounded-full">💊 {ins.treatmentType}</span>
+                          )}
+                        </div>
+                        <div className="flex gap-4 text-xs text-gray-400 flex-wrap">
+                          {ins.frames && <span>{lang === "tr" ? "Çerçeve" : "Frames"}: <strong className="text-gray-200">{ins.frames}</strong></span>}
+                          {ins.varroaCount !== "" && (
+                            <span>{lang === "tr" ? "Varroa" : "Varroa"}: <strong className={varroaColor}>{ins.varroaCount}</strong></span>
+                          )}
+                        </div>
+                        {ins.notes && <p className="text-xs text-gray-400 mt-2 break-words">{ins.notes}</p>}
+                      </div>
+                      <button onClick={() => deleteInspection(ins.id)}
+                        className="p-1.5 text-gray-600 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
+                        aria-label={lang === "tr" ? "Kaydı sil" : "Delete record"}>
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ── Harvest Tracker Tab ────────────────────────────────────────── */}
+      {activeTab === "harvest" && (
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-base font-semibold text-gray-200">{lang === "tr" ? "Bal Hasadı Takibi" : "Honey Harvest Tracker"}</h3>
+              {harvests.length > 0 && (
+                <p className="text-xs text-amber-400 mt-0.5">
+                  {lang === "tr" ? `Toplam: ${totalHarvestKg.toFixed(1)} kg` : `Total: ${totalHarvestKg.toFixed(1)} kg`}
+                </p>
+              )}
+            </div>
+            <button onClick={() => setShowHarvestForm((v) => !v)}
+              className="flex items-center gap-2 px-4 py-2 bg-amber-500 hover:bg-amber-600 text-black font-semibold rounded-lg text-sm transition-colors">
+              <Plus className="w-4 h-4" />
+              {lang === "tr" ? "Hasat Ekle" : "Add Harvest"}
+            </button>
+          </div>
+
+          {showHarvestForm && (
+            <div className="bg-gray-900 border border-gray-700 rounded-xl p-5 space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div>
+                  <label className="block text-xs text-gray-400 mb-1">{lang === "tr" ? "Tarih" : "Date"}</label>
+                  <input type="date" value={harvestForm.date}
+                    onChange={(e) => setHarvestForm((p) => ({ ...p, date: e.target.value }))}
+                    className="w-full px-3 py-2.5 bg-gray-800 border border-gray-700 rounded-lg text-gray-100 text-sm focus:outline-none focus:border-amber-500" />
+                </div>
+                <div>
+                  <label className="block text-xs text-gray-400 mb-1">{lang === "tr" ? "Miktar (kg)" : "Amount (kg)"}</label>
+                  <input type="number" min="0" step="0.1" value={harvestForm.amountKg}
+                    onChange={(e) => setHarvestForm((p) => ({ ...p, amountKg: e.target.value }))}
+                    placeholder={lang === "tr" ? "Örn: 12.5" : "e.g. 12.5"}
+                    className="w-full px-3 py-2.5 bg-gray-800 border border-gray-700 rounded-lg text-gray-100 text-sm focus:outline-none focus:border-amber-500" />
+                </div>
+                <div>
+                  <label className="block text-xs text-gray-400 mb-1">{lang === "tr" ? "Kalite" : "Quality"}</label>
+                  <select value={harvestForm.quality}
+                    onChange={(e) => setHarvestForm((p) => ({ ...p, quality: e.target.value }))}
+                    className="w-full px-3 py-2.5 bg-gray-800 border border-gray-700 rounded-lg text-gray-100 text-sm focus:outline-none focus:border-amber-500">
+                    {(lang === "tr" ? HARVEST_QUALITY_TR : HARVEST_QUALITY_EN).map((q) => (
+                      <option key={q} value={q}>{q}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              <div>
+                <label className="block text-xs text-gray-400 mb-1">{lang === "tr" ? "Notlar" : "Notes"}</label>
+                <textarea rows={2} value={harvestForm.notes}
+                  onChange={(e) => setHarvestForm((p) => ({ ...p, notes: e.target.value }))}
+                  className="w-full px-3 py-2.5 bg-gray-800 border border-gray-700 rounded-lg text-gray-100 text-sm placeholder-gray-500 focus:outline-none focus:border-amber-500 resize-none" />
+              </div>
+              <div className="flex gap-3 justify-end">
+                <button onClick={() => setShowHarvestForm(false)}
+                  className="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg text-sm">{t.common.cancel}</button>
+                <button onClick={addHarvest} disabled={!harvestForm.amountKg}
+                  className="px-4 py-2 bg-amber-500 hover:bg-amber-600 disabled:opacity-30 disabled:cursor-not-allowed text-black font-semibold rounded-lg text-sm">{t.common.save}</button>
+              </div>
+            </div>
+          )}
+
+          {harvests.length === 0 ? (
+            <div className="bg-gray-900 border border-gray-800 rounded-xl p-12 text-center">
+              <Package className="w-12 h-12 text-gray-700 mx-auto mb-3" />
+              <p className="text-gray-500">{lang === "tr" ? "Henüz hasat kaydı yok" : "No harvest records yet"}</p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {harvests.map((h) => (
+                <div key={h.id} className="bg-gray-900 border border-gray-800 rounded-xl p-4 group hover:border-gray-700 transition-colors">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-3 flex-wrap mb-1">
+                        <span className="text-sm font-medium text-gray-200">{h.date}</span>
+                        <span className="text-base font-bold text-amber-400">🍯 {h.amountKg} kg</span>
+                        <span className="text-[10px] px-2 py-0.5 bg-amber-500/10 text-amber-400 border border-amber-500/20 rounded-full">{h.quality}</span>
+                      </div>
+                      {h.notes && <p className="text-xs text-gray-400 mt-1 break-words">{h.notes}</p>}
+                    </div>
+                    <button onClick={() => deleteHarvest(h.id)}
+                      className="p-1.5 text-gray-600 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
+                      aria-label={lang === "tr" ? "Kaydı sil" : "Delete record"}>
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ── Custom Thresholds Tab ──────────────────────────────────────── */}
+      {activeTab === "thresholds" && (
+        <div className="space-y-6">
+          <div>
+            <h3 className="text-base font-semibold text-gray-200 mb-1">
+              {lang === "tr" ? "Özel Uyarı Eşikleri" : "Custom Alert Thresholds"}
+            </h3>
+            <p className="text-xs text-gray-500">
+              {lang === "tr"
+                ? "Bu kovan için kişiselleştirilmiş alarm sınırları belirleyin."
+                : "Set personalised alarm limits for this hive."}
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            {[
+              { label: lang === "tr" ? "Min. Sıcaklık (°C)" : "Min. Temp (°C)", key: "tempMin", min: 10, max: 40 },
+              { label: lang === "tr" ? "Maks. Sıcaklık (°C)" : "Max. Temp (°C)", key: "tempMax", min: 10, max: 50 },
+              { label: lang === "tr" ? "Min. Nem (%)" : "Min. Humidity (%)", key: "humMin", min: 0, max: 100 },
+              { label: lang === "tr" ? "Maks. Nem (%)" : "Max. Humidity (%)", key: "humMax", min: 0, max: 100 },
+              { label: lang === "tr" ? "Min. Pil (%)" : "Min. Battery (%)", key: "batteryMin", min: 0, max: 50 },
+            ].map(({ label, key, min, max }) => (
+              <div key={key} className="bg-gray-900 border border-gray-800 rounded-xl p-4">
+                <label className="block text-xs text-gray-400 mb-3">{label}</label>
+                <div className="flex items-center gap-3">
+                  <input
+                    type="range" min={min} max={max}
+                    value={thresholds[key]}
+                    onChange={(e) => setThresholds((p) => ({ ...p, [key]: Number(e.target.value) }))}
+                    className="flex-1 accent-amber-500"
+                  />
+                  <span className="text-sm font-semibold text-amber-400 w-12 text-right tabular-nums">
+                    {thresholds[key]}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="flex items-center gap-4">
+            <button onClick={saveThresholds}
+              className="flex items-center gap-2 px-6 py-2.5 bg-amber-500 hover:bg-amber-600 text-black font-semibold rounded-lg transition-colors">
+              <Save className="w-4 h-4" />
+              {lang === "tr" ? "Kaydet" : "Save"}
+            </button>
+            {thresholdsSaved && (
+              <span className="text-sm text-emerald-400">
+                ✓ {lang === "tr" ? "Kaydedildi" : "Saved"}
+              </span>
+            )}
+            <button onClick={() => { setThresholds(DEFAULT_THRESHOLDS); setThresholdsSaved(false); }}
+              className="px-4 py-2.5 bg-gray-800 hover:bg-gray-700 text-gray-400 rounded-lg text-sm transition-colors">
+              {lang === "tr" ? "Varsayılana Dön" : "Reset to Default"}
+            </button>
+          </div>
         </div>
       )}
     </div>

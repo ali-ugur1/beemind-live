@@ -8,6 +8,7 @@ import {
   Map,
   FileText,
   Keyboard,
+  Bot,
 } from "lucide-react";
 import { useLanguage } from "../contexts/LanguageContext";
 
@@ -58,6 +59,12 @@ const OnboardingOverlay = ({ onComplete }) => {
       desc: t.onboarding.step5Desc,
       icon: Keyboard,
       color: "bg-cyan-500/20 text-cyan-400",
+    },
+    {
+      title: t.onboarding.step6Title,
+      desc: t.onboarding.step6Desc,
+      icon: Bot,
+      color: "bg-amber-500/20 text-amber-400",
     },
   ];
 
@@ -142,42 +149,73 @@ const OnboardingOverlay = ({ onComplete }) => {
         onClick={(e) => e.stopPropagation()}
         className="max-w-lg w-full bg-gray-900 border border-gray-700 rounded-2xl overflow-hidden shadow-2xl animate-scale-in focus:outline-none"
       >
-        {/* Header */}
-        <div className="relative p-8 text-center">
-          {isFirstStep && (
-            <h2 className="text-3xl font-bold text-gray-100 mb-2">
-              {t.onboarding.welcome}
-            </h2>
-          )}
+        {/* Maya header — her adımda görünür */}
+        <div className="flex items-center justify-between px-6 pt-5 pb-4 border-b border-gray-800">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-amber-500/20 border border-amber-500/30 rounded-xl flex items-center justify-center">
+              <Bot className="w-6 h-6 text-amber-400" />
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-gray-100 leading-none mb-0.5">Maya</p>
+              <p className="text-[10px] text-emerald-400 flex items-center gap-1">
+                <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full inline-block animate-pulse" />
+                BeeMora Arıcılık Asistanı
+              </p>
+            </div>
+          </div>
           <button
             onClick={handleSkip}
             aria-label={t.onboarding.skip || "Close"}
-            className="absolute top-4 right-4 text-gray-500 hover:text-gray-300 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 rounded"
+            className="p-1.5 text-gray-500 hover:text-gray-300 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 rounded-lg"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Step Content */}
-        <div className="px-8 pb-6">
-          <div
-            className={`w-20 h-20 rounded-2xl ${current.color} flex items-center justify-center mx-auto mb-6 transition-colors`}
-            aria-hidden="true"
-          >
-            <Icon className="w-10 h-10" />
-          </div>
-          <h3
-            id="onboarding-title"
-            className="text-xl font-bold text-gray-100 text-center mb-2"
-          >
-            {current.title}
-          </h3>
-          <p
-            id="onboarding-desc"
-            className="text-gray-400 text-center leading-relaxed"
-          >
-            {current.desc}
-          </p>
+        <div className="px-8 pt-6 pb-4">
+          {isFirstStep ? (
+            /* İlk adım: Maya'nın karşılama mesajı */
+            <div className="text-center py-2">
+              <div className="w-20 h-20 bg-amber-500/10 border border-amber-500/20 rounded-2xl flex items-center justify-center mx-auto mb-5">
+                <Bot className="w-10 h-10 text-amber-400" />
+              </div>
+              <h2
+                id="onboarding-title"
+                className="text-2xl font-bold text-gray-100 mb-3"
+              >
+                {t.onboarding.welcome}
+              </h2>
+              <p
+                id="onboarding-desc"
+                className="text-gray-400 leading-relaxed max-w-sm mx-auto"
+              >
+                {t.onboarding.welcomeSub}
+              </p>
+            </div>
+          ) : (
+            /* Diğer adımlar */
+            <>
+              <div
+                className={`w-16 h-16 rounded-2xl ${current.color} flex items-center justify-center mx-auto mb-5 transition-colors`}
+                aria-hidden="true"
+              >
+                <Icon className="w-8 h-8" />
+              </div>
+              <h3
+                id="onboarding-title"
+                className="text-xl font-bold text-gray-100 text-center mb-2"
+              >
+                {current.title}
+              </h3>
+              <p
+                id="onboarding-desc"
+                className="text-gray-400 text-center leading-relaxed"
+              >
+                {current.desc}
+              </p>
+            </>
+          )}
         </div>
 
         {/* Progress Dots */}

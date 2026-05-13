@@ -16,11 +16,13 @@ import {
   Trash2,
   Lock,
   AlertTriangle,
+  Zap,
 } from "lucide-react";
 import { useToast } from "../contexts/ToastContext";
 import { useTheme } from "../contexts/ThemeContext";
 import { useLanguage } from "../contexts/LanguageContext";
 import { useAuth } from "../contexts/AuthContext";
+import { useEasyMode } from "../contexts/EasyModeContext";
 import { api } from "../services/api";
 
 const SETTINGS_KEY = "beemora_settings";
@@ -73,6 +75,7 @@ const SettingsView = ({ pushNotifications }) => {
   const { theme, toggleTheme, accent, changeAccent, accentColors } = useTheme();
   const { t, lang } = useLanguage();
   const { user } = useAuth();
+  const { isEasyMode, toggleEasyMode } = useEasyMode();
   const isTr = lang === "tr";
 
   const [settings, setSettings] = useState(() => loadInitialSettings(user));
@@ -400,6 +403,46 @@ const SettingsView = ({ pushNotifications }) => {
             </span>
           </button>
         </div>
+      </SectionCard>
+
+      {/* Kolay Mod */}
+      <SectionCard
+        icon={<Zap className="w-6 h-6 text-amber-400" />}
+        title={isTr ? "Kolay Mod" : "Easy Mode"}
+      >
+        <div className="flex items-center justify-between p-4 bg-gray-800 rounded-lg">
+          <div className="flex-1 pr-4">
+            <p className="font-medium text-gray-100">
+              {isTr ? "Kolay Mod" : "Easy Mode"}
+            </p>
+            <p className="text-sm text-gray-500 mt-1">
+              {isTr
+                ? "Büyük yazılar, trafik ışığı renkler ve basit gösterim. Okuması daha kolay."
+                : "Larger text, traffic light colors, and simplified display. Easier to read."}
+            </p>
+          </div>
+          <button
+            type="button"
+            role="switch"
+            aria-checked={isEasyMode}
+            onClick={toggleEasyMode}
+            className={`relative w-14 h-7 rounded-full transition-colors flex-shrink-0 ${
+              isEasyMode ? "bg-amber-500" : "bg-gray-700"
+            }`}
+          >
+            <span
+              className={`absolute top-1 w-5 h-5 bg-white rounded-full transition-transform ${
+                isEasyMode ? "translate-x-8" : "translate-x-1"
+              }`}
+            />
+          </button>
+        </div>
+        {isEasyMode && (
+          <p className="text-xs text-amber-400 mt-2 flex items-center gap-1.5">
+            <Zap className="w-3.5 h-3.5" />
+            {isTr ? "Kolay Mod aktif — trafik ışığı görünüm açık" : "Easy Mode active — traffic light view enabled"}
+          </p>
+        )}
       </SectionCard>
 
       {/* Renk Paleti */}

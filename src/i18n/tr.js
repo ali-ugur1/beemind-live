@@ -14,6 +14,7 @@
     about:               'Hakkında',
     package:             'Paket',
     hiveCount:           'Kovan',
+    assistant:           'Maya',
   },
 
   // ─── Header ───────────────────────────────────────────────────────────────
@@ -37,6 +38,7 @@
     profile:             'Genel Bakış > Profil',
     help:                'Genel Bakış > Yardım',
     about:               'Genel Bakış > Hakkında',
+    assistant:           'Genel Bakış > Maya',
   },
 
   // ─── Stats ────────────────────────────────────────────────────────────────
@@ -190,20 +192,23 @@
 
   // ─── Onboarding ───────────────────────────────────────────────────────────
   onboarding: {
-    welcome:    "BeeMora'ya Hoş Geldiniz! 🐝",
+    welcome:    'Merhaba, ben Maya! 🐝',
+    welcomeSub: 'BeeMora\'nın arıcılık asistanıyım. Paneli birlikte keşfedelim, seni yalnız bırakmayacağım.',
     step1Title: 'Genel Bakış',
-    step1Desc:  "Dashboard'da tüm kovanlarınızın anlık durumunu görebilirsiniz.",
+    step1Desc:  'Burası senin komuta merkezin. Tüm kovanlarının anlık sıcaklık, nem, ağırlık ve alarm durumunu tek ekranda görüyorsun.',
     step2Title: 'Kovan Listesi',
-    step2Desc:  'Kovanlarınızı filtreleyebilir, sıralayabilir ve detaylarına bakabilirsiniz.',
+    step2Desc:  'Kovanlarını filtrele, sırala, detayına bak. Kritik durumlar kırmızıya döner — ben de sana anında bildirim gönderirim.',
     step3Title: 'Harita',
-    step3Desc:  'Kovanlarınızın konumlarını haritada görüntüleyebilirsiniz.',
+    step3Desc:  'Arılıklarının konumunu haritada görüntüle. Gezginci arıcılık yapıyorsan bu ekran hayat kurtarır.',
     step4Title: 'Raporlar',
-    step4Desc:  'PDF, CSV, Excel ve JSON formatlarında rapor alabilirsiniz.',
+    step4Desc:  'Sezonluk analiz, bal verimi tahmini, PDF/CSV/Excel export. Verilerini istediğin formatta dışa aktar.',
     step5Title: 'Klavye Kısayolları',
-    step5Desc:  'D=Dashboard, L=Liste, H=Harita, R=Rapor, K=Karşılaştır ile hızlı geçiş yapın.',
+    step5Desc:  'Hız kazanmak istersen: D=Dashboard, L=Liste, H=Harita, R=Rapor, K=Karşılaştır. Ben de her zaman sol menüde seni bekliyorum.',
+    step6Title: 'Soru mu var? Sor bana!',
+    step6Desc:  'Sol menüden "Maya"ya gir ya da sayfanın sağ altındaki butonuma tıkla. Varroa tedavisi, bal hasadı, kovan sıcaklığı... Aklına takılan her şeyi sorabilirsin.',
     next:       'İleri',
     prev:       'Geri',
-    finish:     'Başlayalım!',
+    finish:     'Hadi Başlayalım!',
     skip:       'Atla',
   },
 
