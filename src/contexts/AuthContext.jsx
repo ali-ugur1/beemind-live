@@ -14,6 +14,12 @@ const USER_KEY = "beemora_user";
 const FIRST_LOGIN_KEY = "beemora_first_login";
 const API_BASE = import.meta.env.VITE_API_URL || "";
 
+// Offline fallback users (backend yoksa kullanılır)
+const OFFLINE_USERS = [
+  { email: "admin@beemora.io", password: "admin123", id: "user-001", fullName: "Admin", role: "admin" },
+  { email: "admin@gmail.com",  password: "admin123", id: "user-002", fullName: "Admin", role: "admin" },
+];
+
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -43,10 +49,10 @@ export function AuthProvider({ children }) {
       return;
     }
 
-    // Yerel admin token'ı backend'e gönderilmez
-    if (token === "local-admin-token") {
+    // Offline token — backend doğrulaması gerekmez
+    if (token === "offline-token") {
       setLoading(false);
-      return () => { cancelled = true; };
+      return;
     }
 
     // Verify token in background
@@ -95,62 +101,54 @@ export function AuthProvider({ children }) {
   }, []);
 
   const login = useCallback(async (email, password) => {
-    // ── Yerel admin hesabı (backend gerekmez) ─────────────────────────────
-    const ADMIN_EMAIL = "admin@gmail.com";
-    const ADMIN_PASS  = "admin123";
-
-    if (
-      email.trim().toLowerCase() === ADMIN_EMAIL &&
-      password === ADMIN_PASS
-    ) {
-      const adminUser = {
-        id: "admin-local",
-        email: ADMIN_EMAIL,
-        fullName: "Admin",
-        role: "admin",
-      };
-      const fakeToken = "local-admin-token";
-      localStorage.setItem(TOKEN_KEY, fakeToken);
-      localStorage.setItem(USER_KEY, JSON.stringify(adminUser));
-      setUser(adminUser);
-      setIsAuthenticated(true);
-
-      const hasLoggedBefore = localStorage.getItem(FIRST_LOGIN_KEY);
-      if (!hasLoggedBefore) {
-        setIsFirstLogin(true);
-        localStorage.setItem(FIRST_LOGIN_KEY, "1");
-      }
-      return { success: true };
-    }
-    // ─────────────────────────────────────────────────────────────────────
-
+    // Önce backend'i dene
     try {
       const res = await fetch(`${API_BASE}/api/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
+        signal: AbortSignal.timeout(4000),
       });
       const data = await res.json().catch(() => ({}));
 
-      if (!res.ok) {
+      if (res.ok) {
+        localStorage.setItem(TOKEN_KEY, data.token);
+        localStorage.setItem(USER_KEY, JSON.stringify(data.user));
+        setUser(data.user);
+        setIsAuthenticated(true);
+        const hasLoggedBefore = localStorage.getItem(FIRST_LOGIN_KEY);
+        if (!hasLoggedBefore) {
+          setIsFirstLogin(true);
+          localStorage.setItem(FIRST_LOGIN_KEY, "1");
+        }
+        return { success: true };
+      }
+      // Backend çalışıyor ama kimlik bilgisi yanlış
+      if (res.status === 401 || res.status === 403) {
         return { success: false, error: data.error || "invalid_credentials" };
       }
-
-      localStorage.setItem(TOKEN_KEY, data.token);
-      localStorage.setItem(USER_KEY, JSON.stringify(data.user));
-      setUser(data.user);
-      setIsAuthenticated(true);
-
-      const hasLoggedBefore = localStorage.getItem(FIRST_LOGIN_KEY);
-      if (!hasLoggedBefore) {
-        setIsFirstLogin(true);
-        localStorage.setItem(FIRST_LOGIN_KEY, "1");
-      }
-
-      return { success: true };
     } catch {
-      return { success: false, error: "network_error" };
+      // Backend ulaşılamıyor — offline fallback'e geç
     }
+
+    // Offline fallback
+    const match = OFFLINE_USERS.find(
+      (u) => u.email === email.toLowerCase() && u.password === password
+    );
+    if (!match) return { success: false, error: "invalid_credentials" };
+
+    const { password: _, ...safeUser } = match;
+    const token = "offline-token";
+    localStorage.setItem(TOKEN_KEY, token);
+    localStorage.setItem(USER_KEY, JSON.stringify(safeUser));
+    setUser(safeUser);
+    setIsAuthenticated(true);
+    const hasLoggedBefore = localStorage.getItem(FIRST_LOGIN_KEY);
+    if (!hasLoggedBefore) {
+      setIsFirstLogin(true);
+      localStorage.setItem(FIRST_LOGIN_KEY, "1");
+    }
+    return { success: true };
   }, []);
 
   const register = useCallback(async (email, password, fullName) => {

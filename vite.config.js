@@ -25,8 +25,11 @@ export default defineConfig({
       output: {
         manualChunks: {
           vendor: ['react', 'react-dom', 'react-router-dom'],
+          motion: ['framer-motion'],
           charts: ['recharts'],
           pdf: ['jspdf', 'jspdf-autotable'],
+          icons: ['lucide-react'],
+          firebase: ['firebase/app', 'firebase/database'],
         },
       },
     },

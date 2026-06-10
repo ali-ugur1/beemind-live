@@ -1,22 +1,30 @@
 import { useLanguage } from "../contexts/LanguageContext";
 
-const sizes = {
-  sm: "w-4 h-4",
-  md: "w-8 h-8",
-  lg: "w-12 h-12",
-  xl: "w-16 h-16",
+const sizeMap = {
+  sm: { outer: "w-5 h-5",  inner: "w-2.5 h-2.5", border: "border-2" },
+  md: { outer: "w-9 h-9",  inner: "w-4 h-4",     border: "border-2" },
+  lg: { outer: "w-14 h-14", inner: "w-7 h-7",    border: "border-[3px]" },
+  xl: { outer: "w-20 h-20", inner: "w-10 h-10",  border: "border-4" },
 };
 
 const LoadingSpinner = ({ size = "md", fullScreen = false }) => {
   const { t } = useLanguage();
-  const sizeClass = sizes[size] ?? sizes.md;
+  const s = sizeMap[size] ?? sizeMap.md;
 
   const spinner = (
     <div
-      className={`${sizeClass} border-4 border-gray-700 border-t-amber-500 rounded-full animate-spin`}
+      className="relative flex items-center justify-center"
       role="status"
       aria-label={t.common.loading}
     >
+      {/* Outer ring */}
+      <div
+        className={`${s.outer} ${s.border} rounded-full border-gray-800 border-t-amber-500 animate-spin`}
+      />
+      {/* Inner counter-rotating ring */}
+      <div
+        className={`absolute ${s.inner} ${s.border} rounded-full border-gray-700/60 border-b-amber-400/50 animate-spin-reverse`}
+      />
       <span className="sr-only">{t.common.loading}</span>
     </div>
   );
@@ -24,13 +32,13 @@ const LoadingSpinner = ({ size = "md", fullScreen = false }) => {
   if (fullScreen) {
     return (
       <div
-        className="fixed inset-0 bg-gray-950/80 backdrop-blur-sm z-[9999] flex flex-col items-center justify-center"
+        className="fixed inset-0 bg-gray-950/80 backdrop-blur-sm z-[9999] flex flex-col items-center justify-center gap-5"
         role="alert"
         aria-busy="true"
         aria-live="polite"
       >
         {spinner}
-        <p className="text-gray-400 text-sm mt-4">{t.common.loading}</p>
+        <p className="text-gray-400 text-sm font-medium tracking-wide">{t.common.loading}</p>
       </div>
     );
   }

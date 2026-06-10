@@ -7,7 +7,7 @@
   useCallback,
   useRef,
 } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, MotionConfig } from "framer-motion";
 import { useToast } from "./contexts/ToastContext";
 import { LiveDataProvider, useLiveData } from "./contexts/LiveDataContext";
 import { useLanguage } from "./contexts/LanguageContext";
@@ -34,6 +34,7 @@ import Footer from "./components/Footer";
 import LoginPage from "./components/LoginPage";
 import useKeyboardShortcuts from "./hooks/useKeyboardShortcuts";
 import usePushNotifications from "./hooks/usePushNotifications";
+import { useSEO, PAGE_META } from "./hooks/useSEO";
 import {
   SkeletonStats,
   SkeletonTable,
@@ -166,33 +167,24 @@ function AppContent() {
   }, [isDataStale, apiConnected, lang, toast]);
 
   // ---------------------------------------------------------------------------
-  // Dinamik document.title
+  // SEO — dinamik meta tags (title, description, OG, canonical)
   // ---------------------------------------------------------------------------
-  useEffect(() => {
-    const tabTitles = {
-      dashboard: lang === "tr" ? "Gösterge Paneli" : "Dashboard",
-      list: lang === "tr" ? "Kovan Listesi" : "Hive List",
-      map: lang === "tr" ? "Harita" : "Map",
-      compare: lang === "tr" ? "Karşılaştır" : "Compare",
-      calendar: lang === "tr" ? "Takvim" : "Calendar",
-      reports: lang === "tr" ? "Raporlar" : "Reports",
-      notificationHistory: lang === "tr" ? "Bildirimler" : "Notifications",
-      assistant: "Maya",
-      settings: lang === "tr" ? "Ayarlar" : "Settings",
-      profile: lang === "tr" ? "Profil" : "Profile",
-      help: lang === "tr" ? "Yardım" : "Help",
-      about: lang === "tr" ? "Hakkında" : "About",
-    };
+  const seoProps = useMemo(() => {
+    const pageMeta = PAGE_META[lang] ?? PAGE_META.tr;
+    if (currentView === "detail" && selectedHiveId) {
+      const hive = hives.find((h) => h.id === selectedHiveId);
+      const name = hive?.name ?? `Kovan #${selectedHiveId}`;
+      return {
+        title: name,
+        description: lang === "tr"
+          ? `${name} kovanının anlık sensör verileri, sağlık skoru ve AI analizi.`
+          : `Real-time sensor data, health score, and AI analysis for ${name}.`,
+      };
+    }
+    return pageMeta[activeTab] ?? { title: "BeeMora", description: "" };
+  }, [activeTab, currentView, selectedHiveId, hives, lang]);
 
-    const detailHive = hives.find((h) => h.id === selectedHiveId);
-    const detailName = detailHive?.name ?? (lang === "tr" ? "Kovan" : "Hive");
-    const pageLabel =
-      currentView === "detail" && selectedHiveId
-        ? detailName
-        : (tabTitles[activeTab] ?? "BeeMora");
-
-    document.title = `${pageLabel} | BeeMora`;
-  }, [activeTab, currentView, selectedHiveId, lang, hives]);
+  useSEO({ ...seoProps, url: "https://beemora.com/panel" });
 
   // ---------------------------------------------------------------------------
   // Filtre / arama değişince sayfayı sıfırla
@@ -591,7 +583,7 @@ function AppContent() {
       <Sidebar activeTab={activeTab} onTabChange={handleTabChange} />
 
       <div className="flex-1 flex flex-col overflow-auto">
-        <main className="flex-1 p-4 md:p-8">
+        <main className="flex-1 p-3 pt-16 sm:p-4 sm:pt-16 md:p-8 lg:pt-8">
           <Header
             activeTab={activeTab}
             notifications={notifications}
@@ -641,8 +633,8 @@ function AppContent() {
                       </section>
 
                       <section className="mb-6">
-                        <div className="flex items-center justify-between gap-4 mb-4">
-                          <div className="flex-1">
+                        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 mb-4">
+                          <div className="flex-1 min-w-0">
                             <FilterBar
                               filter={filter}
                               setFilter={setFilter}
@@ -654,13 +646,13 @@ function AppContent() {
                               setAdvancedFilters={setAdvancedFilters}
                             />
                           </div>
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-2 shrink-0">
                             <motion.button
                               whileHover={{ scale: 1.03 }}
                               whileTap={{ scale: 0.97 }}
                               onClick={() => setShowCSVImport(true)}
                               title={lang === "tr" ? "CSV ile içe aktar" : "Import from CSV"}
-                              className="flex items-center gap-2 px-4 py-3 bg-gray-800 hover:bg-gray-700 text-gray-300 font-medium rounded-lg transition-colors whitespace-nowrap border border-gray-700"
+                              className="flex items-center gap-2 px-3 py-2.5 sm:px-4 sm:py-3 bg-gray-800 hover:bg-gray-700 text-gray-300 font-medium rounded-lg transition-colors whitespace-nowrap border border-gray-700 text-sm"
                             >
                               ↑ CSV
                             </motion.button>
@@ -668,7 +660,7 @@ function AppContent() {
                               whileHover={{ scale: 1.03 }}
                               whileTap={{ scale: 0.97 }}
                               onClick={() => setShowAddHive(true)}
-                              className="flex items-center gap-2 px-5 py-3 bg-amber-500 hover:bg-amber-600 text-black font-semibold rounded-lg transition-colors whitespace-nowrap"
+                              className="flex items-center gap-2 px-3 py-2.5 sm:px-5 sm:py-3 bg-amber-500 hover:bg-amber-600 text-black font-semibold rounded-lg transition-colors whitespace-nowrap text-sm"
                             >
                               + {t.addHive.title}
                             </motion.button>
@@ -870,11 +862,13 @@ function AuthGate() {
 // ---------------------------------------------------------------------------
 function App() {
   return (
-    <AuthProvider>
-      <EasyModeProvider>
-        <AuthGate />
-      </EasyModeProvider>
-    </AuthProvider>
+    <MotionConfig reducedMotion="user">
+      <AuthProvider>
+        <EasyModeProvider>
+          <AuthGate />
+        </EasyModeProvider>
+      </AuthProvider>
+    </MotionConfig>
   );
 }
 

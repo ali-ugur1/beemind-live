@@ -210,7 +210,7 @@ const OverviewDashboard = ({ stats, hives, onViewDetail, onNavigate }) => {
                 />
               </div>
               <div>
-                <h3 className="text-sm font-semibold text-gray-400 uppercase">
+                <h3 className="text-sm font-semibold text-gray-300">
                   Gateway
                 </h3>
                 <p className="text-2xl font-bold text-gray-100">{gateway.id}</p>
@@ -507,7 +507,7 @@ const OverviewDashboard = ({ stats, hives, onViewDetail, onNavigate }) => {
 
       {/* Hızlı Eylemler */}
       <div className="bg-gray-900 border border-gray-800 rounded-lg p-6">
-        <h3 className="text-sm font-semibold text-gray-400 uppercase mb-4">
+        <h3 className="text-sm font-semibold text-gray-300 mb-4">
           ⚡ {t.overview.quickActionsTitle}
         </h3>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">

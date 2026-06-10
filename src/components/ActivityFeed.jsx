@@ -138,7 +138,7 @@ const ActivityFeed = ({ limit = 10, onViewDetail }) => {
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
           <Activity className="w-5 h-5 text-amber-400" aria-hidden="true" />
-          <h3 className="text-sm font-semibold text-gray-400 uppercase">
+          <h3 className="text-sm font-semibold text-gray-300">
             {isTr ? "Son Aktiviteler" : "Recent Activity"}
           </h3>
         </div>

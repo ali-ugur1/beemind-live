@@ -270,13 +270,13 @@ const ConfirmDialog = ({
         aria-modal="true"
         aria-labelledby="confirm-dialog-title"
         aria-describedby={message ? "confirm-dialog-message" : undefined}
-        className="bg-gray-900 border border-gray-700 rounded-xl max-w-md w-full shadow-2xl animate-scale-in overflow-hidden my-auto max-h-[calc(100vh-2rem)] flex flex-col"
+        className="bg-gray-900 border border-gray-800/80 rounded-2xl max-w-md w-full shadow-popover animate-scale-in overflow-hidden my-auto max-h-[calc(100vh-2rem)] flex flex-col"
       >
         {/* Header */}
         <div className="flex items-start justify-between p-6 border-b border-gray-800 shrink-0">
           <div className="flex items-center gap-3 min-w-0">
             <div
-              className={`flex items-center justify-center w-10 h-10 rounded-full ${config.iconBg} ring-4 ${config.ring} shrink-0`}
+              className={`flex items-center justify-center w-10 h-10 rounded-xl ${config.iconBg} ring-1 ${config.ring} shrink-0`}
             >
               <Icon
                 className={`w-5 h-5 ${config.iconColor}`}
@@ -317,7 +317,7 @@ const ConfirmDialog = ({
             type="button"
             onClick={safeClose}
             disabled={isLoading}
-            className="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-4 py-2.5 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-xl text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {_cancelText}
           </button>
@@ -327,7 +327,7 @@ const ConfirmDialog = ({
             onClick={handleConfirm}
             disabled={isLoading}
             aria-busy={isLoading}
-            className={`px-4 py-2 ${config.btnBg} text-white rounded-lg font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900 disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center gap-2`}
+            className={`px-4 py-2.5 ${config.btnBg} text-white rounded-xl text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900 disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center gap-2`}
           >
             {isLoading && (
               <span

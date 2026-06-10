@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback, useEffect } from "react";
+import { useFocusTrap } from "../hooks/useFocusTrap";
 import { X, Upload, FileText, CheckCircle, AlertCircle, Download } from "lucide-react";
 import { useLanguage } from "../contexts/LanguageContext";
 
@@ -80,12 +81,11 @@ const TEMPLATE_CSV =
 const CSVImportModal = ({ onClose, onImport }) => {
   const { lang } = useLanguage();
   const fileInputRef = useRef(null);
-  const dialogRef = useRef(null);
+  const dialogRef = useFocusTrap(true);
 
-  // Focus the dialog on mount; restore on unmount
+  // Restore focus and body scroll on unmount
   useEffect(() => {
     const prev = document.activeElement;
-    dialogRef.current?.focus();
     const original = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     const handleKey = (e) => { if (e.key === "Escape") onClose(); };

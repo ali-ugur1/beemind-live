@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { useFocusTrap } from "../hooks/useFocusTrap";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Plus, Hexagon, Cpu, Wifi, MapPin } from "lucide-react";
 import { useToast } from "../contexts/ToastContext";
@@ -19,6 +20,7 @@ const AddHiveModal = ({ isOpen, onClose }) => {
   const toast = useToast();
   const { addHive, hives } = useLiveData();
   const { t, lang } = useLanguage();
+  const dialogRef = useFocusTrap(isOpen);
   const [form, setForm] = useState(INITIAL_FORM);
   const [serialError, setSerialError] = useState("");
   const [latError, setLatError] = useState("");
@@ -236,6 +238,10 @@ const AddHiveModal = ({ isOpen, onClose }) => {
           />
 
           <motion.div
+            ref={dialogRef}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="add-hive-title"
             className="relative bg-gray-900 border border-gray-700 rounded-xl w-full max-w-md shadow-2xl max-h-[90vh] overflow-y-auto"
             initial={{ opacity: 0, y: 40, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -248,7 +254,7 @@ const AddHiveModal = ({ isOpen, onClose }) => {
                 <div className="w-10 h-10 bg-amber-500/20 rounded-full flex items-center justify-center">
                   <Hexagon className="w-5 h-5 text-amber-400" />
                 </div>
-                <h2 className="text-lg font-semibold text-gray-100">
+                <h2 id="add-hive-title" className="text-lg font-semibold text-gray-100">
                   {t.addHive.title}
                 </h2>
               </div>

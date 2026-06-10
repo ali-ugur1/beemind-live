@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Eye, Sparkles, Trash2, Pencil } from "lucide-react";
+import { Eye, Sparkles, Trash2, Pencil, CheckCircle, AlertTriangle, AlertCircle } from "lucide-react";
 import { getStatusColor, getStatusText } from "../data/mockData";
 import EmptyState from "./EmptyState";
 import ConfirmDialog from "./ConfirmDialog";
@@ -81,7 +81,7 @@ const HiveList = ({
       {/* Desktop Table */}
       <div className="hidden md:block bg-gray-900 border border-gray-800 rounded-lg overflow-hidden">
         {/* Header: 1 + 1 + 2 + 3 + 1 + 1 + 3 = 12 */}
-        <div className="grid grid-cols-12 gap-4 px-6 py-4 bg-gray-800 border-b border-gray-700 text-xs font-semibold text-gray-400 uppercase tracking-wider">
+        <div className="grid grid-cols-12 gap-4 px-6 py-4 bg-gray-800 border-b border-gray-700 text-xs font-medium text-gray-400">
           <div className="col-span-1 flex items-center">
             <input
               type="checkbox"
@@ -134,7 +134,7 @@ const HiveList = ({
             className="w-4 h-4 rounded border-gray-600 bg-gray-700 text-amber-500 focus:ring-amber-500 cursor-pointer"
             aria-label={isTR ? "Tümünü seç" : "Select all"}
           />
-          <span className="text-xs text-gray-500 uppercase">
+          <span className="text-xs text-gray-400">
             {isTR ? "Tümünü Seç" : "Select All"}
           </span>
         </div>
@@ -213,13 +213,18 @@ const HiveRow = React.memo(
         animate={{ opacity: 1, x: 0 }}
         exit={{ opacity: 0, x: 12, transition: { duration: 0.18 } }}
         transition={{ type: "spring", stiffness: 300, damping: 28, delay }}
-        layout
-        className={`grid grid-cols-12 gap-4 px-6 py-5 transition-colors ${
+        className={`relative grid grid-cols-12 gap-4 px-6 py-5 transition-colors ${
           isSelected
             ? "bg-amber-500/10 hover:bg-amber-500/15"
             : "hover:bg-gray-800/60"
-        } ${isCritical ? "ring-1 ring-inset ring-red-500/30" : ""}`}
+        }`}
       >
+        <span
+          aria-hidden="true"
+          className={`absolute left-0 top-0 bottom-0 w-0.5 ${
+            isCritical ? "bg-red-500" : isWarning ? "bg-amber-400" : "bg-transparent"
+          }`}
+        />
         <div className="col-span-1 flex items-center">
           <input
             type="checkbox"
@@ -233,12 +238,19 @@ const HiveRow = React.memo(
         </div>
 
         <div className="col-span-1 flex items-center">
-          <span
-            role="img"
-            aria-label={statusLabel}
-            title={statusLabel}
-            className={`w-3 h-3 rounded-full ${colors.badge} ${isCritical ? "animate-pulse" : ""}`}
-          />
+          {isCritical ? (
+            <span className="relative flex h-3 w-3" title={statusLabel} role="img" aria-label={statusLabel}>
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" aria-hidden="true" />
+              <span className="relative inline-flex h-3 w-3 rounded-full bg-red-500" />
+            </span>
+          ) : (
+            <span
+              role="img"
+              aria-label={statusLabel}
+              title={statusLabel}
+              className={`w-3 h-3 rounded-full ${colors.badge}`}
+            />
+          )}
         </div>
 
         <div className="col-span-2 flex items-center min-w-0">
@@ -269,16 +281,17 @@ const HiveRow = React.memo(
             </div>
           ) : isStable ? (
             <div className="flex items-center gap-2">
-              <span aria-hidden="true" className="text-lg">✅</span>
+              <CheckCircle className="w-4 h-4 text-emerald-500 shrink-0" aria-hidden="true" />
               <span className="text-emerald-500 font-medium">
                 {isTR ? "Stabil" : "Stable"}
               </span>
             </div>
           ) : (
             <div className="flex items-center gap-2 min-w-0">
-              <span aria-hidden="true" className="text-lg shrink-0">
-                {isCritical ? "🔴" : "⚠️"}
-              </span>
+              {isCritical
+                ? <AlertCircle className="w-4 h-4 text-red-400 shrink-0" aria-hidden="true" />
+                : <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0" aria-hidden="true" />
+              }
               <span className={`font-medium truncate ${colors.text}`}>
                 {hive.alertType}
               </span>
@@ -450,13 +463,16 @@ const MobileHiveCard = React.memo(
               {statusLabel}
             </p>
           ) : isStable ? (
-            <p className="text-sm text-emerald-400">
-              <span aria-hidden="true">✅</span>{" "}
+            <p className="text-sm text-emerald-400 flex items-center gap-1.5">
+              <CheckCircle className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
               {isTR ? "Stabil durumda" : "Stable"}
             </p>
           ) : (
-            <p className={`text-sm font-medium ${colors.text}`}>
-              <span aria-hidden="true">{isCritical ? "🔴" : "⚠️"}</span>{" "}
+            <p className={`text-sm font-medium ${colors.text} flex items-center gap-1.5`}>
+              {isCritical
+                ? <AlertCircle className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
+                : <AlertTriangle className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
+              }
               {hive.alertType}
             </p>
           )}

@@ -5,6 +5,8 @@ import {
   ChevronDown,
   ChevronUp,
   X,
+  Thermometer,
+  Battery,
 } from "lucide-react";
 import { useLanguage } from "../contexts/LanguageContext";
 
@@ -208,7 +210,7 @@ const FilterBar = ({
               htmlFor="temp-min"
               className="block text-xs font-medium text-gray-500 mb-2"
             >
-              🌡️ {t.filter.tempRange} (°C)
+              <Thermometer className="inline w-3.5 h-3.5 mr-1 -mt-0.5" aria-hidden="true" />{t.filter.tempRange} (°C)
             </label>
             <div className="flex items-center gap-2">
               <input
@@ -245,7 +247,7 @@ const FilterBar = ({
               htmlFor="battery-min"
               className="block text-xs font-medium text-gray-500 mb-2"
             >
-              🔋 {t.filter.batteryRange} (%)
+              <Battery className="inline w-3.5 h-3.5 mr-1 -mt-0.5" aria-hidden="true" />{t.filter.batteryRange} (%)
             </label>
             <div className="flex items-center gap-2">
               <input

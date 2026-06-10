@@ -311,8 +311,8 @@ const Testimonials = ({ isTr }) => {
         {item.text}
       </p>
       <div className="flex items-center gap-2">
-        <div className="w-7 h-7 bg-gradient-to-br from-amber-500/20 to-orange-500/20 border border-amber-500/30 rounded-full flex items-center justify-center text-sm">
-          🧑‍🌾
+        <div className="w-7 h-7 bg-gradient-to-br from-amber-500/20 to-orange-500/20 border border-amber-500/30 rounded-full flex items-center justify-center text-xs font-bold text-amber-400">
+          {item.name.charAt(0)}
         </div>
         <div>
           <p className="text-xs font-bold text-gray-200">{item.name}</p>
@@ -340,21 +340,16 @@ const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState("");
+  const [errorField, setErrorField] = useState(""); // "email" | "password" | "general"
   const [success, setSuccess] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [attempts, setAttempts] = useState(0);
-  const [showDemo, setShowDemo] = useState(false);
   const [forgotSent, setForgotSent] = useState(false);
 
   const { remaining, start: startCountdown } = useCountdown();
 
   const isTr = lang === "tr";
   const isLocked = remaining > 0;
-  const IS_DEV =
-    typeof import.meta !== "undefined" &&
-    import.meta.env &&
-    import.meta.env.DEV;
-
   // Hatırlanan emaili yükle
   useEffect(() => {
     try {
@@ -384,27 +379,39 @@ const LoginPage = () => {
     return fallback;
   };
 
+  const setFieldError = (field, msg) => {
+    setError(msg);
+    setErrorField(field);
+  };
+
+  const clearError = () => {
+    setError("");
+    setErrorField("");
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (isLocked || isLoading) return;
-    setError("");
+    clearError();
     setSuccess("");
 
     const trimmedEmail = email.trim();
 
     // Validation
     if (!trimmedEmail) {
-      setError(isTr ? "Email adresi gerekli" : "Email address is required");
+      setFieldError("email", isTr ? "Email adresi gerekli" : "Email address is required");
       return;
     }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)) {
-      setError(
-        isTr ? "Geçerli bir email adresi girin" : "Enter a valid email address",
-      );
+      setFieldError("email", isTr ? "Geçerli bir email adresi girin" : "Enter a valid email address");
       return;
     }
     if (!password) {
-      setError(isTr ? "Şifre gerekli" : "Password is required");
+      setFieldError("password", isTr ? "Şifre gerekli" : "Password is required");
+      return;
+    }
+    if (password.length < 6) {
+      setFieldError("password", isTr ? "Şifre en az 6 karakter olmalı" : "Password must be at least 6 characters");
       return;
     }
 
@@ -417,8 +424,7 @@ const LoginPage = () => {
         const fallback = isTr
           ? `Email veya şifre hatalı (${next}/5 deneme)`
           : `Invalid email or password (${next}/5 attempts)`;
-        setError(normalizeError(result && result.error, fallback));
-        if (next >= 3) setShowDemo(true);
+        setFieldError("general", normalizeError(result && result.error, fallback));
         if (next >= 5) startCountdown(30);
       } else {
         // Başarılı giriş → remember-me tercihini uygula
@@ -436,12 +442,10 @@ const LoginPage = () => {
         }
       }
     } catch (err) {
-      setError(
-        normalizeError(
-          err,
-          isTr ? "Beklenmeyen bir hata oluştu" : "Unexpected error occurred",
-        ),
-      );
+      setFieldError("general", normalizeError(
+        err,
+        isTr ? "Beklenmeyen bir hata oluştu" : "Unexpected error occurred",
+      ));
     } finally {
       setIsLoading(false);
     }
@@ -450,13 +454,6 @@ const LoginPage = () => {
   const handleForgotPassword = () => {
     setForgotSent(true);
     setError("");
-  };
-
-  const fillDemo = () => {
-    setEmail("admin@gmail.com");
-    setPassword("admin123");
-    setError("");
-    setShowDemo(false);
   };
 
   const inputClass = (hasError = false) =>
@@ -699,13 +696,10 @@ const LoginPage = () => {
             {/* Logo + Title */}
             <div className="text-center mb-6">
               <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-amber-500/25 to-orange-500/15 border border-amber-500/35 rounded-2xl mb-4 shadow-xl shadow-amber-500/15">
-                <span className="text-3xl leading-none">🐝</span>
+                <img src="/beemora-logo.svg" alt="" aria-hidden="true" className="w-9 h-9 object-contain" style={{ filter: "drop-shadow(0 0 8px rgba(245,158,11,0.55))" }} />
               </div>
               <h2 className="text-2xl font-extrabold text-gray-100 mb-1">
-                <span className="bg-gradient-to-r from-amber-400 to-orange-400 bg-clip-text text-transparent">
-                  Bee
-                </span>
-                Mora
+                <span className="text-amber-400">Bee</span>Mora
               </h2>
               <p className="text-gray-500 text-xs">
                 {isTr
@@ -731,6 +725,7 @@ const LoginPage = () => {
               {/* Error */}
               {error && (
                 <div
+                  id="login-error"
                   role="alert"
                   className="mb-4 p-3 bg-red-500/10 border border-red-500/25 rounded-xl flex items-start gap-2.5 text-red-400 text-sm animate-fade-in"
                 >
@@ -738,7 +733,7 @@ const LoginPage = () => {
                   <span className="flex-1 break-words">{error}</span>
                   <button
                     type="button"
-                    onClick={() => setError("")}
+                    onClick={clearError}
                     aria-label={isTr ? "Hata mesajını kapat" : "Dismiss error"}
                     className="text-red-400/60 hover:text-red-400"
                   >
@@ -779,9 +774,9 @@ const LoginPage = () => {
                   >
                     Email
                   </label>
-                  <div className="relative">
+                  <div className="relative input-wrapper">
                     <Mail
-                      className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500"
+                      className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 transition-colors"
                       aria-hidden="true"
                     />
                     <input
@@ -790,14 +785,16 @@ const LoginPage = () => {
                       value={email}
                       onChange={(e) => {
                         setEmail(e.target.value);
-                        setError("");
+                        if (errorField === "email") clearError();
                       }}
                       placeholder={
                         isTr ? "email@ornek.com" : "email@example.com"
                       }
-                      className={inputClass()}
+                      className={inputClass(errorField === "email")}
                       autoComplete="email"
                       inputMode="email"
+                      aria-invalid={errorField === "email" ? "true" : undefined}
+                      aria-describedby={errorField === "email" ? "login-error" : undefined}
                       required
                     />
                   </div>
@@ -811,9 +808,9 @@ const LoginPage = () => {
                   >
                     {isTr ? "Şifre" : "Password"}
                   </label>
-                  <div className="relative">
+                  <div className="relative input-wrapper">
                     <Lock
-                      className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500"
+                      className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 transition-colors"
                       aria-hidden="true"
                     />
                     <input
@@ -822,13 +819,15 @@ const LoginPage = () => {
                       value={password}
                       onChange={(e) => {
                         setPassword(e.target.value);
-                        setError("");
+                        if (errorField === "password") clearError();
                       }}
                       placeholder={
                         isTr ? "Şifrenizi girin" : "Enter your password"
                       }
-                      className={`${inputClass()} pr-11`}
+                      className={`${inputClass(errorField === "password")} pr-11`}
                       autoComplete="current-password"
+                      aria-invalid={errorField === "password" ? "true" : undefined}
+                      aria-describedby={errorField === "password" ? "login-error" : undefined}
                       required
                     />
                     <button
@@ -852,7 +851,9 @@ const LoginPage = () => {
                       )}
                     </button>
                   </div>
-
+                  <p className="mt-1.5 text-[11px] text-gray-600">
+                    {isTr ? "En az 6 karakter" : "At least 6 characters"}
+                  </p>
                 </div>
 
                 {/* Remember me + Forgot password */}

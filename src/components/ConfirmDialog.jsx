@@ -1,5 +1,6 @@
 import { AlertTriangle, AlertCircle, Info, X } from "lucide-react";
 import { useEffect, useRef, useCallback } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage } from "../contexts/LanguageContext";
 
 const TYPE_CONFIG = {
@@ -159,27 +160,35 @@ const ConfirmDialog = ({
     }
   }, [onConfirm, onClose]);
 
-  if (!isOpen) return null;
-
   return (
-    <div
+    <AnimatePresence>
+      {isOpen && (
+    <motion.div
       role="dialog"
       aria-modal="true"
       aria-labelledby="confirm-dialog-title"
       aria-describedby="confirm-dialog-message"
       onClick={handleBackdropClick}
-      className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[100] flex items-center justify-center p-4 animate-fade-in"
+      className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[100] flex items-center justify-center p-4"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.18 }}
     >
-      <div
+      <motion.div
         ref={dialogRef}
-        className="bg-gray-900 border border-gray-700 rounded-xl max-w-md w-full shadow-2xl animate-scale-in overflow-hidden"
+        className="bg-gray-900 border border-gray-800/80 rounded-2xl max-w-md w-full shadow-popover overflow-hidden"
         onClick={(e) => e.stopPropagation()}
+        initial={{ opacity: 0, scale: 0.94, y: 8 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.94, y: 8 }}
+        transition={{ type: "spring", stiffness: 380, damping: 28 }}
       >
         {/* Header */}
         <div className="flex items-start justify-between p-6 border-b border-gray-800">
           <div className="flex items-center gap-3">
             <div
-              className={`flex items-center justify-center w-10 h-10 rounded-full ${config.iconBg} ring-4 ${config.ring}`}
+              className={`flex items-center justify-center w-10 h-10 rounded-xl ${config.iconBg} ring-1 ${config.ring}`}
             >
               <Icon
                 className={`w-5 h-5 ${config.iconColor}`}
@@ -216,20 +225,24 @@ const ConfirmDialog = ({
 
         {/* Footer */}
         <div className="flex items-center justify-end gap-3 p-6 border-t border-gray-800 bg-gray-900/50">
-          <button
+          <motion.button
             type="button"
             onClick={safeClose}
             disabled={isLoading}
+            whileTap={isLoading ? {} : { scale: 0.96 }}
+            transition={{ type: "spring", stiffness: 400, damping: 22 }}
             className="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {_cancelText}
-          </button>
-          <button
+          </motion.button>
+          <motion.button
             ref={confirmBtnRef}
             type="button"
             onClick={handleConfirm}
             disabled={isLoading}
             aria-busy={isLoading}
+            whileTap={isLoading ? {} : { scale: 0.96 }}
+            transition={{ type: "spring", stiffness: 400, damping: 22 }}
             className={`px-4 py-2 ${config.btnBg} text-white rounded-lg font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900 disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center gap-2`}
           >
             {isLoading && (
@@ -239,10 +252,12 @@ const ConfirmDialog = ({
               />
             )}
             {_confirmText}
-          </button>
+          </motion.button>
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
+      )}
+    </AnimatePresence>
   );
 };
 

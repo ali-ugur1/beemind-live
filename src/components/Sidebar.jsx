@@ -14,8 +14,10 @@
   HelpCircle,
   Info,
   Bot,
+  ChevronRight,
 } from "lucide-react";
 import { useState, useEffect, useCallback, useMemo } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useLiveData } from "../contexts/LiveDataContext";
 import { useLanguage } from "../contexts/LanguageContext";
 
@@ -133,19 +135,33 @@ const Sidebar = ({ activeTab, onTabChange }) => {
 
     return (
       <li key={item.id}>
-        <button
+        <motion.button
           type="button"
           onClick={() => handleMenuClick(item.id)}
           aria-current={isActive ? "page" : undefined}
-          className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all ${
-            isActive
-              ? "bg-amber-500/20 text-amber-400 border border-amber-500/50"
-              : "text-gray-400 hover:text-gray-200 hover:bg-gray-800 border border-transparent"
+          whileTap={{ scale: 0.96 }}
+          transition={{ type: "spring", stiffness: 400, damping: 25 }}
+          className={`relative w-full flex items-center gap-3 px-4 py-2.5 rounded-lg ${
+            isActive ? "text-amber-400" : "text-gray-400 hover:text-gray-200"
           }`}
         >
-          <Icon className="w-5 h-5 shrink-0" aria-hidden="true" />
-          <span className="font-medium text-sm">{item.label}</span>
-        </button>
+          {isActive && (
+            <motion.span
+              layoutId="sidebar-pill"
+              className="absolute inset-0 rounded-lg bg-amber-500/12 border border-amber-500/35"
+              style={{ boxShadow: "0 0 12px rgba(245,158,11,0.15)" }}
+              transition={{ type: "spring", stiffness: 350, damping: 30 }}
+            />
+          )}
+          {!isActive && (
+            <motion.span
+              className="absolute inset-0 rounded-lg bg-transparent hover:bg-gray-800/60"
+              transition={{ duration: 0.15 }}
+            />
+          )}
+          <Icon className="relative w-5 h-5 shrink-0" aria-hidden="true" />
+          <span className="relative font-medium text-sm">{item.label}</span>
+        </motion.button>
       </li>
     );
   };
@@ -157,50 +173,58 @@ const Sidebar = ({ activeTab, onTabChange }) => {
         <button
           type="button"
           onClick={() => setIsOpen((prev) => !prev)}
-          className="fixed top-4 left-4 z-[60] p-2 bg-black border border-gray-800 rounded-lg text-amber-400 hover:bg-gray-900 transition-colors lg:hidden"
+          className="fixed top-3 left-3 z-[60] p-2.5 bg-black/90 backdrop-blur-sm border border-gray-700 rounded-xl text-amber-400 hover:bg-gray-900 transition-colors lg:hidden shadow-lg shadow-black/30"
           aria-label={isOpen ? "Close menu" : "Open menu"}
           aria-expanded={isOpen}
           aria-controls="beemora-sidebar"
         >
-          {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
         </button>
       )}
 
-      {/* Overlay (Mobile) */}
-      {isMobile && isOpen && (
-        <div
-          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
-          onClick={() => setIsOpen(false)}
-          aria-hidden="true"
-        />
-      )}
+      {/* Overlay (Mobile) — Framer Motion fade */}
+      <AnimatePresence>
+        {isMobile && isOpen && (
+          <motion.div
+            key="sidebar-overlay"
+            className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            onClick={() => setIsOpen(false)}
+            aria-hidden="true"
+          />
+        )}
+      </AnimatePresence>
 
-      {/* Sidebar */}
-      <aside
+      {/* Sidebar — desktop static, mobile spring drawer */}
+      <motion.aside
         id="beemora-sidebar"
         aria-label="Main navigation"
         className={`${
-          isMobile
-            ? `fixed top-0 left-0 h-full z-50 transform transition-transform duration-300 ${
-                isOpen ? "translate-x-0" : "-translate-x-full"
-              }`
-            : "relative"
+          isMobile ? "fixed top-0 left-0 h-full z-50" : "relative"
         } w-64 bg-black border-r border-gray-800 flex flex-col`}
+        animate={isMobile ? { x: isOpen ? 0 : "-100%" } : { x: 0 }}
+        transition={{ type: "spring", stiffness: 300, damping: 30 }}
       >
         {/* Logo */}
-        <div className="p-6 border-b border-gray-800">
+        <div className="p-5 border-b border-gray-800/80">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 flex items-center justify-center bg-gray-900 rounded-lg p-1">
+            <div className="relative w-10 h-10 flex items-center justify-center bg-gray-900 rounded-xl p-1 ring-1 ring-amber-500/20">
+              {/* Radial amber glow behind logo */}
+              <div className="absolute inset-0 rounded-xl bg-gradient-radial from-amber-500/20 via-amber-500/5 to-transparent" />
               <img
                 src="/beemora-logo.svg"
                 alt="BeeMora Logo"
-                className="w-full h-full object-contain"
-                style={{
-                  filter: "drop-shadow(0 0 8px rgba(79, 70, 229, 0.5))",
-                }}
+                className="relative w-full h-full object-contain"
+                style={{ filter: "drop-shadow(0 0 8px rgba(245,158,11,0.55))" }}
               />
             </div>
-            <h1 className="text-xl font-bold text-violet-400">BeeMora</h1>
+            <div>
+              <h1 className="text-[17px] font-bold text-amber-400 tracking-tight leading-none">BeeMora</h1>
+              <p className="text-[10px] text-gray-600 mt-0.5 font-medium tracking-wide">IOT DASHBOARD</p>
+            </div>
           </div>
         </div>
 
@@ -214,22 +238,31 @@ const Sidebar = ({ activeTab, onTabChange }) => {
         </nav>
 
         {/* Footer */}
-        <div className="p-4 border-t border-gray-800 space-y-2">
-          <div className="flex items-center gap-2 text-sm text-gray-500">
-            <Package className="w-4 h-4" aria-hidden="true" />
-            <span>{t.sidebar.package}: PRO</span>
-          </div>
-          <div className="text-xs text-gray-600">
-            {hives.length} / {HIVE_LIMIT} {t.sidebar.hiveCount}
-          </div>
-          <div className="flex items-center gap-2 text-sm text-gray-500 pt-2">
-            <User className="w-4 h-4 shrink-0" aria-hidden="true" />
-            <span className="truncate" title={userName}>
-              {userName}
-            </span>
-          </div>
+        <div className="p-3 border-t border-gray-800/60">
+          <button
+            type="button"
+            onClick={() => handleMenuClick("profile")}
+            className="w-full flex items-center gap-3 p-2.5 rounded-xl hover:bg-gray-800/60 transition-colors group"
+          >
+            <div className="relative w-8 h-8 rounded-full bg-gradient-to-br from-amber-500/30 to-amber-600/10 border border-amber-500/35 flex items-center justify-center shrink-0">
+              <span className="text-xs font-bold text-amber-400">
+                {userName.charAt(0).toUpperCase()}
+              </span>
+              <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-500 border-2 border-gray-950" />
+            </div>
+            <div className="flex-1 min-w-0 text-left">
+              <p className="text-xs font-semibold text-gray-200 truncate" title={userName}>
+                {userName}
+              </p>
+              <p className="text-[10px] text-gray-500 mt-0.5">
+                <span className="text-amber-500/80 font-medium">PRO</span>
+                {" · "}{hives.length}/{HIVE_LIMIT} {t.sidebar.hiveCount}
+              </p>
+            </div>
+            <ChevronRight className="w-3.5 h-3.5 text-gray-600 opacity-0 group-hover:opacity-100 transition-opacity shrink-0" aria-hidden="true" />
+          </button>
         </div>
-      </aside>
+      </motion.aside>
     </>
   );
 };

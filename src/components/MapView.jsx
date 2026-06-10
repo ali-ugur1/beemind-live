@@ -483,7 +483,7 @@ const MapView = ({ hives, onViewDetail }) => {
 
       {/* Legend */}
       <div className="bg-gray-900 border border-gray-800 rounded-lg p-4">
-        <h4 className="text-sm font-semibold text-gray-400 uppercase mb-3">
+        <h4 className="text-sm font-semibold text-gray-300 mb-3">
           {t.legend}
         </h4>
         <div className="flex flex-wrap gap-4">

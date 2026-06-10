@@ -41,7 +41,7 @@ const Header = ({
   // Her saniye "now" güncellenir — formatlanmış metin useMemo ile türetilir,
   // böylece dil değişince anında doğru metin gösterilir.
   useEffect(() => {
-    const timer = setInterval(() => setNow(Date.now()), 1000);
+    const timer = setInterval(() => setNow(Date.now()), 10_000);
     return () => clearInterval(timer);
   }, []);
 
@@ -126,14 +126,14 @@ const Header = ({
   };
 
   return (
-    <header className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
+    <header className="sticky top-0 z-20 -mx-3 sm:-mx-4 md:-mx-8 px-3 sm:px-4 md:px-8 pt-3 pb-2.5 mb-6 sm:mb-8 bg-gray-950/85 backdrop-blur-md border-b border-gray-800/50 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
       {/* Breadcrumb */}
-      <div className="min-w-0">
-        <p className="text-sm text-gray-500 truncate">{getBreadcrumb()}</p>
+      <div className="min-w-0 pl-10 lg:pl-0">
+        <p className="text-sm font-medium text-gray-400 truncate">{getBreadcrumb()}</p>
       </div>
 
       {/* Right Side */}
-      <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
+      <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap sm:flex-nowrap ml-auto">
         {/* Last Update */}
         <div
           className="hidden md:flex items-center gap-2 text-sm text-gray-500 mr-2"
@@ -146,10 +146,12 @@ const Header = ({
         </div>
 
         {/* Language Toggle */}
-        <button
+        <motion.button
           type="button"
           onClick={() => changeLanguage(lang === "tr" ? "en" : "tr")}
-          className="p-2 text-gray-400 hover:text-gray-200 hover:bg-gray-800 rounded-lg transition-colors flex items-center gap-1 focus:outline-none focus:ring-2 focus:ring-amber-500/50"
+          whileTap={{ scale: 0.9 }}
+          transition={{ type: "spring", stiffness: 400, damping: 22 }}
+          className="min-w-[44px] min-h-[44px] px-2 text-gray-400 hover:text-gray-200 hover:bg-gray-800 rounded-lg transition-colors flex items-center gap-1 focus:outline-none focus:ring-2 focus:ring-amber-500/50"
           aria-label={lang === "tr" ? "Switch to English" : "Türkçeye geç"}
           title={lang === "tr" ? "English" : "Türkçe"}
         >
@@ -157,42 +159,59 @@ const Header = ({
           <span className="text-xs font-semibold">
             {lang === "tr" ? "EN" : "TR"}
           </span>
-        </button>
+        </motion.button>
 
         {/* Theme Toggle */}
-        <button
+        <motion.button
           type="button"
           onClick={toggleTheme}
-          className="p-2 text-gray-400 hover:text-gray-200 hover:bg-gray-800 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-amber-500/50"
+          whileTap={{ scale: 0.9 }}
+          transition={{ type: "spring", stiffness: 400, damping: 22 }}
+          className="min-w-[44px] min-h-[44px] p-2 text-gray-400 hover:text-gray-200 hover:bg-gray-800 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-amber-500/50"
           aria-label={theme === "dark" ? "Light mode" : "Dark mode"}
         >
-          {theme === "dark" ? (
-            <Sun className="w-5 h-5" />
-          ) : (
-            <Moon className="w-5 h-5" />
-          )}
-        </button>
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.span
+              key={theme}
+              initial={{ opacity: 0, rotate: -30, scale: 0.8 }}
+              animate={{ opacity: 1, rotate: 0, scale: 1 }}
+              exit={{ opacity: 0, rotate: 30, scale: 0.8 }}
+              transition={{ duration: 0.2 }}
+            >
+              {theme === "dark" ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+            </motion.span>
+          </AnimatePresence>
+        </motion.button>
 
         {/* Notification Button */}
         <div className="relative" ref={notificationRef}>
-          <button
+          <motion.button
             type="button"
             onClick={handleToggleNotifications}
-            className="p-2 text-gray-400 hover:text-gray-200 hover:bg-gray-800 rounded-lg transition-colors relative focus:outline-none focus:ring-2 focus:ring-amber-500/50"
+            whileTap={{ scale: 0.9 }}
+            transition={{ type: "spring", stiffness: 400, damping: 22 }}
+            className="min-w-[44px] min-h-[44px] p-2 text-gray-400 hover:text-gray-200 hover:bg-gray-800 rounded-lg transition-colors relative focus:outline-none focus:ring-2 focus:ring-amber-500/50"
             aria-label={t.notifications.title}
             aria-haspopup="true"
             aria-expanded={isNotificationOpen}
           >
             <Bell className="w-5 h-5" />
-            {unreadCount > 0 && (
-              <span
-                className="absolute -top-1 -right-1 min-w-[1.25rem] h-5 px-1 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center"
-                aria-label={`${unreadCount} ${t.notifications.unread || "unread"}`}
-              >
-                {unreadCount > 99 ? "99+" : unreadCount}
-              </span>
-            )}
-          </button>
+            <AnimatePresence>
+              {unreadCount > 0 && (
+                <motion.span
+                  key={unreadCount}
+                  initial={{ scale: 0, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0, opacity: 0 }}
+                  transition={{ type: "spring", stiffness: 500, damping: 22 }}
+                  className="absolute -top-1 -right-1 min-w-[1.25rem] h-5 px-1 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center"
+                  aria-label={`${unreadCount} ${t.notifications.unread || "unread"}`}
+                >
+                  {unreadCount > 99 ? "99+" : unreadCount}
+                </motion.span>
+              )}
+            </AnimatePresence>
+          </motion.button>
           <NotificationDropdown
             notifications={notifications}
             isOpen={isNotificationOpen}
@@ -208,10 +227,12 @@ const Header = ({
 
         {/* User Menu */}
         <div className="relative" ref={userMenuRef}>
-          <button
+          <motion.button
             type="button"
             onClick={handleToggleUserMenu}
-            className="flex items-center gap-2 p-2 text-gray-400 hover:text-gray-200 hover:bg-gray-800 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-amber-500/50"
+            whileTap={{ scale: 0.95 }}
+            transition={{ type: "spring", stiffness: 400, damping: 22 }}
+            className="flex items-center gap-2 min-h-[44px] px-2 text-gray-400 hover:text-gray-200 hover:bg-gray-800 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-amber-500/50"
             aria-label={t.sidebar.profile}
             aria-haspopup="true"
             aria-expanded={isUserMenuOpen}
@@ -222,7 +243,7 @@ const Header = ({
             <span className="hidden md:inline text-sm text-gray-300 font-medium max-w-[160px] truncate">
               {displayName}
             </span>
-          </button>
+          </motion.button>
 
           <AnimatePresence>
             {isUserMenuOpen && (
@@ -244,43 +265,40 @@ const Header = ({
                     </p>
                   )}
                 </div>
-                <button
+                <motion.button
                   type="button"
                   role="menuitem"
-                  onClick={() => {
-                    onProfileClick?.();
-                    setIsUserMenuOpen(false);
-                  }}
+                  onClick={() => { onProfileClick?.(); setIsUserMenuOpen(false); }}
+                  whileTap={{ scale: 0.97 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 22 }}
                   className="w-full text-left px-4 py-2.5 text-sm text-gray-300 hover:bg-gray-800 flex items-center gap-2 transition-colors"
                 >
                   <User className="w-4 h-4" />
                   {t.sidebar.profile}
-                </button>
-                <button
+                </motion.button>
+                <motion.button
                   type="button"
                   role="menuitem"
-                  onClick={() => {
-                    onSettingsClick?.();
-                    setIsUserMenuOpen(false);
-                  }}
+                  onClick={() => { onSettingsClick?.(); setIsUserMenuOpen(false); }}
+                  whileTap={{ scale: 0.97 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 22 }}
                   className="w-full text-left px-4 py-2.5 text-sm text-gray-300 hover:bg-gray-800 flex items-center gap-2 transition-colors"
                 >
                   <Settings className="w-4 h-4" />
                   {t.sidebar.settings}
-                </button>
+                </motion.button>
                 <div className="border-t border-gray-800">
-                  <button
+                  <motion.button
                     type="button"
                     role="menuitem"
-                    onClick={() => {
-                      setIsUserMenuOpen(false);
-                      logout?.();
-                    }}
+                    onClick={() => { setIsUserMenuOpen(false); logout?.(); }}
+                    whileTap={{ scale: 0.97 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 22 }}
                     className="w-full text-left px-4 py-2.5 text-sm text-red-400 hover:bg-red-500/10 flex items-center gap-2 transition-colors"
                   >
                     <LogOut className="w-4 h-4" />
                     {lang === "tr" ? "Çıkış Yap" : "Sign Out"}
-                  </button>
+                  </motion.button>
                 </div>
               </motion.div>
             )}

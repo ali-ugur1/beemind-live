@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { searchKnowledge } from "../utils/beeSearch";
 import beeKnowledge from "../data/beeKnowledge";
 import { useSpeechInput } from "../hooks/useSpeechInput";
+import { generateMayaResponse } from "../utils/mayaChat";
 
 const SUGGESTED = [
   "Arıcılığa nasıl başlarım?",
@@ -15,8 +16,7 @@ const SUGGESTED = [
 const WELCOME =
   "Merhaba! Ben Maya 🐝 Arıcılık, kovan bakımı, hastalıklar veya BeeMora hakkında sorularınızı yanıtlayabilirim.";
 
-const NO_RESULT =
-  "Bu konuda bilgi bulamadım. Lütfen farklı kelimelerle tekrar deneyin veya aşağıdaki önerilen sorulardan birini deneyin.";
+const NO_RESULT = null;
 
 // Simple bold/list renderer for answer text
 function RichText({ text }) {
@@ -86,7 +86,9 @@ export default function FloatingAIChat() {
 
       setTimeout(() => {
         const { best } = searchKnowledge(q, "tr", beeKnowledge);
-        const answer = best ? best.answer_tr : NO_RESULT;
+        const answer = best
+          ? best.answer_tr
+          : generateMayaResponse(q, "tr").text;
         setMessages((prev) => [
           ...prev,
           { role: "bot", text: answer, id: Date.now() + 1 },

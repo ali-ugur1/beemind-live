@@ -1,8 +1,10 @@
 ﻿import { useState, useEffect, useRef, useCallback } from "react";
+import { motion } from "framer-motion";
 import FloatingAIChat from "../components/FloatingAIChat";
 import { useNavigate } from "react-router-dom";
 import { useLanguage } from "../contexts/LanguageContext";
 import { useTheme } from "../contexts/ThemeContext";
+import { useSEO } from "../hooks/useSEO";
 import {
   Sun,
   Moon,
@@ -215,7 +217,7 @@ const RoiCalculator = ({ isTr }) => {
             key={i}
             className="bg-gray-800/50 border border-gray-700/40 rounded-xl p-4 text-center"
           >
-            <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">
+            <p className="text-[10px] text-gray-400 mb-1">
               {s.label}
             </p>
             <p className={`text-lg font-extrabold ${s.color}`}>{s.val}</p>
@@ -261,10 +263,19 @@ const LandingPage = () => {
   const { theme, toggleTheme } = useTheme();
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenu, setMobileMenu] = useState(false);
-  const [visibleSections, setVisibleSections] = useState(new Set());
   const [openFaq, setOpenFaq] = useState(null);
 
   const isTr = lang === "tr";
+
+  useSEO({
+    title: isTr
+      ? "AI Destekli IoT Kovan Yönetim Paneli"
+      : "AI-Powered IoT Hive Management Dashboard",
+    description: isTr
+      ? "BeeMora — Arıcılığı dijitalleştiren akıllı IoT sistemi. Gerçek zamanlı kovan izleme, AI analiz ve anlık alarm sistemi."
+      : "BeeMora — Smart IoT system for modern beekeeping. Real-time hive monitoring, AI analysis, and instant alerts.",
+    url: "https://beemora.com/",
+  });
 
   // Hero section counter — starts immediately
   const c3 = useCounter(99, 1500, true);
@@ -276,31 +287,10 @@ const LandingPage = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setVisibleSections((prev) => new Set([...prev, entry.target.id]));
-          }
-        });
-      },
-      { threshold: 0.08 },
-    );
-    const els = document.querySelectorAll("[data-animate]");
-    els.forEach((el) => observer.observe(el));
-    return () => observer.disconnect();
-  }, []);
-
   const scrollTo = useCallback((id) => {
     setMobileMenu(false);
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
   }, []);
-
-  const anim = (id) =>
-    visibleSections.has(id)
-      ? "opacity-100 translate-y-0"
-      : "opacity-0 translate-y-10";
 
   const handleFaqToggle = useCallback((i) => {
     setOpenFaq((prev) => (prev === i ? null : i));
@@ -566,7 +556,7 @@ const LandingPage = () => {
               <span className="text-xl leading-none">🐝</span>
             </div>
             <div className="flex flex-col items-start">
-              <span className="text-xl font-extrabold leading-none bg-gradient-to-r from-amber-400 to-orange-400 bg-clip-text text-transparent">
+              <span className="text-xl font-extrabold leading-none text-amber-400">
                 Bee<span className="text-white">Mora</span>
               </span>
               <span className="text-[10px] text-gray-500 leading-none mt-0.5">
@@ -671,6 +661,8 @@ const LandingPage = () => {
             alt=""
             className="w-full h-full object-cover opacity-10"
             aria-hidden="true"
+            fetchpriority="high"
+            decoding="async"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-gray-950 via-gray-950/80 to-gray-950" />
 
@@ -784,7 +776,7 @@ const LandingPage = () => {
                 <>
                   Kovanlarınız
                   <br />
-                  <span className="bg-gradient-to-r from-yellow-300 via-amber-400 to-orange-500 bg-clip-text text-transparent drop-shadow-[0_0_30px_rgba(245,158,11,0.4)]">
+                  <span className="text-amber-400">
                     Güvende
                   </span>
                 </>
@@ -792,7 +784,7 @@ const LandingPage = () => {
                 <>
                   Your Hives
                   <br />
-                  <span className="bg-gradient-to-r from-yellow-300 via-amber-400 to-orange-500 bg-clip-text text-transparent drop-shadow-[0_0_30px_rgba(245,158,11,0.4)]">
+                  <span className="text-amber-400">
                     Are Safe
                   </span>
                 </>
@@ -1116,14 +1108,13 @@ const LandingPage = () => {
 
       {/* ═══════════ TRUSTED BY + GOAL ═══════════ */}
       <section
-        data-animate
         id="trust"
-        className={`py-16 px-6 border-t border-gray-800/50 transition-all duration-700 ${anim("trust")}`}
+        className={`py-16 px-6 border-t border-gray-800/50`}
       >
         <div className="max-w-5xl mx-auto">
           {/* Partner placeholder — gerçek ortaklar eklendikçe güncellenecek */}
           <div className="max-w-2xl mx-auto bg-gray-900/60 border border-dashed border-gray-700/60 rounded-2xl p-6 text-center mb-12">
-            <p className="text-[11px] text-gray-500 uppercase tracking-[0.2em] mb-3">
+            <p className="text-xs text-gray-400 mb-3">
               {isTr ? "Ortaklıklar" : "Partnerships"}
             </p>
             <p className="text-sm text-gray-400 leading-relaxed">
@@ -1159,12 +1150,11 @@ const LandingPage = () => {
       {/* ═══════════ TURKEY BEEKEEPING CRISIS ═══════════ */}
       <section
         id="crisis"
-        data-animate
-        className={`py-24 px-6 transition-all duration-700 ${anim("crisis")}`}
+        className={`py-24 px-6`}
       >
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
-            <p className="text-red-400 text-sm font-semibold uppercase tracking-wider mb-3">
+            <p className="text-red-400 text-sm font-semibold mb-3">
               {isTr
                 ? "Türkiye'de Arıcılık Krizi"
                 : "Turkey's Beekeeping Crisis"}
@@ -1302,7 +1292,7 @@ const LandingPage = () => {
           {/* Solution */}
           <div id="solution">
             <div className="text-center mb-10">
-              <p className="text-emerald-400 text-sm font-semibold uppercase tracking-wider mb-3">
+              <p className="text-emerald-400 text-sm font-semibold mb-3">
                 {isTr ? "BeeMora Çözümleri" : "BeeMora Solutions"}
               </p>
               <h3 className="text-3xl md:text-4xl font-bold text-gray-100 mb-4">
@@ -1427,15 +1417,14 @@ const LandingPage = () => {
       {/* ═══════════ FEATURES ═══════════ */}
       <section
         id="features"
-        data-animate
-        className={`py-24 px-6 bg-gray-900/20 transition-all duration-700 ${anim("features")}`}
+        className={`py-24 px-6 bg-gray-900/20`}
       >
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <p className="text-amber-400 text-sm font-semibold uppercase tracking-wider mb-3">
+            <p className="text-amber-400 text-sm font-semibold mb-3">
               {isTr ? "Platform Özellikleri" : "Platform Features"}
             </p>
-            <h2 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-gray-100 via-amber-100 to-gray-100 bg-clip-text text-transparent">
+            <h2 className="text-4xl md:text-5xl font-bold mb-4 text-gray-100">
               {isTr
                 ? "Endüstriyel Güçte Özellikler"
                 : "Industrial-Grade Features"}
@@ -1447,25 +1436,40 @@ const LandingPage = () => {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {features.map((f, i) => {
+          {/* 3 birincil özellik — büyük, farklılaşmış */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+            {features.slice(0, 3).map((f, i) => {
               const Icon = f.icon;
               return (
                 <div
                   key={i}
-                  className="group bg-gray-900/60 border border-gray-800 rounded-2xl p-6 hover:border-gray-700 transition-all hover:-translate-y-1"
+                  className="group bg-gray-900/80 border border-gray-800 rounded-2xl p-8 hover:border-amber-500/30 transition-all"
                 >
-                  <div
-                    className={`w-12 h-12 rounded-xl bg-gradient-to-br ${f.color} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg`}
-                  >
-                    <Icon className="w-6 h-6 text-white" aria-hidden="true" />
+                  <div className="w-11 h-11 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center mb-5">
+                    <Icon className="w-5 h-5 text-amber-400" aria-hidden="true" />
                   </div>
-                  <h3 className="text-lg font-bold text-gray-100 mb-2">
+                  <h3 className="text-xl font-bold text-gray-100 mb-3">
                     {f.title}
                   </h3>
-                  <p className="text-sm text-gray-500 leading-relaxed">
+                  <p className="text-sm text-gray-400 leading-relaxed">
                     {f.desc}
                   </p>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* 5 destekleyici özellik — kompakt liste */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+            {features.slice(3).map((f, i) => {
+              const Icon = f.icon;
+              return (
+                <div
+                  key={i}
+                  className="flex items-start gap-3 bg-gray-900/40 border border-gray-800/60 rounded-xl px-4 py-3 hover:border-gray-700 transition-colors"
+                >
+                  <Icon className="w-4 h-4 text-gray-400 shrink-0 mt-0.5" aria-hidden="true" />
+                  <span className="text-sm font-medium text-gray-300">{f.title}</span>
                 </div>
               );
             })}
@@ -1475,9 +1479,8 @@ const LandingPage = () => {
 
       {/* ═══════════ BIG STATS BANNER ═══════════ */}
       <section
-        data-animate
         id="stats"
-        className={`py-16 px-6 bg-gradient-to-r from-amber-500/5 via-orange-500/5 to-amber-500/5 border-y border-amber-500/10 transition-all duration-700 ${anim("stats")}`}
+        className={`py-16 px-6 bg-gradient-to-r from-amber-500/5 via-orange-500/5 to-amber-500/5 border-y border-amber-500/10`}
       >
         <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
           <StatItem
@@ -1510,13 +1513,12 @@ const LandingPage = () => {
       {/* ═══════════ HOW IT WORKS ═══════════ */}
       <section
         id="how"
-        data-animate
-        className={`py-24 px-6 transition-all duration-700 ${anim("how")}`}
+        className={`py-24 px-6`}
       >
         <div className="max-w-6xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <div>
-              <p className="text-amber-400 text-sm font-semibold uppercase tracking-wider mb-3">
+              <p className="text-amber-400 text-sm font-semibold mb-3">
                 {isTr ? "Nasıl Çalışır" : "How It Works"}
               </p>
               <h2 className="text-4xl md:text-5xl font-bold mb-6">
@@ -1717,12 +1719,11 @@ const LandingPage = () => {
       {/* ═══════════ DASHBOARD PREVIEW ═══════════ */}
       <section
         id="preview"
-        data-animate
-        className={`py-24 px-6 bg-gray-900/20 transition-all duration-700 ${anim("preview")}`}
+        className={`py-24 px-6 bg-gray-900/20`}
       >
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
-            <p className="text-amber-400 text-sm font-semibold uppercase tracking-wider mb-3">
+            <p className="text-amber-400 text-sm font-semibold mb-3">
               {isTr ? "Kontrol Paneli" : "Control Panel"}
             </p>
             <h2 className="text-4xl font-bold mb-4">
@@ -1999,14 +2000,13 @@ const LandingPage = () => {
 
       {/* ═══════════ MOBILE APP PREVIEW ═══════════ */}
       <section
-        data-animate
         id="mobile"
-        className={`py-24 px-6 transition-all duration-700 ${anim("mobile")}`}
+        className={`py-24 px-6`}
       >
         <div className="max-w-6xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <div>
-              <p className="text-amber-400 text-sm font-semibold uppercase tracking-wider mb-3">
+              <p className="text-amber-400 text-sm font-semibold mb-3">
                 {isTr ? "Mobil Erişim" : "Mobile Access"}
               </p>
               <h2 className="text-4xl md:text-5xl font-bold mb-6">
@@ -2180,13 +2180,12 @@ const LandingPage = () => {
 
       {/* ═══════════ PRICING ═══════════ */}
       <section
-        data-animate
         id="pricing"
-        className={`py-24 px-6 bg-gray-900/20 transition-all duration-700 ${anim("pricing")}`}
+        className={`py-24 px-6 bg-gray-900/20`}
       >
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-6">
-            <p className="text-amber-400 text-sm font-semibold uppercase tracking-wider mb-3">
+            <p className="text-amber-400 text-sm font-semibold mb-3">
               {isTr ? "Fiyatlandırma" : "Pricing"}
             </p>
             <h2 className="text-4xl font-bold mb-4">
@@ -2331,13 +2330,12 @@ const LandingPage = () => {
 
       {/* ═══════════ USE CASES ═══════════ */}
       <section
-        data-animate
         id="usecases"
-        className={`py-24 px-6 transition-all duration-700 ${anim("usecases")}`}
+        className={`py-24 px-6`}
       >
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
-            <p className="text-amber-400 text-sm font-semibold uppercase tracking-wider mb-3">
+            <p className="text-amber-400 text-sm font-semibold mb-3">
               {isTr ? "Kullanım Senaryoları" : "Use Cases"}
             </p>
             <h2 className="text-4xl font-bold mb-4">
@@ -2415,13 +2413,12 @@ const LandingPage = () => {
 
       {/* ═══════════ THE BEEMORA DIFFERENCE ═══════════ */}
       <section
-        data-animate
         id="difference"
-        className={`py-24 px-6 bg-gray-900/20 transition-all duration-700 ${anim("difference")}`}
+        className={`py-24 px-6 bg-gray-900/20`}
       >
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-12">
-            <p className="text-amber-400 text-sm font-semibold uppercase tracking-wider mb-3">
+            <p className="text-amber-400 text-sm font-semibold mb-3">
               {isTr ? "BeeMora Farkı" : "The BeeMora Difference"}
             </p>
             <h2 className="text-4xl font-bold mb-4">
@@ -2518,13 +2515,12 @@ const LandingPage = () => {
 
       {/* ═══════════ COMPARISON TABLE ═══════════ */}
       <section
-        data-animate
         id="compare"
-        className={`py-24 px-6 transition-all duration-700 ${anim("compare")}`}
+        className={`py-24 px-6`}
       >
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12">
-            <p className="text-amber-400 text-sm font-semibold uppercase tracking-wider mb-3">
+            <p className="text-amber-400 text-sm font-semibold mb-3">
               {isTr ? "Karşılaştırma" : "Comparison"}
             </p>
             <h2 className="text-4xl font-bold mb-4">
@@ -2688,13 +2684,12 @@ const LandingPage = () => {
 
       {/* ═══════════ ROI CALCULATOR ═══════════ */}
       <section
-        data-animate
         id="roi"
-        className={`py-24 px-6 bg-gray-900/20 transition-all duration-700 ${anim("roi")}`}
+        className={`py-24 px-6 bg-gray-900/20`}
       >
         <div className="max-w-3xl mx-auto">
           <div className="text-center mb-10">
-            <p className="text-amber-400 text-sm font-semibold uppercase tracking-wider mb-3">
+            <p className="text-amber-400 text-sm font-semibold mb-3">
               {isTr ? "Yatırım Getirisi" : "Return on Investment"}
             </p>
             <h2 className="text-4xl font-bold mb-4">
@@ -2714,13 +2709,12 @@ const LandingPage = () => {
 
       {/* ═══════════ TESTIMONIALS ═══════════ */}
       <section
-        data-animate
         id="stories"
-        className={`py-24 px-6 transition-all duration-700 ${anim("stories")}`}
+        className={`py-24 px-6`}
       >
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-14">
-            <p className="text-amber-400 text-sm font-semibold uppercase tracking-wider mb-3">
+            <p className="text-amber-400 text-sm font-semibold mb-3">
               {isTr ? "Arıcı Hikayeleri" : "Beekeeper Stories"}
             </p>
             <h2 className="text-4xl font-bold mb-3">
@@ -2828,13 +2822,12 @@ const LandingPage = () => {
 
       {/* ═══════════ ACHIEVEMENTS & PRESS ═══════════ */}
       <section
-        data-animate
         id="news"
-        className={`py-20 px-6 bg-gray-900/20 transition-all duration-700 ${anim("news")}`}
+        className={`py-20 px-6 bg-gray-900/20`}
       >
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-12">
-            <p className="text-amber-400 text-sm font-semibold uppercase tracking-wider mb-3">
+            <p className="text-amber-400 text-sm font-semibold mb-3">
               {isTr ? "Başarılar & Duyurular" : "Achievements & Announcements"}
             </p>
             <h2 className="text-3xl font-bold mb-3">
@@ -2908,9 +2901,8 @@ const LandingPage = () => {
 
       {/* ═══════════ FREE CONSULTATION CTA ═══════════ */}
       <section
-        data-animate
         id="consult"
-        className={`py-20 px-6 transition-all duration-700 ${anim("consult")}`}
+        className={`py-20 px-6`}
       >
         <div className="max-w-3xl mx-auto text-center">
           <div className="bg-gradient-to-br from-amber-500/10 via-orange-500/5 to-transparent border border-amber-500/20 rounded-3xl p-10 md:p-14">
@@ -2942,13 +2934,12 @@ const LandingPage = () => {
 
       {/* ═══════════ CONTACT ═══════════ */}
       <section
-        data-animate
         id="contact"
-        className={`py-24 px-6 bg-gray-900/20 transition-all duration-700 ${anim("contact")}`}
+        className={`py-24 px-6 bg-gray-900/20`}
       >
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-12">
-            <p className="text-amber-400 text-sm font-semibold uppercase tracking-wider mb-3">
+            <p className="text-amber-400 text-sm font-semibold mb-3">
               {isTr ? "İletişim" : "Contact"}
             </p>
             <h2 className="text-4xl font-bold mb-4">
@@ -3157,12 +3148,11 @@ const LandingPage = () => {
       {/* ═══════════ FAQ ═══════════ */}
       <section
         id="faq"
-        data-animate
-        className={`py-24 px-6 bg-gray-900/20 transition-all duration-700 ${anim("faq")}`}
+        className={`py-24 px-6 bg-gray-900/20`}
       >
         <div className="max-w-3xl mx-auto">
           <div className="text-center mb-12">
-            <p className="text-amber-400 text-sm font-semibold uppercase tracking-wider mb-3">
+            <p className="text-amber-400 text-sm font-semibold mb-3">
               {isTr ? "Sıkça Sorulan Sorular" : "FAQ"}
             </p>
             <h2 className="text-4xl font-bold mb-4">
@@ -3205,12 +3195,11 @@ const LandingPage = () => {
       {/* ═══════════ ABOUT US ═══════════ */}
       <section
         id="about"
-        data-animate
-        className={`py-24 px-6 transition-all duration-700 ${anim("about")}`}
+        className={`py-24 px-6`}
       >
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
-            <p className="text-amber-400 text-sm font-semibold uppercase tracking-wider mb-3">
+            <p className="text-amber-400 text-sm font-semibold mb-3">
               {isTr ? "Hakkımızda" : "About Us"}
             </p>
             <h2 className="text-4xl md:text-5xl font-bold mb-4">
@@ -3534,8 +3523,8 @@ const LandingPage = () => {
                   </span>
                 </div>
                 <div>
-                  <span className="text-lg font-extrabold bg-gradient-to-r from-amber-400 to-orange-400 bg-clip-text text-transparent">
-                    Bee<span className="text-white">Mora</span>
+                  <span className="text-lg font-extrabold text-amber-400">
+                    Bee<span className="text-gray-100">Mora</span>
                   </span>
                   <p className="text-[10px] text-gray-600 leading-none">
                     {isTr

@@ -1,21 +1,18 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
                             http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
 
+  <!-- Ana sayfa — herkese açık, dizine alınabilir -->
   <url>
-    <loc>https://beemora.io/</loc>
-    <lastmod>2026-04-24T10:00:00+03:00</lastmod>
+    <loc>https://beemora.com/</loc>
+    <lastmod>2026-06-06T00:00:00+03:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
-  </url>
-
-  <url>
-    <loc>https://beemora.io/panel</loc>
-    <lastmod>2026-04-24T10:00:00+03:00</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://beemora.com/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://beemora.com/" />
   </url>
 
 </urlset>

@@ -2,9 +2,13 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { Send, Bot, User, Trash2, Sparkles, Search, Copy, Check, Mic, MicOff } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage } from "../contexts/LanguageContext";
+import { useLiveData } from "../contexts/LiveDataContext";
 import { searchKnowledge } from "../utils/beeSearch";
 import beeKnowledge from "../data/beeKnowledge";
 import { useSpeechInput } from "../hooks/useSpeechInput";
+import { generateMayaResponse } from "../utils/mayaChat";
+
+const MAYA_STORAGE_KEY = "beemora_maya_chat";
 
 const SUGGESTED_TR = [
   "Arıcılığa nasıl başlarım?",
@@ -26,14 +30,14 @@ const SUGGESTED_EN = [
 
 const TR = {
   title: "Maya",
-  subtitle: "Arıcılık hakkında merak ettiğiniz her şeyi sorun",
+  subtitle: "Arıcılık asistanınız — her şeyi sorabilirsiniz",
   placeholder: "Maya'ya bir şey sorun...",
   send: "Gönder",
   clear: "Temizle",
   suggestedTitle: "Sık Sorulan Sorular",
   noResults: "Bu konuda bilgi tabanımda eşleşme bulamadım. Lütfen sorunuzu farklı kelimelerle tekrar deneyin.",
-  welcome: "Merhaba! Ben Maya 🐝 Arıcılık, kovan bakımı, hastalıklar, sensörler ve daha fazlası hakkında sorularınızı yanıtlayabilirim.",
-  poweredBy: "BeeMora Bilgi Tabanı",
+  welcome: "Merhaba! Ben Maya 🐝 BeeMora'nın arıcılık asistanıyım. Kovan bakımı, arı hastalıkları, bal hasadı, sensörler ve daha fazlası hakkında benimle sohbet edebilirsin!",
+  poweredBy: "BeeMora AI Asistan",
   relatedTitle: "İlgili Konular",
   copied: "Kopyalandı",
   category: {
@@ -103,10 +107,25 @@ function RichText({ text }) {
 function CopyButton({ text, label }) {
   const [copied, setCopied] = useState(false);
   const handleCopy = useCallback(() => {
-    navigator.clipboard.writeText(text).then(() => {
+    if (navigator.clipboard?.writeText) {
+      navigator.clipboard.writeText(text).then(() => {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      }).catch(() => fallbackCopy(text));
+    } else {
+      fallbackCopy(text);
+    }
+    function fallbackCopy(str) {
+      const ta = document.createElement("textarea");
+      ta.value = str;
+      ta.style.cssText = "position:fixed;left:-9999px";
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand("copy");
+      document.body.removeChild(ta);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    });
+    }
   }, [text]);
   return (
     <button
@@ -121,13 +140,19 @@ function CopyButton({ text, label }) {
 
 const AIAssistantView = () => {
   const { lang } = useLanguage();
+  const { hives } = useLiveData();
   const t = lang === "tr" ? TR : EN;
   const suggested = lang === "tr" ? SUGGESTED_TR : SUGGESTED_EN;
 
   const [messages, setMessages] = useState(() => {
     try {
-      const saved = sessionStorage.getItem("beemora_chat");
-      return saved ? JSON.parse(saved) : [];
+      const saved = localStorage.getItem(MAYA_STORAGE_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        // Son 50 mesajı yükle, eski olanları at
+        return Array.isArray(parsed) ? parsed.slice(-50) : [];
+      }
+      return [];
     } catch {
       return [];
     }
@@ -148,7 +173,7 @@ const AIAssistantView = () => {
 
   useEffect(() => {
     try {
-      sessionStorage.setItem("beemora_chat", JSON.stringify(messages));
+      localStorage.setItem(MAYA_STORAGE_KEY, JSON.stringify(messages.slice(-50)));
     } catch {}
   }, [messages]);
 
@@ -157,41 +182,58 @@ const AIAssistantView = () => {
       const query = (text || input).trim();
       if (!query) return;
 
-      setMessages((prev) => [
-        ...prev,
-        { role: "user", content: query, timestamp: Date.now() },
-      ]);
-      setInput("");
-      setIsTyping(true);
+      const userMsg = { role: "user", content: query, timestamp: Date.now() };
 
-      setTimeout(() => {
-        const { best, related } = searchKnowledge(query, lang, beeKnowledge);
+      setMessages((prev) => {
+        const updated = [...prev, userMsg];
+        const conversationHistory = updated.slice(-10); // Son 10 mesajı context olarak kullan
 
-        const answer = best
-          ? lang === "tr" ? best.answer_tr : best.answer_en
-          : t.noResults;
+        setInput("");
+        setIsTyping(true);
 
-        const relatedItems = best
-          ? related.map((r) => ({
+        // Yanıt uzunluğuna göre değişken gecikme (kısa soru = kısa bekleme)
+        const baseDelay = query.length < 20 ? 300 : query.length < 60 ? 500 : 700;
+        const delay = baseDelay + Math.random() * 300;
+
+        setTimeout(() => {
+          const { best, related } = searchKnowledge(query, lang, beeKnowledge);
+
+          let answer;
+          let category = best?.category;
+          let relatedItems = [];
+
+          if (best) {
+            answer = lang === "tr" ? best.answer_tr : best.answer_en;
+            relatedItems = related.map((r) => ({
               question: lang === "tr" ? r.question_tr : r.question_en,
               category: r.category,
-            }))
-          : [];
+            }));
+          } else {
+            const chatResponse = generateMayaResponse(query, lang, {
+              hives,
+              conversationHistory,
+            });
+            answer = chatResponse.text;
+            category = chatResponse.category;
+          }
 
-        setMessages((prev) => [
-          ...prev,
-          {
-            role: "assistant",
-            content: answer,
-            related: relatedItems,
-            category: best?.category,
-            timestamp: Date.now(),
-          },
-        ]);
-        setIsTyping(false);
-      }, 600 + Math.random() * 400);
+          setMessages((prev) => [
+            ...prev,
+            {
+              role: "assistant",
+              content: answer,
+              related: relatedItems,
+              category,
+              timestamp: Date.now(),
+            },
+          ]);
+          setIsTyping(false);
+        }, delay);
+
+        return updated;
+      });
     },
-    [input, lang, t],
+    [input, lang, hives],
   );
 
   const handleKeyDown = useCallback(
@@ -221,7 +263,10 @@ const AIAssistantView = () => {
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            onClick={() => setMessages([])}
+            onClick={() => {
+              setMessages([]);
+              try { localStorage.removeItem(MAYA_STORAGE_KEY); } catch {}
+            }}
             className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-gray-500 hover:text-red-400 hover:bg-red-500/10 border border-gray-700/50 hover:border-red-500/20 rounded-lg transition-all"
           >
             <Trash2 className="w-3.5 h-3.5" />

@@ -21,11 +21,11 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
   const showEndDots = endPage < totalPages;
 
   const baseBtn =
-    "min-w-[40px] h-10 px-3 rounded-lg font-medium transition-colors flex items-center justify-center";
-  const inactiveBtn = "bg-gray-800 text-gray-400 hover:bg-gray-700";
-  const activeBtn = "bg-amber-500 text-black font-bold hover:bg-amber-400";
+    "min-w-[40px] h-9 px-3 rounded-xl text-sm font-medium transition-colors flex items-center justify-center";
+  const inactiveBtn = "bg-gray-900 border border-gray-800 text-gray-400 hover:bg-gray-800 hover:text-gray-200";
+  const activeBtn = "bg-amber-500 text-black font-bold hover:bg-amber-400 shadow-glow-amber-sm";
   const iconBtn =
-    "h-10 w-10 rounded-lg bg-gray-800 text-gray-400 hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center";
+    "h-9 w-9 rounded-xl bg-gray-900 border border-gray-800 text-gray-400 hover:bg-gray-800 hover:text-gray-200 disabled:opacity-40 disabled:cursor-not-allowed transition-colors flex items-center justify-center";
 
   return (
     <nav

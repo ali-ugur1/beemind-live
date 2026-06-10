@@ -409,7 +409,7 @@ const ReportsView = ({ hives }) => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Sıcaklık & Nem Trendi */}
         <div className="bg-gray-900 border border-gray-800 rounded-lg p-6">
-          <h3 className="text-sm font-semibold text-gray-400 uppercase mb-4">
+          <h3 className="text-sm font-semibold text-gray-300 mb-4">
             {r.tempHumTrend}
           </h3>
           <ResponsiveContainer width="100%" height={250}>
@@ -450,7 +450,7 @@ const ReportsView = ({ hives }) => {
 
         {/* Durum Dağılımı (Pie Chart) */}
         <div className="bg-gray-900 border border-gray-800 rounded-lg p-6">
-          <h3 className="text-sm font-semibold text-gray-400 uppercase mb-4">
+          <h3 className="text-sm font-semibold text-gray-300 mb-4">
             {r.statusDist}
           </h3>
           <ResponsiveContainer width="100%" height={250}>
@@ -478,7 +478,7 @@ const ReportsView = ({ hives }) => {
 
         {/* Durum Değişim Trendi (Stacked Bar) */}
         <div className="bg-gray-900 border border-gray-800 rounded-lg p-6">
-          <h3 className="text-sm font-semibold text-gray-400 uppercase mb-4">
+          <h3 className="text-sm font-semibold text-gray-300 mb-4">
             {r.dailyChange}
           </h3>
           <ResponsiveContainer width="100%" height={250}>
@@ -516,7 +516,7 @@ const ReportsView = ({ hives }) => {
 
         {/* Pil Durumu Dağılımı */}
         <div className="bg-gray-900 border border-gray-800 rounded-lg p-6">
-          <h3 className="text-sm font-semibold text-gray-400 uppercase mb-4">
+          <h3 className="text-sm font-semibold text-gray-300 mb-4">
             {r.batDist}
           </h3>
           <ResponsiveContainer width="100%" height={250}>
@@ -545,7 +545,7 @@ const ReportsView = ({ hives }) => {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <h4 className="text-sm font-semibold text-gray-400 uppercase mb-3">
+            <h4 className="text-sm font-semibold text-gray-300 mb-3">
               {r.findings}
             </h4>
             <ul className="space-y-2 text-sm text-gray-300">
@@ -568,7 +568,7 @@ const ReportsView = ({ hives }) => {
             </ul>
           </div>
           <div>
-            <h4 className="text-sm font-semibold text-gray-400 uppercase mb-3">
+            <h4 className="text-sm font-semibold text-gray-300 mb-3">
               {r.suggestions}
             </h4>
             <ul className="space-y-2 text-sm text-gray-300">

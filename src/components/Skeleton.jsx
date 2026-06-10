@@ -8,23 +8,23 @@ const SHIMMER_CSS = `
   }
   @keyframes skeleton-fade {
     0%, 100% { opacity: 1; }
-    50%       { opacity: 0.55; }
+    50%       { opacity: 0.45; }
   }
   .skeleton-shimmer {
     background: linear-gradient(
       90deg,
-      #1a1f2e 0%,
-      #252b3b 40%,
-      #2e3650 50%,
-      #252b3b 60%,
-      #1a1f2e 100%
+      #111827 0%,
+      #1a2235 40%,
+      #1f2a40 50%,
+      #1a2235 60%,
+      #111827 100%
     );
     background-size: 600px 100%;
     animation: shimmer 1.8s ease-in-out infinite;
     border-radius: 6px;
   }
   .skeleton-pulse {
-    background: #1a1f2e;
+    background: #111827;
     animation: skeleton-fade 1.8s ease-in-out infinite;
     border-radius: 6px;
   }

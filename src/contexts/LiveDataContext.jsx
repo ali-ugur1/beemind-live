@@ -10,6 +10,7 @@
 import { api, apiToHiveFormat } from "../services/api";
 import { fetchWeather } from "../services/weather";
 import { DEFAULT_HIVE } from "../data/mockData";
+import { subscribeToSensorData } from "../services/firebase";
 
 const LiveDataContext = createContext();
 
@@ -248,6 +249,51 @@ export const LiveDataProvider = ({ children }) => {
       stopWeather();
     };
   }, [fetchLiveData, fetchAuxData]);
+
+  // ── Firebase gerçek zamanlı sensör verisi ───────────────────────────────
+  useEffect(() => {
+    const unsubscribe = subscribeToSensorData((sensorData) => {
+      if (!mountedRef.current) return;
+
+      setHives((prev) =>
+        prev.map((hive) => {
+          const status =
+            sensorData.temperature > 38 || sensorData.temperature < 10
+              ? "critical"
+              : sensorData.temperature > 36 || sensorData.humidity > 80
+                ? "warning"
+                : "stable";
+
+          return {
+            ...hive,
+            temp: sensorData.temperature ?? hive.temp,
+            humidity: sensorData.humidity ?? hive.humidity,
+            pressure: sensorData.pressure ?? hive.pressure,
+            vibration: sensorData.vibration ?? hive.vibration,
+            battery: sensorData.battery ?? hive.battery,
+            bat_voltage: sensorData.bat_voltage ?? hive.bat_voltage,
+            sound: sensorData.sound_db ?? hive.sound,
+            soundDb: sensorData.sound_db ?? hive.soundDb,
+            co2: sensorData.co2 ?? hive.co2,
+            tvoc: sensorData.tvoc ?? hive.tvoc,
+            lastUpdate: new Date(sensorData.timestamp).toISOString(),
+            lastActivity: new Date(sensorData.timestamp).toISOString(),
+            hasData: true,
+            status,
+          };
+        }),
+      );
+
+      setApiConnected(true);
+      setLastApiUpdate(new Date());
+      setLoading(false);
+      setError(null);
+    });
+
+    return () => {
+      if (typeof unsubscribe === "function") unsubscribe();
+    };
+  }, []);
 
   // ── Veri bayatlık kontrolü ──────────────────────────────────────────────
   const isDataStale = useMemo(() => {

@@ -73,6 +73,14 @@ if (VAPID_PUBLIC && VAPID_PRIVATE) {
   console.warn("[Push] VAPID keys not found in .env — push disabled");
 }
 
+if (IS_PROD && !ESP_API_KEY) {
+  console.warn("[Security] ⚠️  ESP_API_KEY tanımlı değil — /api/sensor-data endpoint'i herkese açık! .env dosyasına ESP_API_KEY ekleyin.");
+}
+
+if (!process.env.JWT_SECRET) {
+  console.warn("[Security] ⚠️  JWT_SECRET .env'de tanımlı değil — varsayılan fallback secret kullanılıyor. Production için güvenli bir secret belirleyin!");
+}
+
 // ── Dosya Sistemi Yardımcıları ────────────────────────────────────────────
 
 /**
@@ -83,7 +91,7 @@ if (VAPID_PUBLIC && VAPID_PRIVATE) {
  */
 function safeReadJSON(filePath, fallback) {
   try {
-    const raw = fs.readFileSync(filePath, "utf-8");
+    const raw = fs.readFileSync(filePath, "utf-8").replace(/^﻿/, "");
     return JSON.parse(raw);
   } catch {
     return fallback;
@@ -310,6 +318,13 @@ const rateLimitCleanupTimer = setInterval(() => {
 
 // ── Auth Middleware ────────────────────────────────────────────────────────
 
+function requireAdmin(req, res, next) {
+  if (req.user?.role !== "admin") {
+    return res.status(403).json({ error: "Bu işlem için yönetici yetkisi gerekli" });
+  }
+  next();
+}
+
 function authMiddleware(req, res, next) {
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -318,12 +333,6 @@ function authMiddleware(req, res, next) {
   const token = authHeader.slice(7); // "Bearer " prefix'ini güvenle kaldır
   if (!token) {
     return res.status(401).json({ error: "Token boş olamaz" });
-  }
-
-  // Yerel admin token — backend doğrulaması atlanır
-  if (token === "local-admin-token") {
-    req.user = { id: "admin-local", email: "admin@gmail.com", role: "admin" };
-    return next();
   }
 
   try {
@@ -468,22 +477,6 @@ app.post("/api/auth/login", rateLimit(10), async (req, res) => {
     if (!email || !password) {
       return res.status(400).json({ error: "Email ve şifre gerekli" });
     }
-
-    // ── Yerel admin hesabı (sabit kimlik bilgileri) ───────────────────────
-    if (
-      email.trim().toLowerCase() === "admin@gmail.com" &&
-      password === "admin123"
-    ) {
-      const adminUser = { id: "admin-local", email: "admin@gmail.com", fullName: "Admin", role: "admin" };
-      const token = jwt.sign(
-        { id: adminUser.id, email: adminUser.email, role: adminUser.role },
-        JWT_SECRET,
-        { expiresIn: "7d" },
-      );
-      log("[Auth] Local admin login");
-      return res.json({ status: "ok", token, user: adminUser });
-    }
-    // ─────────────────────────────────────────────────────────────────────
 
     const users = readUsers();
     const user = users.find((u) => u.email === email.toLowerCase());
@@ -656,10 +649,13 @@ app.post("/api/sensor-data", espAuthMiddleware, rateLimit(60), (req, res) => {
     deviceLastSeen.set(resolvedHiveId, now);
 
     const entry = {
-      ...req.body,
       hive_id: resolvedHiveId,
+      temperature: temperature ?? null,
+      humidity: humidity ?? null,
+      weight: weight ?? null,
+      sound_db: sound_db ?? null,
+      battery: battery ?? null,
       received_at: new Date().toISOString(),
-      ip: req.ip,
     };
 
     log(
@@ -1112,7 +1108,7 @@ app.get("/api/hives/:id/chart", authMiddleware, (req, res) => {
 //  BACKUP & RESTORE
 // ══════════════════════════════════════════════════════════════════════════
 
-app.get("/api/backup", authMiddleware, (req, res) => {
+app.get("/api/backup", authMiddleware, requireAdmin, (req, res) => {
   try {
     const dateStr = new Date().toISOString().slice(0, 10);
     // Dosya adında özel karakter olmamasını garantile
@@ -1135,7 +1131,7 @@ app.get("/api/backup", authMiddleware, (req, res) => {
   }
 });
 
-app.post("/api/restore", authMiddleware, (req, res) => {
+app.post("/api/restore", authMiddleware, requireAdmin, (req, res) => {
   try {
     const { sensorData, hives } = req.body;
     if (!sensorData && !hives) {
@@ -1160,7 +1156,7 @@ app.post("/api/restore", authMiddleware, (req, res) => {
   }
 });
 
-app.delete("/api/data/reset", authMiddleware, (req, res) => {
+app.delete("/api/data/reset", authMiddleware, requireAdmin, (req, res) => {
   try {
     const { target } = req.query;
     if (target === "sensor" || target === "all" || !target) {
@@ -1343,6 +1339,11 @@ async function checkAndSendAlarms(entry) {
     writeSubscriptions(cleaned);
   }
 }
+
+// ── API 404 Handler ───────────────────────────────────────────────────────
+app.all("/api/*", (req, res) => {
+  return res.status(404).json({ error: "Bu API endpoint'i bulunamadı" });
+});
 
 // ── SPA Fallback ──────────────────────────────────────────────────────────
 if (fs.existsSync(distDir)) {

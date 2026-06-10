@@ -1,4 +1,5 @@
 ﻿import { useState, useEffect, useCallback } from "react";
+import { useFocusTrap } from "../hooks/useFocusTrap";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Save } from "lucide-react";
 import { useToast } from "../contexts/ToastContext";
@@ -10,6 +11,7 @@ const INITIAL_FORM = { location: "", note: "" };
 const EditHiveModal = ({ hive, isOpen, onClose, onSave }) => {
   const toast = useToast();
   const { t, lang } = useLanguage();
+  const dialogRef = useFocusTrap(isOpen);
   const [saving, setSaving] = useState(false);
   const [formData, setFormData] = useState(INITIAL_FORM);
 
@@ -106,6 +108,7 @@ const EditHiveModal = ({ hive, isOpen, onClose, onSave }) => {
             exit={{ opacity: 0 }}
           />
           <motion.div
+            ref={dialogRef}
             className="relative bg-gray-900 border border-gray-700 rounded-xl w-full max-w-md shadow-2xl"
             initial={{ opacity: 0, y: 40, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
